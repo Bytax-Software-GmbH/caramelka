@@ -61,7 +61,7 @@ function Hero() {
         <div className="ck-frame">
           <Placeholder imageKey="signature-torte" className="aspect-[3/3.5] rounded-[4px]" />
         </div>
-        <div className="flex items-center gap-3 text-[12px] tracking-[0.06em] text-espresso/50">
+        <div className="flex items-center gap-3 text-[12px] tracking-[0.06em] text-espresso/70">
           <span aria-hidden className="h-px w-8 bg-caramel/40" />
           {t.hero.photoCaption}
         </div>

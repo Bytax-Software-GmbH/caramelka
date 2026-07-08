@@ -92,7 +92,7 @@ function ContactPage() {
             <div className="ck-frame">
               <Placeholder imageKey="backstube" className="aspect-[3/3.4] rounded-[4px]" />
             </div>
-            <div className="text-[12px] tracking-[0.06em] text-espresso/50">
+            <div className="text-[12px] tracking-[0.06em] text-espresso/70">
               {t.contact.addressLabel} · {contact.address.city}
             </div>
           </div>

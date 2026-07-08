@@ -103,7 +103,7 @@ function CartPage() {
                       <button
                         type="button"
                         onClick={() => cart.remove(item.key)}
-                        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.1em] text-espresso/50 uppercase hover:text-destructive"
+                        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.1em] text-espresso/70 uppercase hover:text-destructive"
                       >
                         <Trash2Icon className="size-3.5" aria-hidden /> {t.cart.remove}
                       </button>

@@ -303,7 +303,7 @@ function CheckoutPage() {
                 <li key={item.key} className="flex justify-between gap-4">
                   <span className="text-espresso/75">
                     {item.quantity} × {pickL(item.nameDe, item.nameRu)}
-                    <span className="block text-[12px] text-espresso/50">
+                    <span className="block text-[12px] text-espresso/70">
                       {pickL(item.sizeLabelDe, item.sizeLabelRu)}
                       {item.fillingNameDe
                         ? ` · ${pickL(item.fillingNameDe, item.fillingNameRu ?? item.fillingNameDe)}`
@@ -345,7 +345,7 @@ function CheckoutPage() {
             >
               {submitting ? t.checkout.submitting : t.checkout.submit}
             </button>
-            <p className="mt-3 text-center text-[11.5px] text-espresso/50">
+            <p className="mt-3 text-center text-[11.5px] text-espresso/70">
               <Link to="/agb" className="underline hover:text-espresso">
                 {t.checkout.legalNote}
               </Link>

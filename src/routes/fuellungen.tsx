@@ -55,7 +55,7 @@ function FillingsPage() {
                   {pickL(filling.descriptionDe, filling.descriptionRu)}
                 </p>
                 {filling.allergensDe && (
-                  <p className="text-[12.5px] text-espresso/50">
+                  <p className="text-[12.5px] text-espresso/70">
                     {t.fillings.allergens}: {pickL(filling.allergensDe, filling.allergensRu)}
                   </p>
                 )}
