@@ -8,10 +8,10 @@ services:
         VITE_BASE_URL: ${SERVICE_URL_APP}
     environment:
       # Coolify auto-generates the FQDN + secrets via these magic variables
-      - SERVICE_FQDN_APP_3000
-      - VITE_BASE_URL=${SERVICE_URL_APP}
-      - DATABASE_URL=postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
-      - BETTER_AUTH_SECRET=${SERVICE_PASSWORD_64_AUTHSECRET}
+      SERVICE_FQDN_APP_3000: ""
+      VITE_BASE_URL: ${SERVICE_URL_APP}
+      DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
+      BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
     depends_on:
       db:
         condition: service_healthy
@@ -32,8 +32,8 @@ services:
       target: base
     command: ["pnpm", "db:migrate"]
     environment:
-      - DATABASE_URL=postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
-      - BETTER_AUTH_SECRET=${SERVICE_PASSWORD_64_AUTHSECRET}
+      DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
+      BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
     depends_on:
       db:
         condition: service_healthy
@@ -44,9 +44,9 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      - POSTGRES_USER=caramelka
-      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
-      - POSTGRES_DB=caramelka
+      POSTGRES_USER: caramelka
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DB: caramelka
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
