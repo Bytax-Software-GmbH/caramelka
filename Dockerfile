@@ -2,7 +2,10 @@
 FROM node:24-alpine AS base
 WORKDIR /app
 
-RUN npm install -g pnpm
+# Pin pnpm to the version used locally. Newer pnpm turns "ignored build
+# scripts" (esbuild) into a fatal error; 10.34.x honors onlyBuiltDependencies
+# from pnpm-workspace.yaml and builds esbuild without prompting.
+RUN npm install -g pnpm@10.34.2
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
