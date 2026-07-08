@@ -30,7 +30,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: base
-    command: ["pnpm", "db:migrate"]
+    # Schema migrieren, dann leere DB einmalig mit Platzhalter-Katalog befüllen
+    # (db:seed:prod ist idempotent und lässt bestehende Daten unangetastet).
+    command: ["sh", "-c", "pnpm db:migrate && pnpm db:seed:prod"]
     environment:
       DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}

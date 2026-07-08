@@ -13,6 +13,15 @@ const client = postgres(process.env.DATABASE_URL!);
 const db = drizzle({ client, casing: "snake_case" });
 
 async function seed() {
+  // Idempotent & prod-safe: nur eine leere DB befüllen. So überschreibt der
+  // Seed bei jedem (Re-)Deploy keine im Admin gepflegten Produkte/Füllungen.
+  // Zum Neu-Seeden: SEED_FORCE=1 setzen (löscht Katalogdaten, nicht Bestellungen).
+  const [existing] = await db.select({ id: categories.id }).from(categories).limit(1);
+  if (existing && process.env.SEED_FORCE !== "1") {
+    console.log("Seed übersprungen: Katalog enthält bereits Daten (SEED_FORCE=1 zum Erzwingen).");
+    return;
+  }
+
   await db.delete(productSizes);
   await db.delete(products);
   await db.delete(fillings);
