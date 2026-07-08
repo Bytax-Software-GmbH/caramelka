@@ -4,12 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Inlined into the client bundle at build time
-        VITE_BASE_URL: ${SERVICE_FQDN_APP}
+        # Inlined into the client bundle at build time (full URL incl. https://)
+        VITE_BASE_URL: ${SERVICE_URL_APP}
     environment:
       # Coolify auto-generates the FQDN + secrets via these magic variables
       - SERVICE_FQDN_APP_3000
-      - VITE_BASE_URL=${SERVICE_FQDN_APP}
+      - VITE_BASE_URL=${SERVICE_URL_APP}
       - DATABASE_URL=postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
       - BETTER_AUTH_SECRET=${SERVICE_PASSWORD_64_AUTHSECRET}
     depends_on:
