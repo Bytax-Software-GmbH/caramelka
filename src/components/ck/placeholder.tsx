@@ -42,8 +42,8 @@ export function Placeholder({
       className={cn(
         "grid place-items-center overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07)]",
         onDark
-          ? "bg-[repeating-linear-gradient(45deg,#2B1D13_0_12px,#332316_12px_24px)]"
-          : "bg-[repeating-linear-gradient(45deg,#EFE6D6_0_12px,#E7DBC6_12px_24px)]",
+          ? "bg-[repeating-linear-gradient(45deg,#26292E_0_12px,#2E3237_12px_24px)]"
+          : "bg-[repeating-linear-gradient(45deg,#E4E3E0_0_12px,#D8D7D3_12px_24px)]",
         className,
       )}
     >

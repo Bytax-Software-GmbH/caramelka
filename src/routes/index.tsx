@@ -109,7 +109,7 @@ function CraftSection() {
         className="mx-auto max-w-6xl px-5 py-24 text-center md:px-8 md:py-32"
         style={{
           background:
-            "radial-gradient(ellipse 620px 420px at 50% 58%, rgba(211,161,94,.14), transparent 70%)",
+            "radial-gradient(ellipse 620px 420px at 50% 58%, rgba(170,176,182,.16), transparent 70%)",
         }}
       >
         <Reveal>

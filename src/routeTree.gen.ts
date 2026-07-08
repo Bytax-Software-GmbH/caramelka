@@ -18,6 +18,7 @@ import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as GalerieRouteImport } from './routes/galerie'
 import { Route as FuellungenRouteImport } from './routes/fuellungen'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as ColorsRouteImport } from './routes/colors'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
@@ -79,6 +80,11 @@ const FuellungenRoute = FuellungenRouteImport.update({
 const DatenschutzRoute = DatenschutzRouteImport.update({
   id: '/datenschutz',
   path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColorsRoute = ColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgbRoute = AgbRouteImport.update({
@@ -168,6 +174,7 @@ const AuthAppBestellungenIdRoute = AuthAppBestellungenIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
   '/galerie': typeof GalerieRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
   '/galerie': typeof GalerieRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/agb': typeof AgbRoute
+  '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
   '/galerie': typeof GalerieRoute
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agb'
+    | '/colors'
     | '/datenschutz'
     | '/fuellungen'
     | '/galerie'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agb'
+    | '/colors'
     | '/datenschutz'
     | '/fuellungen'
     | '/galerie'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/agb'
+    | '/colors'
     | '/datenschutz'
     | '/fuellungen'
     | '/galerie'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
+  ColorsRoute: typeof ColorsRoute
   DatenschutzRoute: typeof DatenschutzRoute
   FuellungenRoute: typeof FuellungenRoute
   GalerieRoute: typeof GalerieRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/datenschutz'
       fullPath: '/datenschutz'
       preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colors': {
+      id: '/colors'
+      path: '/colors'
+      fullPath: '/colors'
+      preLoaderRoute: typeof ColorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agb': {
@@ -587,6 +607,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   AgbRoute: AgbRoute,
+  ColorsRoute: ColorsRoute,
   DatenschutzRoute: DatenschutzRoute,
   FuellungenRoute: FuellungenRoute,
   GalerieRoute: GalerieRoute,

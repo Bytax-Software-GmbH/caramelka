@@ -32,8 +32,8 @@
   --color-gold: var(--gold);
   --color-cream-on-dark: var(--cream-on-dark);
 
-  --shadow-lift: 0 18px 40px rgba(122, 74, 33, 0.14);
-  --shadow-lift-sm: 0 8px 24px rgba(122, 74, 33, 0.1);
+  --shadow-lift: 0 18px 40px rgba(30, 33, 40, 0.14);
+  --shadow-lift-sm: 0 8px 24px rgba(30, 33, 40, 0.1);
 
   /* shadcn semantic → brand */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -76,18 +76,21 @@
 }
 
 :root {
-  /* raw brand palette (from Caramelka Directions: 1a base, 1b warmth, 1c gold) */
-  --creme: #fbf8f2;
-  --creme-2: #f3ece0;
-  --toffee-light: #f5e8d5;
-  --espresso: #261d13;
-  --espresso-2: #4a2e14;
-  --dark: #1e140e;
-  --caramel: #a96a32;
-  --caramel-deep: #8a5a2b;
-  --toffee: #c98b4b;
-  --gold: #d3a15e;
-  --cream-on-dark: #f1e3d0;
+  /* Brand palette — Kundenwunsch "графит, серый, молочный":
+     milchig-weiße Basis, Graphit-Dunkeltöne, kühl-graue Akzente.
+     Token-Namen bleiben (creme/espresso/caramel/gold), damit alle bestehenden
+     Utility-Klassen (bg-creme, text-caramel-deep, …) unverändert weiterlaufen. */
+  --creme: #f4f3f1; /* Milchweiß, neutral-kühl */
+  --creme-2: #e8e7e3; /* Milchgrau */
+  --toffee-light: #dedddb; /* heller Nebelgrau (Akzentflächen) */
+  --espresso: #23262b; /* Graphit (Haupttext, dunkle Buttons) */
+  --espresso-2: #3b4046; /* mittlerer Graphit */
+  --dark: #17191c; /* tiefer Graphit (Sektionen, Footer) */
+  --caramel: #6b7178; /* Stahlgrau — Primär-Akzent */
+  --caramel-deep: #52575d; /* dunkles Graphitgrau — Kicker/Hover (AA auf Milchweiß) */
+  --toffee: #878d94; /* Mittelgrau */
+  --gold: #aab0b6; /* helles Silbergrau — Akzent auf Dunkel (Ornamente) */
+  --cream-on-dark: #e7e8ea; /* helles Grauweiß auf Dunkel */
 
   /* shadcn semantic tokens mapped to the brand */
   --background: var(--creme);
@@ -101,12 +104,12 @@
   --secondary: var(--creme-2);
   --secondary-foreground: var(--espresso);
   --muted: var(--creme-2);
-  --muted-foreground: #6b5c48;
+  --muted-foreground: #676b70;
   --accent: var(--toffee-light);
   --accent-foreground: var(--espresso-2);
   --destructive: #a03323;
-  --border: #e6ddcc;
-  --input: #d8cdb8;
+  --border: #e0dfdc;
+  --input: #cfceca;
   --ring: var(--caramel);
   --chart-1: var(--caramel);
   --chart-2: var(--gold);
@@ -120,7 +123,7 @@
   --sidebar-primary-foreground: var(--gold);
   --sidebar-accent: var(--toffee-light);
   --sidebar-accent-foreground: var(--espresso);
-  --sidebar-border: #e6ddcc;
+  --sidebar-border: #e0dfdc;
   --sidebar-ring: var(--caramel);
 }
 
@@ -230,21 +233,21 @@
 
 /* double-bezel picture frame: crème mat + hairline, concentric radii */
 @utility ck-frame {
-  background: #fffdf9;
+  background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   box-shadow:
-    0 0 0 1px rgba(38, 29, 19, 0.08),
-    0 1px 2px rgba(38, 29, 19, 0.05),
-    0 24px 48px -20px rgba(122, 74, 33, 0.28);
+    0 0 0 1px rgba(35, 38, 43, 0.09),
+    0 1px 2px rgba(35, 38, 43, 0.05),
+    0 24px 48px -20px rgba(30, 33, 40, 0.28);
 }
 @utility ck-frame-dark {
-  background: #241811;
+  background: #202327;
   padding: 10px;
   border-radius: 10px;
   box-shadow:
-    0 0 0 1px rgba(211, 161, 94, 0.35),
-    inset 0 1px 0 rgba(241, 227, 208, 0.06),
+    0 0 0 1px rgba(170, 176, 182, 0.32),
+    inset 0 1px 0 rgba(231, 232, 234, 0.06),
     0 30px 60px rgba(0, 0, 0, 0.45);
 }
 
