@@ -130,7 +130,7 @@ feishu-integration/
 
 ```typescript
 // src/auth/token-manager.ts
-import * as lark from '@larksuiteoapi/node-sdk';
+import * as lark from "@larksuiteoapi/node-sdk";
 
 const client = new lark.Client({
   appId: process.env.FEISHU_APP_ID!,
@@ -142,7 +142,7 @@ export { client };
 
 // Manual token management scenario (when not using the SDK)
 class TokenManager {
-  private token: string = '';
+  private token: string = "";
   private expireAt: number = 0;
 
   async getTenantAccessToken(): Promise<string> {
@@ -151,15 +151,15 @@ class TokenManager {
     }
 
     const resp = await fetch(
-      'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal',
+      "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           app_id: process.env.FEISHU_APP_ID,
           app_secret: process.env.FEISHU_APP_SECRET,
         }),
-      }
+      },
     );
 
     const data = await resp.json();
@@ -199,47 +199,47 @@ function buildApprovalCard(params: {
   return {
     config: { wide_screen_mode: true },
     header: {
-      title: { tag: 'plain_text', content: params.title },
-      template: 'orange',
+      title: { tag: "plain_text", content: params.title },
+      template: "orange",
     },
     elements: [
       {
-        tag: 'div',
+        tag: "div",
         fields: [
           {
             is_short: true,
-            text: { tag: 'lark_md', content: `**Applicant**\n${params.applicant}` },
+            text: { tag: "lark_md", content: `**Applicant**\n${params.applicant}` },
           },
           {
             is_short: true,
-            text: { tag: 'lark_md', content: `**Amount**\n¥${params.amount}` },
+            text: { tag: "lark_md", content: `**Amount**\n¥${params.amount}` },
           },
         ],
       },
       {
-        tag: 'div',
-        text: { tag: 'lark_md', content: `**Reason**\n${params.reason}` },
+        tag: "div",
+        text: { tag: "lark_md", content: `**Reason**\n${params.reason}` },
       },
-      { tag: 'hr' },
+      { tag: "hr" },
       {
-        tag: 'action',
+        tag: "action",
         actions: [
           {
-            tag: 'button',
-            text: { tag: 'plain_text', content: 'Approve' },
-            type: 'primary',
-            value: { action: 'approve', instance_id: params.instanceId },
+            tag: "button",
+            text: { tag: "plain_text", content: "Approve" },
+            type: "primary",
+            value: { action: "approve", instance_id: params.instanceId },
           },
           {
-            tag: 'button',
-            text: { tag: 'plain_text', content: 'Reject' },
-            type: 'danger',
-            value: { action: 'reject', instance_id: params.instanceId },
+            tag: "button",
+            text: { tag: "plain_text", content: "Reject" },
+            type: "danger",
+            value: { action: "reject", instance_id: params.instanceId },
           },
           {
-            tag: 'button',
-            text: { tag: 'plain_text', content: 'View Details' },
-            type: 'default',
+            tag: "button",
+            text: { tag: "plain_text", content: "View Details" },
+            type: "default",
             url: `https://your-domain.com/approval/${params.instanceId}`,
           },
         ],
@@ -252,14 +252,14 @@ function buildApprovalCard(params: {
 async function sendCardMessage(
   client: any,
   receiveId: string,
-  receiveIdType: 'open_id' | 'chat_id' | 'user_id',
-  card: object
+  receiveIdType: "open_id" | "chat_id" | "user_id",
+  card: object,
 ): Promise<string> {
   const resp = await client.im.message.create({
     params: { receive_id_type: receiveIdType },
     data: {
       receive_id: receiveId,
-      msg_type: 'interactive',
+      msg_type: "interactive",
       content: JSON.stringify(card),
     },
   });
@@ -275,25 +275,25 @@ async function sendCardMessage(
 
 ```typescript
 // src/webhook/event-dispatcher.ts
-import * as lark from '@larksuiteoapi/node-sdk';
-import express from 'express';
+import * as lark from "@larksuiteoapi/node-sdk";
+import express from "express";
 
 const app = express();
 
 const eventDispatcher = new lark.EventDispatcher({
-  encryptKey: process.env.FEISHU_ENCRYPT_KEY || '',
-  verificationToken: process.env.FEISHU_VERIFICATION_TOKEN || '',
+  encryptKey: process.env.FEISHU_ENCRYPT_KEY || "",
+  verificationToken: process.env.FEISHU_VERIFICATION_TOKEN || "",
 });
 
 // Listen for bot message received events
 eventDispatcher.register({
-  'im.message.receive_v1': async (data) => {
+  "im.message.receive_v1": async (data) => {
     const message = data.message;
     const chatId = message.chat_id;
     const content = JSON.parse(message.content);
 
     // Handle plain text messages
-    if (message.message_type === 'text') {
+    if (message.message_type === "text") {
       const text = content.text as string;
       await handleBotCommand(chatId, text);
     }
@@ -302,39 +302,42 @@ eventDispatcher.register({
 
 // Listen for approval status changes
 eventDispatcher.register({
-  'approval.approval.updated_v4': async (data) => {
+  "approval.approval.updated_v4": async (data) => {
     const instanceId = data.approval_code;
     const status = data.status;
 
-    if (status === 'APPROVED') {
+    if (status === "APPROVED") {
       await onApprovalApproved(instanceId);
-    } else if (status === 'REJECTED') {
+    } else if (status === "REJECTED") {
       await onApprovalRejected(instanceId);
     }
   },
 });
 
 // Card action callback handler
-const cardActionHandler = new lark.CardActionHandler({
-  encryptKey: process.env.FEISHU_ENCRYPT_KEY || '',
-  verificationToken: process.env.FEISHU_VERIFICATION_TOKEN || '',
-}, async (data) => {
-  const action = data.action.value;
+const cardActionHandler = new lark.CardActionHandler(
+  {
+    encryptKey: process.env.FEISHU_ENCRYPT_KEY || "",
+    verificationToken: process.env.FEISHU_VERIFICATION_TOKEN || "",
+  },
+  async (data) => {
+    const action = data.action.value;
 
-  if (action.action === 'approve') {
-    await processApproval(action.instance_id, true);
-    // Return the updated card
-    return {
-      toast: { type: 'success', content: 'Approval granted' },
-    };
-  }
-  return {};
-});
+    if (action.action === "approve") {
+      await processApproval(action.instance_id, true);
+      // Return the updated card
+      return {
+        toast: { type: "success", content: "Approval granted" },
+      };
+    }
+    return {};
+  },
+);
 
-app.use('/webhook/event', lark.adaptExpress(eventDispatcher));
-app.use('/webhook/card', lark.adaptExpress(cardActionHandler));
+app.use("/webhook/event", lark.adaptExpress(eventDispatcher));
+app.use("/webhook/card", lark.adaptExpress(cardActionHandler));
 
-app.listen(3000, () => console.log('Feishu event service started'));
+app.listen(3000, () => console.log("Feishu event service started"));
 ```
 
 ### Bitable Operations
@@ -353,7 +356,7 @@ class BitableClient {
       sort?: string[];
       pageSize?: number;
       pageToken?: string;
-    }
+    },
   ) {
     const resp = await this.client.bitable.appTableRecord.list({
       path: { app_token: appToken, table_id: tableId },
@@ -375,7 +378,7 @@ class BitableClient {
   async batchCreateRecords(
     appToken: string,
     tableId: string,
-    records: Array<{ fields: Record<string, any> }>
+    records: Array<{ fields: Record<string, any> }>,
   ) {
     const resp = await this.client.bitable.appTableRecord.batchCreate({
       path: { app_token: appToken, table_id: tableId },
@@ -393,7 +396,7 @@ class BitableClient {
     appToken: string,
     tableId: string,
     recordId: string,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ) {
     const resp = await this.client.bitable.appTableRecord.update({
       path: {
@@ -419,11 +422,11 @@ async function syncOrdersToBitable(orders: any[]) {
 
   const records = orders.map((order) => ({
     fields: {
-      'Order ID': order.orderId,
-      'Customer Name': order.customerName,
-      'Order Amount': order.amount,
-      'Status': order.status,
-      'Created At': order.createdAt,
+      "Order ID": order.orderId,
+      "Customer Name": order.customerName,
+      "Order Amount": order.amount,
+      Status: order.status,
+      "Created At": order.createdAt,
     },
   }));
 
@@ -454,12 +457,12 @@ async function createApprovalInstance(params: {
       form: JSON.stringify(
         Object.entries(params.formValues).map(([name, value]) => ({
           id: name,
-          type: 'input',
+          type: "input",
           value: String(value),
-        }))
+        })),
       ),
       node_approver_user_id_list: params.approvers
-        ? [{ key: 'node_1', value: params.approvers }]
+        ? [{ key: "node_1", value: params.approvers }]
         : undefined,
     },
   });
@@ -487,43 +490,41 @@ async function getApprovalInstance(instanceCode: string) {
 
 ```typescript
 // src/sso/oauth-handler.ts
-import { Router } from 'express';
+import { Router } from "express";
 
 const router = Router();
 
 // Step 1: Redirect to Feishu authorization page
-router.get('/login/feishu', (req, res) => {
-  const redirectUri = encodeURIComponent(
-    `${process.env.BASE_URL}/callback/feishu`
-  );
+router.get("/login/feishu", (req, res) => {
+  const redirectUri = encodeURIComponent(`${process.env.BASE_URL}/callback/feishu`);
   const state = generateRandomState();
   req.session!.oauthState = state;
 
   res.redirect(
     `https://open.feishu.cn/open-apis/authen/v1/authorize` +
-    `?app_id=${process.env.FEISHU_APP_ID}` +
-    `&redirect_uri=${redirectUri}` +
-    `&state=${state}`
+      `?app_id=${process.env.FEISHU_APP_ID}` +
+      `&redirect_uri=${redirectUri}` +
+      `&state=${state}`,
   );
 });
 
 // Step 2: Feishu callback — exchange code for user_access_token
-router.get('/callback/feishu', async (req, res) => {
+router.get("/callback/feishu", async (req, res) => {
   const { code, state } = req.query;
 
   if (state !== req.session!.oauthState) {
-    return res.status(403).json({ error: 'State mismatch — possible CSRF attack' });
+    return res.status(403).json({ error: "State mismatch — possible CSRF attack" });
   }
 
   const tokenResp = await client.authen.oidcAccessToken.create({
     data: {
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
       code: code as string,
     },
   });
 
   if (tokenResp.code !== 0) {
-    return res.status(401).json({ error: 'Authorization failed' });
+    return res.status(401).json({ error: "Authorization failed" });
   }
 
   const userToken = tokenResp.data!.access_token;

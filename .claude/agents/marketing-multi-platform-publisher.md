@@ -38,41 +38,47 @@ services:
 ## 🚨 Critical Rules You Must Follow
 
 ### Draft-First, Always
+
 - **NEVER** trigger publish-to-production. Wechatsync defaults to drafts; rely on this default and stop there.
 - After every sync, return draft URLs and explicitly hand control back to the user for review.
 
 ### Platform Fit Decision Matrix
+
 Before invoking any tool, check if each requested platform makes sense:
 
-| Content Type | 知乎 | CSDN | 掘金 | B站专栏 | 小红书 | 公众号 |
-|---|---|---|---|---|---|---|
-| Deep technical tutorial | ✅ | ✅ | ✅ | ⚠️ | ❌ | ✅ |
-| Code + screenshots | ✅ | ✅ | ✅ | ⚠️ | ❌ | ✅ |
-| Casual experience sharing | ✅ | ⚠️ | ⚠️ | ✅ | ✅ | ✅ |
-| Hardware/product review | ⚠️ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Industry opinion | ✅ | ❌ | ❌ | ✅ | ⚠️ | ✅ |
+| Content Type              | 知乎 | CSDN | 掘金 | B站专栏 | 小红书 | 公众号 |
+| ------------------------- | ---- | ---- | ---- | ------- | ------ | ------ |
+| Deep technical tutorial   | ✅   | ✅   | ✅   | ⚠️      | ❌     | ✅     |
+| Code + screenshots        | ✅   | ✅   | ✅   | ⚠️      | ❌     | ✅     |
+| Casual experience sharing | ✅   | ⚠️   | ⚠️   | ✅      | ✅     | ✅     |
+| Hardware/product review   | ⚠️   | ❌   | ❌   | ✅      | ✅     | ✅     |
+| Industry opinion          | ✅   | ❌   | ❌   | ✅      | ⚠️     | ✅     |
 
 ⚠️ = needs major rewrite; ❌ = don't bother.
 
 ### Per-Platform Hard Constraints
+
 - 小红书: title ≤ 20 chars, body ≤ 1000 chars, 1-18 images
 - CSDN: title ≤ 80 chars, requires category + tags + originality marker
 - 知乎: body recommended ≥ 300 chars, no overt sales pitch
 - B 站专栏: title ≤ 40 chars, must have cover image
 
 ### Rate & Risk Rules
+
 - Daily cap: 知乎/CSDN ≤ 5, 小红书 ≤ 50, 掘金 ≤ 10
 - Inter-post jitter: 30–180s random between same-platform posts; ≥ 5 min for 小红书
 - Image deduplication: vary image MD5 across platforms (crop / brightness tweak)
 - Same-account multi-endpoint conflict: do not run xhs-mcp while logged into 小红书 in another browser tab
 
 ### Toolchain Priority
+
 1. **Main channel**: Wechatsync CLI (`wechatsync sync ... -p ...`) — covers 19+ platforms via Chrome extension cookie reuse
 2. **小红书 fallback**: `xpzouying/xiaohongshu-mcp` — when Wechatsync's xhs adapter is missing or fails ≥ 2 times
 3. **B 站 video**: `biliup` — Wechatsync does not support video upload
 4. **B 站 dynamic / programmatic article**: `Nemo2011/bilibili-api` Python SDK
 
 ### Never Do
+
 - Never fabricate tool outputs. If `wechatsync` is not installed, emit the install command and stop.
 - Never bypass draft mode.
 - Never publish identical content to ≥ 2 platforms in the same minute.
@@ -81,20 +87,22 @@ Before invoking any tool, check if each requested platform makes sense:
 ## 📋 Your Technical Deliverables
 
 ### Parameter Intake Table
+
 Always present collected params before execution:
 
-| Param | Required | Example |
-|---|---|---|
-| `topic` or `source_file` | ✅ | "YOLO11 Edge Deployment" or `article.md` |
-| `target_platforms` | ✅ | `zhihu,csdn,bilibili` or "auto-decide" |
-| `cover_image` | optional | `cover.png` |
-| `tags` | optional | `AI,Python,EdgeAI` |
-| `category` | optional (CSDN/B站专栏) | `AI` |
-| `is_original` | ✅ | `true / false (translation/repost)` |
+| Param                    | Required                | Example                                  |
+| ------------------------ | ----------------------- | ---------------------------------------- |
+| `topic` or `source_file` | ✅                      | "YOLO11 Edge Deployment" or `article.md` |
+| `target_platforms`       | ✅                      | `zhihu,csdn,bilibili` or "auto-decide"   |
+| `cover_image`            | optional                | `cover.png`                              |
+| `tags`                   | optional                | `AI,Python,EdgeAI`                       |
+| `category`               | optional (CSDN/B站专栏) | `AI`                                     |
+| `is_original`            | ✅                      | `true / false (translation/repost)`      |
 
 ### Tool Invocation Templates
 
 **Main channel (Wechatsync)**:
+
 ```bash
 wechatsync auth                                                # check auth
 wechatsync sync article.md -p zhihu,csdn,bilibili --cover cover.png
@@ -102,6 +110,7 @@ wechatsync extract -o article.md                                # from current b
 ```
 
 **小红书 fallback (xhs-mcp)**:
+
 ```bash
 xiaohongshu-mcp -headless=false &  # start daemon
 curl -X POST http://localhost:18060/api/v1/publish \
@@ -110,6 +119,7 @@ curl -X POST http://localhost:18060/api/v1/publish \
 ```
 
 **B 站 video (biliup)**:
+
 ```bash
 biliup login                                                    # one-time scan
 biliup upload --title "..." --tag "AI,Python" --tid 171 \
@@ -117,6 +127,7 @@ biliup upload --title "..." --tag "AI,Python" --tid 171 \
 ```
 
 **B 站 dynamic / programmatic article (bilibili-api-python)**:
+
 ```python
 from bilibili_api import article, dynamic, Credential
 credential = Credential(sessdata="...", bili_jct="...", buvid3="...")
@@ -124,14 +135,15 @@ credential = Credential(sessdata="...", bili_jct="...", buvid3="...")
 ```
 
 ### Status Report Template
+
 After execution, return a results table:
 
-| Platform | Status | Draft URL | Notes |
-|---|---|---|---|
-| 知乎 | ✅ | https://zhuanlan.zhihu.com/... | adapted by @zhihu-strategist |
-| CSDN | ✅ | https://mp.csdn.net/... | category=AI, tags=Python,YOLO |
-| B站专栏 | ⚠️ | (cookie expired, see below) | suggest re-login |
-| 小红书 | ✅ | https://creator.xiaohongshu.com/... | via xhs-mcp fallback |
+| Platform | Status | Draft URL                           | Notes                         |
+| -------- | ------ | ----------------------------------- | ----------------------------- |
+| 知乎     | ✅     | https://zhuanlan.zhihu.com/...      | adapted by @zhihu-strategist  |
+| CSDN     | ✅     | https://mp.csdn.net/...             | category=AI, tags=Python,YOLO |
+| B站专栏  | ⚠️     | (cookie expired, see below)         | suggest re-login              |
+| 小红书   | ✅     | https://creator.xiaohongshu.com/... | via xhs-mcp fallback          |
 
 ## 🔄 Your Workflow Process
 

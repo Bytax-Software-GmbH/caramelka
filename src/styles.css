@@ -1,0 +1,305 @@
+@import "tailwindcss" source("./");
+
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@import "@fontsource-variable/playfair-display";
+@import "@fontsource-variable/playfair-display/wght-italic.css";
+@import "@fontsource-variable/jost";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Caramelka design tokens ─────────────────────────────────────────────
+   "Polished mix": Editorial Crème base (1a) + warm caramel palette (1b)
+   + espresso/gold boutique accents (1c). Rectangular cards, pill CTAs.
+   Brand palette is exposed as Tailwind colors (bg-creme, text-espresso, …)
+   and wired into shadcn's semantic tokens so primitives inherit the look. */
+@theme inline {
+  --font-display: "Playfair Display Variable", Georgia, serif;
+  --font-sans: "Jost Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-heading: var(--font-display);
+
+  --color-creme: var(--creme);
+  --color-creme-2: var(--creme-2);
+  --color-toffee-light: var(--toffee-light);
+  --color-espresso: var(--espresso);
+  --color-espresso-2: var(--espresso-2);
+  --color-dark: var(--dark);
+  --color-caramel: var(--caramel);
+  --color-caramel-deep: var(--caramel-deep);
+  --color-toffee: var(--toffee);
+  --color-gold: var(--gold);
+  --color-cream-on-dark: var(--cream-on-dark);
+
+  --shadow-lift: 0 18px 40px rgba(122, 74, 33, 0.14);
+  --shadow-lift-sm: 0 8px 24px rgba(122, 74, 33, 0.1);
+
+  /* shadcn semantic → brand */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.7);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* raw brand palette (from Caramelka Directions: 1a base, 1b warmth, 1c gold) */
+  --creme: #fbf8f2;
+  --creme-2: #f3ece0;
+  --toffee-light: #f5e8d5;
+  --espresso: #261d13;
+  --espresso-2: #4a2e14;
+  --dark: #1e140e;
+  --caramel: #a96a32;
+  --caramel-deep: #8a5a2b;
+  --toffee: #c98b4b;
+  --gold: #d3a15e;
+  --cream-on-dark: #f1e3d0;
+
+  /* shadcn semantic tokens mapped to the brand */
+  --background: var(--creme);
+  --foreground: var(--espresso);
+  --card: #ffffff;
+  --card-foreground: var(--espresso);
+  --popover: #fffdf9;
+  --popover-foreground: var(--espresso);
+  --primary: var(--espresso);
+  --primary-foreground: var(--creme);
+  --secondary: var(--creme-2);
+  --secondary-foreground: var(--espresso);
+  --muted: var(--creme-2);
+  --muted-foreground: #6b5c48;
+  --accent: var(--toffee-light);
+  --accent-foreground: var(--espresso-2);
+  --destructive: #a03323;
+  --border: #e6ddcc;
+  --input: #d8cdb8;
+  --ring: var(--caramel);
+  --chart-1: var(--caramel);
+  --chart-2: var(--gold);
+  --chart-3: var(--espresso-2);
+  --chart-4: var(--toffee);
+  --chart-5: var(--creme-2);
+  --radius: 0.5rem;
+  --sidebar: var(--creme-2);
+  --sidebar-foreground: var(--espresso);
+  --sidebar-primary: var(--espresso);
+  --sidebar-primary-foreground: var(--gold);
+  --sidebar-accent: var(--toffee-light);
+  --sidebar-accent-foreground: var(--espresso);
+  --sidebar-border: #e6ddcc;
+  --sidebar-ring: var(--caramel);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--gold);
+    color: var(--dark);
+  }
+}
+
+@utility ck-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+@utility ck-kicker {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--caramel-deep);
+}
+
+@utility ck-nav-link {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* endless marquee strip (from direction 1a) */
+@keyframes ck-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@utility ck-marquee {
+  animation: ck-marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ck-marquee {
+    animation: none;
+  }
+}
+
+/* soft reveal used on section entrances */
+@keyframes ck-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+@utility ck-rise {
+  animation: ck-rise 0.9s var(--ease-lux) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ck-rise {
+    animation: none;
+  }
+}
+
+/* ── Luxury layer ──────────────────────────────────────────────────────── */
+
+:root {
+  /* heavy, weighted easing for all brand motion */
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* film-grain overlay for a physical paper feel (fixed, never on scrollers) */
+.ck-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* double-bezel picture frame: crème mat + hairline, concentric radii */
+@utility ck-frame {
+  background: #fffdf9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgba(38, 29, 19, 0.08),
+    0 1px 2px rgba(38, 29, 19, 0.05),
+    0 24px 48px -20px rgba(122, 74, 33, 0.28);
+}
+@utility ck-frame-dark {
+  background: #241811;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgba(211, 161, 94, 0.35),
+    inset 0 1px 0 rgba(241, 227, 208, 0.06),
+    0 30px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* animated hairline underline for nav links */
+@utility ck-underline {
+  position: relative;
+}
+.ck-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: var(--caramel);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-lux);
+}
+.ck-underline:hover::after,
+.ck-underline.active::after {
+  transform: scaleX(1);
+}
+
+/* prices & order numbers in editorial serif */
+@utility ck-price {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* viewport reveal (used by <Reveal/>); hidden state only when JS can run */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(6px);
+    transition:
+      opacity 0.9s var(--ease-lux),
+      transform 0.9s var(--ease-lux),
+      filter 0.9s var(--ease-lux);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  [data-reveal="in"] {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

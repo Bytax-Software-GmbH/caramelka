@@ -1,0 +1,2019 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <meta name="design_doc_mode" content="canvas" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Archivo:wght@400;500;600&family=Prata&family=Karla:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+            background: #f0eee9;
+            font-family: system-ui, sans-serif;
+          }
+          a {
+            color: inherit;
+          }
+          a:hover {
+            color: #8a5a2b;
+          }
+          .dv-turn {
+            padding: 40px 44px 32px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            scroll-margin-top: 16px;
+          }
+          .dv-thd {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin: 0 0 20px;
+          }
+          .dv-tid {
+            font:
+              600 10px ui-monospace,
+              Menlo,
+              monospace;
+            padding: 3px 7px;
+            background: #1a1a1a;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+          }
+          .dv-tname {
+            font:
+              600 13px/1.2 system-ui,
+              sans-serif;
+            color: #1a1a1a;
+          }
+          .dv-opts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            align-items: flex-start;
+          }
+          .dv-opt {
+            flex: none;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            scroll-margin-top: 16px;
+          }
+          .dv-oid {
+            font:
+              600 10.5px ui-monospace,
+              Menlo,
+              monospace;
+            padding: 3px 7px;
+            background: rgba(0, 0, 0, 0.08);
+            color: #1a1a1a;
+            border-radius: 5px;
+            text-decoration: none;
+          }
+          .dv-olabel {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font:
+              400 11px/1.3 system-ui,
+              sans-serif;
+            color: rgba(0, 0, 0, 0.55);
+          }
+          .dv-card {
+            max-width: 100%;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+          }
+          .dv-opt:target .dv-oid {
+            background: #2a78d6;
+            color: #fff;
+          }
+          .dv-next {
+            margin: 22px 0 0;
+            font:
+              12px/1.5 system-ui,
+              sans-serif;
+            color: rgba(0, 0, 0, 0.5);
+          }
+          @keyframes ck-marquee {
+            from {
+              transform: translateX(0);
+            }
+            to {
+              transform: translateX(-50%);
+            }
+          }
+        </style>
+      </helmet>
+
+      <section class="dv-turn" id="t2" data-screen-label="Turn 2 — Logo-Varianten">
+        <div class="dv-thd">
+          <a class="dv-tid" href="#t2">2</a
+          ><span class="dv-tname">Logo-Varianten — passend zu den Richtungen aus Turn 1</span>
+        </div>
+        <div class="dv-opts">
+          <!-- 2a editorial wordmark -->
+          <div class="dv-opt" id="2a" data-screen-label="2a Editorial Wortmarke">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#2a">2a</a>Editorial Wortmarke — Serifen, gesperrt,
+              Karamell-Punkt (passt zu <a class="dv-oid" href="#1a">1a</a>)
+            </div>
+            <div class="dv-card" style="width: 420px">
+              <div
+                style="
+                  background: #fbf8f2;
+                  padding: 56px 32px;
+                  display: grid;
+                  place-items: center;
+                  gap: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-weight: 600;
+                    font-size: 34px;
+                    letter-spacing: 0.14em;
+                    color: #261d13;
+                  "
+                >
+                  CARAMELKA<span style="color: #a96a32">.</span>
+                </div>
+                <div
+                  style="
+                    font-family: Archivo, sans-serif;
+                    font-size: 10px;
+                    letter-spacing: 0.42em;
+                    color: #8a5a2b;
+                  "
+                >
+                  KONDITOREI
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  background: #261d13;
+                  padding: 18px 32px;
+                  align-items: center;
+                  justify-content: space-between;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-weight: 600;
+                    font-size: 18px;
+                    letter-spacing: 0.14em;
+                    color: #fbf8f2;
+                  "
+                >
+                  CARAMELKA<span style="color: #d3a15e">.</span>
+                </div>
+                <div
+                  style="
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 6px;
+                    background: #fbf8f2;
+                    display: grid;
+                    place-items: center;
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-weight: 600;
+                    font-size: 17px;
+                    color: #261d13;
+                  "
+                >
+                  <span>C<span style="color: #a96a32">.</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2b caramel cube -->
+          <div class="dv-opt" id="2b" data-screen-label="2b Karamellwürfel">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#2b">2b</a>Karamellwürfel — Bonbon als Bildmarke, warm &amp;
+              freundlich (passt zu <a class="dv-oid" href="#1b">1b</a>)
+            </div>
+            <div class="dv-card" style="width: 420px">
+              <div
+                style="
+                  background: #f5e8d5;
+                  padding: 48px 32px;
+                  display: grid;
+                  place-items: center;
+                  gap: 16px;
+                "
+              >
+                <div
+                  style="
+                    width: 72px;
+                    height: 72px;
+                    border-radius: 18px;
+                    background: linear-gradient(145deg, #d69a5c, #b4763a);
+                    box-shadow:
+                      0 5px 0 #7a4a21,
+                      inset 0 2px 0 rgba(255, 255, 255, 0.35);
+                    display: grid;
+                    place-items: center;
+                    transform: rotate(-6deg);
+                    font-family: Prata, serif;
+                    font-size: 34px;
+                    color: #fbf3e7;
+                  "
+                >
+                  C
+                </div>
+                <div style="font-family: Prata, serif; font-size: 30px; color: #7a4a21">
+                  Caramelka
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  background: #7a4a21;
+                  padding: 18px 32px;
+                  align-items: center;
+                  gap: 12px;
+                "
+              >
+                <div
+                  style="
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 7px;
+                    background: linear-gradient(145deg, #d69a5c, #b4763a);
+                    display: grid;
+                    place-items: center;
+                    transform: rotate(-6deg);
+                    font-family: Prata, serif;
+                    font-size: 14px;
+                    color: #fbf3e7;
+                  "
+                >
+                  C
+                </div>
+                <div style="font-family: Prata, serif; font-size: 18px; color: #f5e8d5">
+                  Caramelka
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2c gold monogram -->
+          <div class="dv-opt" id="2c" data-screen-label="2c Gold-Monogramm">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#2c">2c</a>Gold-Monogramm — doppelter Ring, Boutique (passt zu
+              <a class="dv-oid" href="#1c">1c</a>)
+            </div>
+            <div class="dv-card" style="width: 420px">
+              <div
+                style="
+                  background: #1e140e;
+                  padding: 48px 32px;
+                  display: grid;
+                  place-items: center;
+                  gap: 18px;
+                "
+              >
+                <div
+                  style="
+                    width: 88px;
+                    height: 88px;
+                    border-radius: 50%;
+                    border: 1px solid #d3a15e;
+                    display: grid;
+                    place-items: center;
+                  "
+                >
+                  <div
+                    style="
+                      width: 74px;
+                      height: 74px;
+                      border-radius: 50%;
+                      border: 1px solid rgba(211, 161, 94, 0.45);
+                      display: grid;
+                      place-items: center;
+                      font-family: Marcellus, serif;
+                      font-size: 38px;
+                      color: #d3a15e;
+                    "
+                  >
+                    C
+                  </div>
+                </div>
+                <div style="display: grid; place-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-family: Marcellus, serif;
+                      font-size: 24px;
+                      letter-spacing: 0.3em;
+                      color: #f1e3d0;
+                      margin-left: 0.3em;
+                    "
+                  >
+                    CARAMELKA
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px; width: 100%">
+                    <div style="height: 1px; flex: 1; background: rgba(211, 161, 94, 0.4)"></div>
+                    <div
+                      style="
+                        font-family: Jost, sans-serif;
+                        font-size: 9.5px;
+                        letter-spacing: 0.4em;
+                        color: rgba(211, 161, 94, 0.9);
+                        margin-left: 0.4em;
+                      "
+                    >
+                      PATISSERIE
+                    </div>
+                    <div style="height: 1px; flex: 1; background: rgba(211, 161, 94, 0.4)"></div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  background: #fbf8f2;
+                  padding: 18px 32px;
+                  align-items: center;
+                  gap: 12px;
+                "
+              >
+                <div
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    border: 1px solid #a96a32;
+                    display: grid;
+                    place-items: center;
+                    font-family: Marcellus, serif;
+                    font-size: 16px;
+                    color: #a96a32;
+                  "
+                >
+                  C
+                </div>
+                <div
+                  style="
+                    font-family: Marcellus, serif;
+                    font-size: 16px;
+                    letter-spacing: 0.26em;
+                    color: #261d13;
+                  "
+                >
+                  CARAMELKA
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2d stacked block -->
+          <div class="dv-opt" id="2d" data-screen-label="2d Gestapelter Block">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#2d">2d</a>Gestapelter Block — wie Tortenschichten, kompakt
+              &amp; modern
+            </div>
+            <div class="dv-card" style="width: 420px">
+              <div
+                style="background: #fbf8f2; padding: 48px 32px; display: grid; place-items: center"
+              >
+                <div style="display: grid; text-align: center">
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-weight: 600;
+                      font-size: 36px;
+                      letter-spacing: 0.18em;
+                      color: #261d13;
+                      line-height: 1.05;
+                      margin-left: 0.18em;
+                    "
+                  >
+                    CARA
+                  </div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-weight: 600;
+                      font-size: 36px;
+                      letter-spacing: 0.18em;
+                      color: #a96a32;
+                      line-height: 1.05;
+                      margin-left: 0.18em;
+                    "
+                  >
+                    MEL
+                  </div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-weight: 600;
+                      font-size: 36px;
+                      letter-spacing: 0.18em;
+                      color: #261d13;
+                      line-height: 1.05;
+                      margin-left: 0.18em;
+                    "
+                  >
+                    KA<span style="color: #a96a32">·</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  background: #a96a32;
+                  padding: 18px 32px;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <div
+                  style="
+                    font-family: Archivo, sans-serif;
+                    font-weight: 600;
+                    font-size: 16px;
+                    letter-spacing: 0.22em;
+                    color: #fbf8f2;
+                    margin-left: 0.22em;
+                  "
+                >
+                  CARA·MEL·KA
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2e script diminutive -->
+          <div class="dv-opt" id="2e" data-screen-label="2e Zweisprachige Marke">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#2e">2e</a>Zweisprachig — lateinisch + kyrillisch gespiegelt
+              (DE/RU-Kundschaft)
+            </div>
+            <div class="dv-card" style="width: 420px">
+              <div
+                style="
+                  background: #f5e8d5;
+                  padding: 52px 32px;
+                  display: grid;
+                  place-items: center;
+                  gap: 6px;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-weight: 500;
+                    font-size: 34px;
+                    letter-spacing: 0.1em;
+                    color: #261d13;
+                  "
+                >
+                  Caramelka
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-style: italic;
+                    font-size: 19px;
+                    letter-spacing: 0.16em;
+                    color: #a96a32;
+                  "
+                >
+                  Карамелька
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  background: #261d13;
+                  padding: 18px 32px;
+                  align-items: baseline;
+                  justify-content: center;
+                  gap: 14px;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-weight: 500;
+                    font-size: 19px;
+                    letter-spacing: 0.1em;
+                    color: #fbf8f2;
+                  "
+                >
+                  Caramelka
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-style: italic;
+                    font-size: 14px;
+                    letter-spacing: 0.14em;
+                    color: #d3a15e;
+                  "
+                >
+                  Карамелька
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dv-next">
+          Weiter: „<a class="dv-oid" href="#2b">2b</a> in die Website
+          <a class="dv-oid" href="#1b">1b</a> einsetzen" · „<a class="dv-oid" href="#2c">2c</a>
+          heller machen" · „mehr Logo-Ideen"
+        </p>
+      </section>
+
+      <section class="dv-turn" id="t1" data-screen-label="Turn 1 — Drei Richtungen">
+        <div class="dv-thd">
+          <a class="dv-tid" href="#t1">1</a
+          ><span class="dv-tname"
+            >Caramelka — drei visuelle Richtungen (Startseite, DE, mit RU-Umschalter)</span
+          >
+        </div>
+        <div class="dv-opts">
+          <!-- ============ 1a EDITORIAL CRÈME ============ -->
+          <div class="dv-opt" id="1a" data-screen-label="1a Editorial Crème">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#1a">1a</a>Editorial Crème — luftig, große Serifen, viel
+              Weißraum (nah an der Inspiration)
+            </div>
+            <div class="dv-card" style="width: 1280px; background: #fbf8f2; color: #261d13">
+              <!-- nav -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 22px 48px;
+                  border-bottom: 1px solid rgba(38, 29, 19, 0.12);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-size: 28px;
+                    font-weight: 600;
+                    letter-spacing: 0.06em;
+                  "
+                >
+                  CARAMELKA
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 34px;
+                    font-family: Archivo, sans-serif;
+                    font-size: 13px;
+                    letter-spacing: 0.14em;
+                    font-weight: 500;
+                  "
+                >
+                  <span>TORTEN</span><span>FÜLLUNGEN</span><span>GALERIE</span><span>KONTAKT</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px">
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 12px;
+                      letter-spacing: 0.1em;
+                      color: rgba(38, 29, 19, 0.55);
+                    "
+                  >
+                    <span style="color: #261d13; font-weight: 600">DE</span> / RU
+                  </div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 12.5px;
+                      letter-spacing: 0.12em;
+                      font-weight: 600;
+                      padding: 11px 22px;
+                      border: 1px solid #261d13;
+                      border-radius: 999px;
+                    "
+                    style-hover="background:#261D13;color:#FBF8F2"
+                  >
+                    WHATSAPP
+                  </div>
+                </div>
+              </div>
+
+              <!-- marquee -->
+              <div
+                style="
+                  overflow: hidden;
+                  border-bottom: 1px solid rgba(38, 29, 19, 0.12);
+                  background: #f3ece0;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    width: max-content;
+                    animation: ck-marquee 22s linear infinite;
+                    padding: 9px 0;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      gap: 36px;
+                      padding-right: 36px;
+                      font-family: Archivo, sans-serif;
+                      font-size: 11.5px;
+                      letter-spacing: 0.22em;
+                      color: #8a5a2b;
+                      white-space: nowrap;
+                    "
+                  >
+                    <span>FRISCHE ZUTATEN</span><span>·</span><span>HANDGEFERTIGT</span
+                    ><span>·</span><span>ABHOLUNG &amp; LIEFERUNG BIS 100 KM</span><span>·</span
+                    ><span>FRISCHE ZUTATEN</span><span>·</span><span>HANDGEFERTIGT</span
+                    ><span>·</span><span>ABHOLUNG &amp; LIEFERUNG BIS 100 KM</span><span>·</span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 36px;
+                      padding-right: 36px;
+                      font-family: Archivo, sans-serif;
+                      font-size: 11.5px;
+                      letter-spacing: 0.22em;
+                      color: #8a5a2b;
+                      white-space: nowrap;
+                    "
+                  >
+                    <span>FRISCHE ZUTATEN</span><span>·</span><span>HANDGEFERTIGT</span
+                    ><span>·</span><span>ABHOLUNG &amp; LIEFERUNG BIS 100 KM</span><span>·</span
+                    ><span>FRISCHE ZUTATEN</span><span>·</span><span>HANDGEFERTIGT</span
+                    ><span>·</span><span>ABHOLUNG &amp; LIEFERUNG BIS 100 KM</span><span>·</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- hero: split editorial -->
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1.1fr 0.9fr;
+                  gap: 56px;
+                  padding: 72px 48px 80px;
+                  align-items: center;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 12px;
+                      letter-spacing: 0.26em;
+                      color: #8a5a2b;
+                      margin-bottom: 26px;
+                    "
+                  >
+                    KONDITOREI · TORTEN AUF BESTELLUNG
+                  </div>
+                  <h1
+                    style="
+                      font-family: &quot;Cormorant Garamond&quot;, serif;
+                      font-weight: 500;
+                      font-size: 72px;
+                      line-height: 1.04;
+                      margin: 0 0 28px;
+                      text-wrap: balance;
+                    "
+                  >
+                    Torten, die in Erinnerung bleiben.
+                  </h1>
+                  <p
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 16.5px;
+                      line-height: 1.65;
+                      color: rgba(38, 29, 19, 0.72);
+                      max-width: 52ch;
+                      margin: 0 0 38px;
+                    "
+                  >
+                    Individuelle Torten und feine Patisserie — handgefertigt aus frischen,
+                    ausgewählten Zutaten. Für Hochzeiten, Geburtstage und alle Momente dazwischen.
+                  </p>
+                  <div style="display: flex; gap: 16px; align-items: center">
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.12em;
+                        font-weight: 600;
+                        background: #261d13;
+                        color: #fbf8f2;
+                        padding: 16px 32px;
+                        border-radius: 999px;
+                      "
+                      style-hover="background:#8A5A2B"
+                    >
+                      PER WHATSAPP ANFRAGEN
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.12em;
+                        font-weight: 600;
+                        padding: 16px 32px;
+                        border: 1px solid rgba(38, 29, 19, 0.35);
+                        border-radius: 999px;
+                      "
+                      style-hover="border-color:#261D13"
+                    >
+                      SORTIMENT ANSEHEN
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px">
+                  <div
+                    style="
+                      aspect-ratio: 3/3.6;
+                      border-radius: 4px;
+                      background: repeating-linear-gradient(
+                        45deg,
+                        #efe6d6 0 12px,
+                        #e7dbc6 12px 24px
+                      );
+                      display: grid;
+                      place-items: center;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                        color: #8a5a2b;
+                        background: #fbf8f2;
+                        padding: 6px 12px;
+                        border-radius: 4px;
+                      "
+                      >foto: signature-torte</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 12px;
+                      color: rgba(38, 29, 19, 0.5);
+                      letter-spacing: 0.06em;
+                    "
+                  >
+                    Karamell-Signature · dreistöckig · ab 68 €
+                  </div>
+                </div>
+              </div>
+
+              <!-- bestsellers -->
+              <div style="padding: 0 48px 76px">
+                <div
+                  style="
+                    display: flex;
+                    align-items: baseline;
+                    justify-content: space-between;
+                    margin-bottom: 30px;
+                  "
+                >
+                  <h2
+                    style="
+                      font-family: &quot;Cormorant Garamond&quot;, serif;
+                      font-weight: 500;
+                      font-size: 38px;
+                      margin: 0;
+                    "
+                  >
+                    Beliebte Torten
+                  </h2>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 12.5px;
+                      letter-spacing: 0.16em;
+                      font-weight: 600;
+                      color: #8a5a2b;
+                      border-bottom: 1px solid #8a5a2b;
+                      padding-bottom: 3px;
+                    "
+                  >
+                    ALLE ANSEHEN
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px">
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #efe6d6 0 12px,
+                          #e7dbc6 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                        border-radius: 4px;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #8a5a2b;
+                          background: #fbf8f2;
+                          padding: 5px 10px;
+                          border-radius: 4px;
+                        "
+                        >foto: bento</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.14em;
+                        font-weight: 600;
+                      "
+                    >
+                      BENTO MINI
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        color: rgba(38, 29, 19, 0.55);
+                        margin-top: -6px;
+                      "
+                    >
+                      ab 24 €
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #efe6d6 0 12px,
+                          #e7dbc6 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                        border-radius: 4px;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #8a5a2b;
+                          background: #fbf8f2;
+                          padding: 5px 10px;
+                          border-radius: 4px;
+                        "
+                        >foto: karamell</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.14em;
+                        font-weight: 600;
+                      "
+                    >
+                      KARAMELL-CREME
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        color: rgba(38, 29, 19, 0.55);
+                        margin-top: -6px;
+                      "
+                    >
+                      ab 42 €
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #efe6d6 0 12px,
+                          #e7dbc6 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                        border-radius: 4px;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #8a5a2b;
+                          background: #fbf8f2;
+                          padding: 5px 10px;
+                          border-radius: 4px;
+                        "
+                        >foto: himbeere</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.14em;
+                        font-weight: 600;
+                      "
+                    >
+                      HIMBEER-VANILLE
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        color: rgba(38, 29, 19, 0.55);
+                        margin-top: -6px;
+                      "
+                    >
+                      ab 45 €
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #efe6d6 0 12px,
+                          #e7dbc6 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                        border-radius: 4px;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #8a5a2b;
+                          background: #fbf8f2;
+                          padding: 5px 10px;
+                          border-radius: 4px;
+                        "
+                        >foto: hochzeit</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        letter-spacing: 0.14em;
+                        font-weight: 600;
+                      "
+                    >
+                      HOCHZEIT KLASSIK
+                    </div>
+                    <div
+                      style="
+                        font-family: Archivo, sans-serif;
+                        font-size: 13px;
+                        color: rgba(38, 29, 19, 0.55);
+                        margin-top: -6px;
+                      "
+                    >
+                      ab 120 €
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- footer strip -->
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 40px;
+                  padding: 44px 48px;
+                  border-top: 1px solid rgba(38, 29, 19, 0.12);
+                  background: #f3ece0;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 11px;
+                      letter-spacing: 0.24em;
+                      color: #8a5a2b;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    BESTELLUNG
+                  </div>
+                  <div style="font-family: &quot;Cormorant Garamond&quot;, serif; font-size: 22px">
+                    WhatsApp +49 123 456 789
+                  </div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 11px;
+                      letter-spacing: 0.24em;
+                      color: #8a5a2b;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    ABHOLUNG &amp; LIEFERUNG
+                  </div>
+                  <div style="font-family: &quot;Cormorant Garamond&quot;, serif; font-size: 22px">
+                    Im Umkreis von 100 km
+                  </div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-family: Archivo, sans-serif;
+                      font-size: 11px;
+                      letter-spacing: 0.24em;
+                      color: #8a5a2b;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    ÖFFNUNGSZEITEN
+                  </div>
+                  <div style="font-family: &quot;Cormorant Garamond&quot;, serif; font-size: 22px">
+                    Mo – Sa · 9:00 – 18:00
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ 1b WARMES KARAMELL ============ -->
+          <div class="dv-opt" id="1b" data-screen-label="1b Warmes Karamell">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#1b">1b</a>Warmes Karamell — gemütlich, Toffee-Töne, weiche
+              Bögen, Sticker-Akzente
+            </div>
+            <div class="dv-card" style="width: 1280px; background: #f5e8d5; color: #4a2e14">
+              <!-- nav pill -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 20px 40px;
+                "
+              >
+                <div
+                  style="
+                    font-family: Prata, serif;
+                    font-size: 26px;
+                    letter-spacing: 0.02em;
+                    color: #7a4a21;
+                  "
+                >
+                  Caramelka
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    background: #fbf3e7;
+                    border-radius: 999px;
+                    padding: 6px;
+                    box-shadow: 0 1px 0 rgba(122, 74, 33, 0.15);
+                  "
+                >
+                  <span
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 13.5px;
+                      font-weight: 700;
+                      padding: 9px 18px;
+                      border-radius: 999px;
+                      background: #7a4a21;
+                      color: #fbf3e7;
+                    "
+                    >Torten</span
+                  >
+                  <span
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      padding: 9px 18px;
+                      border-radius: 999px;
+                    "
+                    style-hover="background:#F0E1CB"
+                    >Füllungen</span
+                  >
+                  <span
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      padding: 9px 18px;
+                      border-radius: 999px;
+                    "
+                    style-hover="background:#F0E1CB"
+                    >Galerie</span
+                  >
+                  <span
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      padding: 9px 18px;
+                      border-radius: 999px;
+                    "
+                    style-hover="background:#F0E1CB"
+                    >Kontakt</span
+                  >
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px">
+                  <div
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 13px;
+                      font-weight: 700;
+                      color: rgba(74, 46, 20, 0.5);
+                    "
+                  >
+                    <span style="color: #4a2e14">DE</span> · RU
+                  </div>
+                  <div
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 14px;
+                      font-weight: 700;
+                      background: #c98b4b;
+                      color: #3a2210;
+                      padding: 12px 24px;
+                      border-radius: 999px;
+                      box-shadow: 0 2px 0 #7a4a21;
+                    "
+                    style-hover="background:#D69A5C"
+                  >
+                    WhatsApp schreiben
+                  </div>
+                </div>
+              </div>
+
+              <!-- hero: arched centerpiece -->
+              <div
+                style="
+                  position: relative;
+                  padding: 52px 40px 70px;
+                  display: grid;
+                  grid-template-columns: 1fr 460px 1fr;
+                  gap: 36px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    text-align: right;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 18px;
+                    align-items: flex-end;
+                  "
+                >
+                  <h1
+                    style="
+                      font-family: Prata, serif;
+                      font-size: 52px;
+                      line-height: 1.12;
+                      margin: 0;
+                      color: #7a4a21;
+                      text-wrap: balance;
+                    "
+                  >
+                    Süßes, das glücklich macht.
+                  </h1>
+                  <p
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 16px;
+                      line-height: 1.6;
+                      color: rgba(74, 46, 20, 0.75);
+                      max-width: 34ch;
+                      margin: 0;
+                    "
+                  >
+                    Handgemachte Torten aus unserer Backstube — mit frischen, ausgewählten Zutaten
+                    und ganz viel Liebe.
+                  </p>
+                </div>
+                <div style="position: relative">
+                  <div
+                    style="
+                      height: 520px;
+                      border-radius: 230px 230px 18px 18px;
+                      background: repeating-linear-gradient(
+                        45deg,
+                        #ebd8bc 0 12px,
+                        #e2cba8 12px 24px
+                      );
+                      display: grid;
+                      place-items: center;
+                      border: 6px solid #fbf3e7;
+                      box-shadow: 0 18px 40px rgba(122, 74, 33, 0.18);
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                        color: #7a4a21;
+                        background: #fbf3e7;
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                      "
+                      >foto: torte des monats</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      position: absolute;
+                      top: 26px;
+                      right: -34px;
+                      transform: rotate(8deg);
+                      background: #c98b4b;
+                      color: #3a2210;
+                      font-family: Karla, sans-serif;
+                      font-weight: 700;
+                      font-size: 14px;
+                      line-height: 1.25;
+                      padding: 18px 20px;
+                      border-radius: 50%;
+                      width: 96px;
+                      height: 96px;
+                      display: grid;
+                      place-items: center;
+                      text-align: center;
+                      box-shadow: 0 4px 0 #7a4a21;
+                    "
+                  >
+                    Bento ab 24 €
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 18px">
+                  <div
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 15px;
+                      font-weight: 700;
+                      color: #7a4a21;
+                      display: flex;
+                      align-items: center;
+                      gap: 10px;
+                    "
+                  >
+                    <span
+                      style="width: 34px; height: 2px; background: #c98b4b; display: inline-block"
+                    ></span
+                    >Frisch aus der Backstube
+                  </div>
+                  <div
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 15px;
+                      font-weight: 700;
+                      color: #7a4a21;
+                      display: flex;
+                      align-items: center;
+                      gap: 10px;
+                    "
+                  >
+                    <span
+                      style="width: 34px; height: 2px; background: #c98b4b; display: inline-block"
+                    ></span
+                    >Abholung &amp; Lieferung bis 100 km
+                  </div>
+                  <div
+                    style="
+                      font-family: Karla, sans-serif;
+                      font-size: 15px;
+                      font-weight: 700;
+                      color: #7a4a21;
+                      display: flex;
+                      align-items: center;
+                      gap: 10px;
+                    "
+                  >
+                    <span
+                      style="width: 34px; height: 2px; background: #c98b4b; display: inline-block"
+                    ></span
+                    >Bestellung per WhatsApp
+                  </div>
+                </div>
+              </div>
+
+              <!-- product row: arched cards -->
+              <div
+                style="background: #fbf3e7; border-radius: 36px 36px 0 0; padding: 56px 40px 60px"
+              >
+                <h2
+                  style="
+                    font-family: Prata, serif;
+                    font-size: 34px;
+                    margin: 0 0 30px;
+                    color: #7a4a21;
+                    text-align: center;
+                  "
+                >
+                  Unsere Lieblinge
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px">
+                  <div
+                    style="
+                      background: #f5e8d5;
+                      border-radius: 130px 130px 20px 20px;
+                      padding: 12px 12px 20px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 14px;
+                      text-align: center;
+                    "
+                    style-hover="transform:translateY(-4px)"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1/1.15;
+                        border-radius: 118px 118px 12px 12px;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #ebd8bc 0 12px,
+                          #e2cba8 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #7a4a21;
+                          background: #fbf3e7;
+                          padding: 5px 10px;
+                          border-radius: 6px;
+                        "
+                        >foto: bento</span
+                      >
+                    </div>
+                    <div style="font-family: Prata, serif; font-size: 18px; color: #7a4a21">
+                      Bento Mini
+                    </div>
+                    <div
+                      style="
+                        font-family: Karla, sans-serif;
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #c98b4b;
+                        margin-top: -8px;
+                      "
+                    >
+                      ab 24 €
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: #f5e8d5;
+                      border-radius: 130px 130px 20px 20px;
+                      padding: 12px 12px 20px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 14px;
+                      text-align: center;
+                    "
+                    style-hover="transform:translateY(-4px)"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1/1.15;
+                        border-radius: 118px 118px 12px 12px;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #ebd8bc 0 12px,
+                          #e2cba8 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #7a4a21;
+                          background: #fbf3e7;
+                          padding: 5px 10px;
+                          border-radius: 6px;
+                        "
+                        >foto: karamell</span
+                      >
+                    </div>
+                    <div style="font-family: Prata, serif; font-size: 18px; color: #7a4a21">
+                      Karamell-Creme
+                    </div>
+                    <div
+                      style="
+                        font-family: Karla, sans-serif;
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #c98b4b;
+                        margin-top: -8px;
+                      "
+                    >
+                      ab 42 €
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: #f5e8d5;
+                      border-radius: 130px 130px 20px 20px;
+                      padding: 12px 12px 20px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 14px;
+                      text-align: center;
+                    "
+                    style-hover="transform:translateY(-4px)"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1/1.15;
+                        border-radius: 118px 118px 12px 12px;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #ebd8bc 0 12px,
+                          #e2cba8 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #7a4a21;
+                          background: #fbf3e7;
+                          padding: 5px 10px;
+                          border-radius: 6px;
+                        "
+                        >foto: himbeere</span
+                      >
+                    </div>
+                    <div style="font-family: Prata, serif; font-size: 18px; color: #7a4a21">
+                      Himbeer-Vanille
+                    </div>
+                    <div
+                      style="
+                        font-family: Karla, sans-serif;
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #c98b4b;
+                        margin-top: -8px;
+                      "
+                    >
+                      ab 45 €
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: #f5e8d5;
+                      border-radius: 130px 130px 20px 20px;
+                      padding: 12px 12px 20px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 14px;
+                      text-align: center;
+                    "
+                    style-hover="transform:translateY(-4px)"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1/1.15;
+                        border-radius: 118px 118px 12px 12px;
+                        background: repeating-linear-gradient(
+                          45deg,
+                          #ebd8bc 0 12px,
+                          #e2cba8 12px 24px
+                        );
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #7a4a21;
+                          background: #fbf3e7;
+                          padding: 5px 10px;
+                          border-radius: 6px;
+                        "
+                        >foto: hochzeit</span
+                      >
+                    </div>
+                    <div style="font-family: Prata, serif; font-size: 18px; color: #7a4a21">
+                      Hochzeit Klassik
+                    </div>
+                    <div
+                      style="
+                        font-family: Karla, sans-serif;
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #c98b4b;
+                        margin-top: -8px;
+                      "
+                    >
+                      ab 120 €
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- footer band -->
+              <div
+                style="
+                  background: #7a4a21;
+                  color: #f5e8d5;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 30px 40px;
+                "
+              >
+                <div style="font-family: Prata, serif; font-size: 20px">Caramelka</div>
+                <div
+                  style="
+                    font-family: Karla, sans-serif;
+                    font-size: 14px;
+                    font-weight: 600;
+                    display: flex;
+                    gap: 28px;
+                  "
+                >
+                  <span>WhatsApp +49 123 456 789</span><span>Mo – Sa · 9:00 – 18:00</span
+                  ><span>Abholung &amp; Lieferung bis 100 km</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ 1c DUNKLE PATISSERIE ============ -->
+          <div class="dv-opt" id="1c" data-screen-label="1c Dunkle Patisserie">
+            <div class="dv-olabel">
+              <a class="dv-oid" href="#1c">1c</a>Dunkle Patisserie — edel, Espresso &amp; Gold,
+              Spotlight-Hero, Boutique-Charakter
+            </div>
+            <div class="dv-card" style="width: 1280px; background: #1e140e; color: #f1e3d0">
+              <!-- nav -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 24px 48px;
+                  border-bottom: 1px solid rgba(211, 161, 94, 0.25);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    gap: 32px;
+                    font-family: Jost, sans-serif;
+                    font-size: 12.5px;
+                    letter-spacing: 0.24em;
+                    font-weight: 400;
+                    color: rgba(241, 227, 208, 0.75);
+                  "
+                >
+                  <span style-hover="color:#D3A15E">TORTEN</span
+                  ><span style-hover="color:#D3A15E">FÜLLUNGEN</span>
+                </div>
+                <div
+                  style="
+                    font-family: Marcellus, serif;
+                    font-size: 30px;
+                    letter-spacing: 0.18em;
+                    color: #d3a15e;
+                  "
+                >
+                  CARAMELKA
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 32px;
+                    align-items: center;
+                    font-family: Jost, sans-serif;
+                    font-size: 12.5px;
+                    letter-spacing: 0.24em;
+                    color: rgba(241, 227, 208, 0.75);
+                  "
+                >
+                  <span style-hover="color:#D3A15E">GALERIE</span
+                  ><span style-hover="color:#D3A15E">KONTAKT</span>
+                  <span style="color: rgba(241, 227, 208, 0.45)"
+                    ><span style="color: #d3a15e">DE</span> / RU</span
+                  >
+                </div>
+              </div>
+
+              <!-- hero: spotlight -->
+              <div
+                style="
+                  position: relative;
+                  padding: 80px 48px 90px;
+                  text-align: center;
+                  background: radial-gradient(
+                    ellipse 620px 430px at 50% 62%,
+                    rgba(211, 161, 94, 0.16),
+                    transparent 70%
+                  );
+                "
+              >
+                <div
+                  style="
+                    font-family: Jost, sans-serif;
+                    font-size: 12px;
+                    letter-spacing: 0.34em;
+                    color: #d3a15e;
+                    margin-bottom: 24px;
+                  "
+                >
+                  FEINE PATISSERIE · AUF BESTELLUNG
+                </div>
+                <h1
+                  style="
+                    font-family: Marcellus, serif;
+                    font-size: 64px;
+                    line-height: 1.1;
+                    margin: 0 auto 20px;
+                    max-width: 18ch;
+                    font-weight: 400;
+                    text-wrap: balance;
+                  "
+                >
+                  Die Kunst der Torte
+                </h1>
+                <p
+                  style="
+                    font-family: Jost, sans-serif;
+                    font-weight: 300;
+                    font-size: 17px;
+                    line-height: 1.7;
+                    color: rgba(241, 227, 208, 0.72);
+                    max-width: 56ch;
+                    margin: 0 auto 44px;
+                  "
+                >
+                  Jede Torte ein Einzelstück — aus frischen, ausgewählten Zutaten, von Hand
+                  gefertigt. Abholung und Lieferung im Umkreis von 100 km.
+                </p>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    gap: 44px;
+                    align-items: flex-end;
+                    margin-bottom: 46px;
+                  "
+                >
+                  <div
+                    style="
+                      width: 220px;
+                      aspect-ratio: 1/1.25;
+                      background:
+                        repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                        #2b1d13;
+                      border: 1px solid rgba(211, 161, 94, 0.35);
+                      display: grid;
+                      place-items: center;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                        color: #d3a15e;
+                        background: #1e140e;
+                        padding: 5px 10px;
+                      "
+                      >foto: praliné</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      width: 300px;
+                      aspect-ratio: 1/1.35;
+                      background:
+                        repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                        #2b1d13;
+                      border: 1px solid rgba(211, 161, 94, 0.55);
+                      display: grid;
+                      place-items: center;
+                      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                        color: #d3a15e;
+                        background: #1e140e;
+                        padding: 5px 10px;
+                      "
+                      >foto: signature-torte</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      width: 220px;
+                      aspect-ratio: 1/1.25;
+                      background:
+                        repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                        #2b1d13;
+                      border: 1px solid rgba(211, 161, 94, 0.35);
+                      display: grid;
+                      place-items: center;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                        color: #d3a15e;
+                        background: #1e140e;
+                        padding: 5px 10px;
+                      "
+                      >foto: éclair</span
+                    >
+                  </div>
+                </div>
+                <div style="display: inline-flex; gap: 18px">
+                  <div
+                    style="
+                      font-family: Jost, sans-serif;
+                      font-size: 13px;
+                      letter-spacing: 0.22em;
+                      padding: 16px 36px;
+                      border: 1px solid #d3a15e;
+                      color: #d3a15e;
+                    "
+                    style-hover="background:#D3A15E;color:#1E140E"
+                  >
+                    PER WHATSAPP ANFRAGEN
+                  </div>
+                  <div
+                    style="
+                      font-family: Jost, sans-serif;
+                      font-size: 13px;
+                      letter-spacing: 0.22em;
+                      padding: 16px 36px;
+                      border: 1px solid rgba(241, 227, 208, 0.25);
+                      color: rgba(241, 227, 208, 0.8);
+                    "
+                    style-hover="border-color:#F1E3D0;color:#F1E3D0"
+                  >
+                    KOLLEKTION
+                  </div>
+                </div>
+              </div>
+
+              <!-- selection row -->
+              <div style="padding: 0 48px 80px">
+                <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 36px">
+                  <div style="height: 1px; flex: 1; background: rgba(211, 161, 94, 0.3)"></div>
+                  <h2
+                    style="
+                      font-family: Marcellus, serif;
+                      font-size: 28px;
+                      font-weight: 400;
+                      margin: 0;
+                      letter-spacing: 0.12em;
+                    "
+                  >
+                    AUSGEWÄHLTE TORTEN
+                  </h2>
+                  <div style="height: 1px; flex: 1; background: rgba(211, 161, 94, 0.3)"></div>
+                </div>
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 1px;
+                    background: rgba(211, 161, 94, 0.25);
+                    border: 1px solid rgba(211, 161, 94, 0.25);
+                  "
+                >
+                  <div
+                    style="
+                      background: #1e140e;
+                      padding: 28px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 16px;
+                    "
+                    style-hover="background:#251910"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background:
+                          repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                          #2b1d13;
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #d3a15e;
+                          background: #1e140e;
+                          padding: 5px 10px;
+                        "
+                        >foto: karamell</span
+                      >
+                    </div>
+                    <div
+                      style="display: flex; justify-content: space-between; align-items: baseline"
+                    >
+                      <div
+                        style="
+                          font-family: Marcellus, serif;
+                          font-size: 19px;
+                          letter-spacing: 0.08em;
+                        "
+                      >
+                        KARAMELL NOIR
+                      </div>
+                      <div style="font-family: Jost, sans-serif; font-size: 14px; color: #d3a15e">
+                        ab 48 €
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: #1e140e;
+                      padding: 28px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 16px;
+                    "
+                    style-hover="background:#251910"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background:
+                          repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                          #2b1d13;
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #d3a15e;
+                          background: #1e140e;
+                          padding: 5px 10px;
+                        "
+                        >foto: schokolade</span
+                      >
+                    </div>
+                    <div
+                      style="display: flex; justify-content: space-between; align-items: baseline"
+                    >
+                      <div
+                        style="
+                          font-family: Marcellus, serif;
+                          font-size: 19px;
+                          letter-spacing: 0.08em;
+                        "
+                      >
+                        VALRHONA 70 %
+                      </div>
+                      <div style="font-family: Jost, sans-serif; font-size: 14px; color: #d3a15e">
+                        ab 52 €
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: #1e140e;
+                      padding: 28px;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 16px;
+                    "
+                    style-hover="background:#251910"
+                  >
+                    <div
+                      style="
+                        aspect-ratio: 1;
+                        background:
+                          repeating-linear-gradient(45deg, #2b1d13 0 12px, #33231636 12px 24px),
+                          #2b1d13;
+                        display: grid;
+                        place-items: center;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;JetBrains Mono&quot;, monospace;
+                          font-size: 11px;
+                          color: #d3a15e;
+                          background: #1e140e;
+                          padding: 5px 10px;
+                        "
+                        >foto: hochzeit</span
+                      >
+                    </div>
+                    <div
+                      style="display: flex; justify-content: space-between; align-items: baseline"
+                    >
+                      <div
+                        style="
+                          font-family: Marcellus, serif;
+                          font-size: 19px;
+                          letter-spacing: 0.08em;
+                        "
+                      >
+                        HOCHZEIT GRANDE
+                      </div>
+                      <div style="font-family: Jost, sans-serif; font-size: 14px; color: #d3a15e">
+                        ab 140 €
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- footer -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 28px 48px;
+                  border-top: 1px solid rgba(211, 161, 94, 0.25);
+                  font-family: Jost, sans-serif;
+                  font-size: 13px;
+                  letter-spacing: 0.14em;
+                  color: rgba(241, 227, 208, 0.65);
+                "
+              >
+                <span>WHATSAPP +49 123 456 789</span>
+                <span>MO – SA · 9:00 – 18:00</span>
+                <span>ABHOLUNG &amp; LIEFERUNG BIS 100 KM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dv-next">
+          Weiter: „baue <a class="dv-oid" href="#1b">1b</a> als komplette Website aus" · „Hero von
+          <a class="dv-oid" href="#1c">1c</a> mit den Farben von
+          <a class="dv-oid" href="#1a">1a</a>" · „zeig mir mehr Richtungen"
+        </p>
+      </section>
+    </x-dc>
+  </body>
+</html>
