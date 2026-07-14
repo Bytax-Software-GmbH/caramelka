@@ -6,6 +6,7 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useEffect } from "react";
 
+import { ThemeParamSync } from "#/components/ck/theme-preview";
 import { Toaster } from "#/components/ui/sonner";
 import type { AuthQueryResult } from "#/lib/auth/queries";
 import { CartProvider } from "#/lib/cart";
@@ -86,6 +87,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
         <I18nProvider initialLocale={initialLocale}>
           <CartProvider>
             <HtmlLangSync />
+            <ThemeParamSync />
             {children}
             <Toaster richColors />
           </CartProvider>

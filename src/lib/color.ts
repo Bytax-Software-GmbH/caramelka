@@ -1,5 +1,14 @@
 /** Kleine, abhängigkeitsfreie Farb-Helfer für den Palette-Generator. */
 
+/** 6-stelliger Hex, führendes # optional (URL-Param-freundlich). */
+export const HEX6 = /^#?[0-9a-fA-F]{6}$/;
+
+/** "6B7178" | "#6b7178" → "#6B7178"; null bei ungültigem Wert. */
+export function normalizeHex(raw: string | null | undefined): string | null {
+  if (!raw || !HEX6.test(raw.trim())) return null;
+  return `#${raw.trim().replace(/^#/, "").toUpperCase()}`;
+}
+
 export interface Hsl {
   h: number; // 0–360
   s: number; // 0–100
@@ -16,10 +25,7 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } | nul
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-  const to = (n: number) =>
-    clamp(Math.round(n), 0, 255)
-      .toString(16)
-      .padStart(2, "0");
+  const to = (n: number) => clamp(Math.round(n), 0, 255).toString(16).padStart(2, "0");
   return `#${to(r)}${to(g)}${to(b)}`;
 }
 
@@ -116,6 +122,13 @@ export function ramp(baseHex: string): { step: number; hex: string }[] {
 }
 
 export type HarmonyKind = "complementary" | "analogous" | "triadic" | "split" | "tetradic";
+
+/** Farbe um `amount` Lightness-Punkte abdunkeln (HSL-basiert). */
+export function darken(hex: string, amount: number): string {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return hex;
+  return hslToHex({ ...hsl, l: Math.max(0, hsl.l - amount) });
+}
 
 /** Farbharmonien relativ zum Basis-Farbton. */
 export function harmony(baseHex: string, kind: HarmonyKind): string[] {

@@ -1,10 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckIcon, CopyIcon, DownloadIcon, RefreshCwIcon, RotateCcwIcon } from "lucide-react";
+import {
+  CheckIcon,
+  CopyIcon,
+  DownloadIcon,
+  RefreshCwIcon,
+  RotateCcwIcon,
+  Share2Icon,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PublicShell } from "#/components/ck/layout";
 import { Kicker, Ornament, SectionTitle } from "#/components/ck/primitives";
+import {
+  buildShareUrl,
+  getActiveThemePreview,
+  reapplyThemePreview,
+} from "#/components/ck/theme-preview";
 import {
   contrastRatio,
   type HarmonyKind,
@@ -165,7 +177,21 @@ function ColorsPage() {
   // ── Marken-Editor ──────────────────────────────────────────────────────
   const [brand, setBrand] = useState<BrandToken[]>(DEFAULT_BRAND);
 
-  // Live-Vorschau: Token-Werte auf :root anwenden; beim Verlassen zurücksetzen.
+  // Aktive URL-Param-Vorschau (?primary/&secondary) in den Editor übernehmen.
+  useEffect(() => {
+    const preview = getActiveThemePreview();
+    if (!preview) return;
+    setBrand((prev) =>
+      prev.map((t) => {
+        if (t.cssVar === "--caramel" && preview.primary) return { ...t, hex: preview.primary };
+        if (t.cssVar === "--gold" && preview.secondary) return { ...t, hex: preview.secondary };
+        return t;
+      }),
+    );
+  }, []);
+
+  // Live-Vorschau: Token-Werte auf :root anwenden; beim Verlassen zurücksetzen
+  // (und eine ggf. aktive URL-Param-Vorschau wiederherstellen).
   useEffect(() => {
     const root = document.documentElement;
     for (const t of brand) {
@@ -173,6 +199,7 @@ function ColorsPage() {
     }
     return () => {
       for (const t of brand) root.style.removeProperty(t.cssVar);
+      reapplyThemePreview();
     };
   }, [brand]);
 
@@ -239,8 +266,19 @@ function ColorsPage() {
 
         {/* ── Editierbare Markenpalette ── */}
         <div className="mb-10">
-          <div className="mb-4 flex items-baseline justify-between gap-4">
-            <h2 className="ck-display text-2xl">Markenpalette</h2>
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <h2 className="mr-auto ck-display text-2xl">Markenpalette</h2>
+            <button
+              type="button"
+              onClick={() => {
+                const caramel = brand.find((t) => t.cssVar === "--caramel")?.hex ?? "";
+                const gold = brand.find((t) => t.cssVar === "--gold")?.hex ?? "";
+                copy(buildShareUrl(caramel, gold), "Vorschau-Link kopiert");
+              }}
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-caramel-deep uppercase transition-colors hover:text-espresso"
+            >
+              <Share2Icon className="size-3.5" /> Link teilen
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -295,9 +333,8 @@ function ColorsPage() {
             {cssExport}
           </pre>
           <p className="mt-2 text-[12px] text-espresso/55">
-            In <span className="font-mono">src/styles.css</span> im <span className="font-mono">
-              :root
-            </span>
+            In <span className="font-mono">src/styles.css</span> im{" "}
+            <span className="font-mono">:root</span>
             -Block einsetzen, um die Farben dauerhaft zu übernehmen.
           </p>
         </div>
@@ -381,7 +418,9 @@ function ColorsPage() {
                       // eslint-disable-next-line react/no-array-index-key
                       key={`${h.key}-${i}`}
                       hex={hex}
-                      sub={i === 0 ? undefined : `${contrastRatio(hex, base).toFixed(1)}:1 zu Basis`}
+                      sub={
+                        i === 0 ? undefined : `${contrastRatio(hex, base).toFixed(1)}:1 zu Basis`
+                      }
                       onCopy={copy}
                       copied={copied === hex}
                       className="flex-1"
