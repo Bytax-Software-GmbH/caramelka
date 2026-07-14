@@ -123,11 +123,11 @@ export function ramp(baseHex: string): { step: number; hex: string }[] {
 
 export type HarmonyKind = "complementary" | "analogous" | "triadic" | "split" | "tetradic";
 
-/** Farbe um `amount` Lightness-Punkte abdunkeln (HSL-basiert). */
+/** Farbe um `amount` Lightness-Punkte abdunkeln (negativ = aufhellen). */
 export function darken(hex: string, amount: number): string {
   const hsl = hexToHsl(hex);
   if (!hsl) return hex;
-  return hslToHex({ ...hsl, l: Math.max(0, hsl.l - amount) });
+  return hslToHex({ ...hsl, l: clamp(hsl.l - amount, 0, 100) });
 }
 
 /** Farbharmonien relativ zum Basis-Farbton. */

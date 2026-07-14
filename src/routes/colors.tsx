@@ -15,7 +15,9 @@ import { Kicker, Ornament, SectionTitle } from "#/components/ck/primitives";
 import {
   buildShareUrl,
   getActiveThemePreview,
+  PARAM_BY_CSSVAR,
   reapplyThemePreview,
+  THEME_PARAMS,
 } from "#/components/ck/theme-preview";
 import {
   contrastRatio,
@@ -177,15 +179,17 @@ function ColorsPage() {
   // ── Marken-Editor ──────────────────────────────────────────────────────
   const [brand, setBrand] = useState<BrandToken[]>(DEFAULT_BRAND);
 
-  // Aktive URL-Param-Vorschau (?primary/&secondary) in den Editor übernehmen.
+  // Aktive URL-Param-Vorschau (?primary, ?bg, ?text, …) in den Editor übernehmen.
   useEffect(() => {
     const preview = getActiveThemePreview();
     if (!preview) return;
+    const hexByCssVar = new Map(
+      THEME_PARAMS.flatMap((d) => (preview[d.param] ? [[d.cssVar, preview[d.param]!]] : [])),
+    );
     setBrand((prev) =>
       prev.map((t) => {
-        if (t.cssVar === "--caramel" && preview.primary) return { ...t, hex: preview.primary };
-        if (t.cssVar === "--gold" && preview.secondary) return { ...t, hex: preview.secondary };
-        return t;
+        const hex = hexByCssVar.get(t.cssVar);
+        return hex ? { ...t, hex } : t;
       }),
     );
   }, []);
@@ -271,9 +275,21 @@ function ColorsPage() {
             <button
               type="button"
               onClick={() => {
-                const caramel = brand.find((t) => t.cssVar === "--caramel")?.hex ?? "";
-                const gold = brand.find((t) => t.cssVar === "--gold")?.hex ?? "";
-                copy(buildShareUrl(caramel, gold), "Vorschau-Link kopiert");
+                // Nur vom Standard abweichende, param-fähige Tokens in den Link.
+                const params = Object.fromEntries(
+                  brand.flatMap((t) => {
+                    const param = PARAM_BY_CSSVAR[t.cssVar];
+                    const def = DEFAULT_BRAND.find((d) => d.cssVar === t.cssVar);
+                    return param && def && t.hex.toUpperCase() !== def.hex.toUpperCase()
+                      ? [[param, t.hex]]
+                      : [];
+                  }),
+                );
+                if (Object.keys(params).length === 0) {
+                  toast.info("Keine Abweichung vom Standard — Farben zuerst anpassen.");
+                  return;
+                }
+                copy(buildShareUrl(params), "Vorschau-Link kopiert");
               }}
               className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-caramel-deep uppercase transition-colors hover:text-espresso"
             >

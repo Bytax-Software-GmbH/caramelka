@@ -1,23 +1,90 @@
+import { CopyIcon, PaletteIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { darken, normalizeHex } from "#/lib/color";
 
 /**
  * Sitewide Farb-Vorschau über URL-Parameter, damit der Kunde Kombis live
- * testen kann: `/?primary=6B7178&secondary=AAB0B6` (Hex ohne #).
+ * testen kann — Akzente UND Hintergründe/Text/Dunkel-Sektionen:
  *
- * - `primary`   → --caramel, --caramel-deep (automatisch abgedunkelt)
- * - `secondary` → --gold, --toffee (automatisch abgedunkelt)
- * - Persistenz in sessionStorage → Kombi überlebt Navigation + Reload im Tab
- * - `?theme=reset` beendet die Vorschau
+ *   /?primary=6B7178&secondary=AAB0B6&bg=F4F3F1&text=23262B&dark=17191C
+ *
+ * Hex ohne #; jeder Parameter ist optional, ungültige Werte werden ignoriert.
+ * Persistenz in sessionStorage → Kombi überlebt Navigation + Reload im Tab.
+ * `?theme=reset` beendet die Vorschau, `?theme=edit` öffnet das Live-Panel.
+ * Das schwebende Panel (Badge anklicken) erlaubt Live-Anpassung aller Params.
  */
 
 const STORAGE_KEY = "ck-theme-preview";
 
-interface ThemePreview {
-  primary?: string;
-  secondary?: string;
+interface ParamDef {
+  /** URL-Parameter-Name. */
+  param: string;
+  label: string;
+  /** Haupt-Token. */
+  cssVar: string;
+  /** Standardwert (Graphit-Palette) — für Panel-Anzeige & Diff im Share-Link. */
+  defaultHex: string;
+  /**
+   * Automatisch abgeleitete Nachbar-Tokens (Lightness-Offset), damit eine
+   * einzelne Param-Farbe stimmig wirkt. Wird übersprungen, wenn ein anderer
+   * Parameter denselben Token explizit setzt.
+   */
+  derived?: { cssVar: string; delta: number }[];
 }
+
+export const THEME_PARAMS: ParamDef[] = [
+  {
+    param: "primary",
+    label: "Primär-Akzent",
+    cssVar: "--caramel",
+    defaultHex: "#6B7178",
+    derived: [{ cssVar: "--caramel-deep", delta: 12 }],
+  },
+  {
+    param: "secondary",
+    label: "Sekundär-Akzent",
+    cssVar: "--gold",
+    defaultHex: "#AAB0B6",
+    derived: [{ cssVar: "--toffee", delta: 8 }],
+  },
+  {
+    param: "bg",
+    label: "Hintergrund",
+    cssVar: "--creme",
+    defaultHex: "#F4F3F1",
+    derived: [
+      { cssVar: "--creme-2", delta: 5 },
+      { cssVar: "--toffee-light", delta: 9 },
+    ],
+  },
+  { param: "bg2", label: "Fläche 2", cssVar: "--creme-2", defaultHex: "#E8E7E3" },
+  { param: "surface", label: "Akzentfläche", cssVar: "--toffee-light", defaultHex: "#DEDDDB" },
+  {
+    param: "text",
+    label: "Text/Buttons",
+    cssVar: "--espresso",
+    defaultHex: "#23262B",
+    derived: [{ cssVar: "--espresso-2", delta: -10 }],
+  },
+  {
+    param: "dark",
+    label: "Dunkle Sektion",
+    cssVar: "--dark",
+    defaultHex: "#17191C",
+    derived: [{ cssVar: "--cream-on-dark", delta: -74 }],
+  },
+  { param: "ondark", label: "Text auf Dunkel", cssVar: "--cream-on-dark", defaultHex: "#E7E8EA" },
+];
+
+/** cssVar → URL-Param (für „Link teilen" im /colors-Editor). */
+export const PARAM_BY_CSSVAR: Record<string, string> = Object.fromEntries(
+  THEME_PARAMS.map((d) => [d.cssVar, d.param]),
+);
+
+/** param → Hex (nur gesetzte, valide Werte). */
+export type ThemePreview = Record<string, string>;
 
 function readStored(): ThemePreview | null {
   try {
@@ -25,10 +92,12 @@ function readStored(): ThemePreview | null {
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return null;
-    const p = parsed as ThemePreview;
-    const primary = normalizeHex(p.primary) ?? undefined;
-    const secondary = normalizeHex(p.secondary) ?? undefined;
-    return primary || secondary ? { primary, secondary } : null;
+    const out: ThemePreview = {};
+    for (const def of THEME_PARAMS) {
+      const hex = normalizeHex((parsed as Record<string, unknown>)[def.param] as string);
+      if (hex) out[def.param] = hex;
+    }
+    return Object.keys(out).length > 0 ? out : null;
   } catch {
     return null;
   }
@@ -36,20 +105,24 @@ function readStored(): ThemePreview | null {
 
 function applyPreview(preview: ThemePreview) {
   const root = document.documentElement;
-  if (preview.primary) {
-    root.style.setProperty("--caramel", preview.primary);
-    root.style.setProperty("--caramel-deep", darken(preview.primary, 12));
-  }
-  if (preview.secondary) {
-    root.style.setProperty("--gold", preview.secondary);
-    root.style.setProperty("--toffee", darken(preview.secondary, 8));
+  // Explizit gesetzte Haupt-Tokens haben Vorrang vor Ableitungen.
+  const explicit = new Set(THEME_PARAMS.filter((d) => preview[d.param]).map((d) => d.cssVar));
+  for (const def of THEME_PARAMS) {
+    const hex = preview[def.param];
+    if (!hex) continue;
+    root.style.setProperty(def.cssVar, hex);
+    for (const d of def.derived ?? []) {
+      if (explicit.has(d.cssVar)) continue;
+      root.style.setProperty(d.cssVar, darken(hex, d.delta));
+    }
   }
 }
 
 function clearPreview() {
   const root = document.documentElement;
-  for (const v of ["--caramel", "--caramel-deep", "--gold", "--toffee"]) {
-    root.style.removeProperty(v);
+  for (const def of THEME_PARAMS) {
+    root.style.removeProperty(def.cssVar);
+    for (const d of def.derived ?? []) root.style.removeProperty(d.cssVar);
   }
   sessionStorage.removeItem(STORAGE_KEY);
 }
@@ -70,69 +143,163 @@ export function reapplyThemePreview() {
   if (stored) applyPreview(stored);
 }
 
-/** Teilbarer Link aus zwei Farben (für den „Link teilen"-Button). */
-export function buildShareUrl(primary: string, secondary: string): string {
-  const p = normalizeHex(primary)?.slice(1) ?? "";
-  const s = normalizeHex(secondary)?.slice(1) ?? "";
-  return `${window.location.origin}/?primary=${p}&secondary=${s}`;
+/** Teilbarer Link aus Param→Hex-Paaren (nur valide Werte landen in der URL). */
+export function buildShareUrl(params: ThemePreview): string {
+  const search = new URLSearchParams();
+  for (const def of THEME_PARAMS) {
+    const hex = normalizeHex(params[def.param]);
+    if (hex) search.set(def.param, hex.slice(1));
+  }
+  return `${window.location.origin}/?${search.toString()}`;
 }
 
 export function ThemeParamSync() {
   const [active, setActive] = useState<ThemePreview | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
 
-    if (params.get("theme") === "reset") {
+    if (urlParams.get("theme") === "reset") {
       clearPreview();
       setActive(null);
       return;
     }
 
-    const fromUrl: ThemePreview = {
-      primary: normalizeHex(params.get("primary")) ?? undefined,
-      secondary: normalizeHex(params.get("secondary")) ?? undefined,
-    };
+    const fromUrl: ThemePreview = {};
+    for (const def of THEME_PARAMS) {
+      const hex = normalizeHex(urlParams.get(def.param));
+      if (hex) fromUrl[def.param] = hex;
+    }
 
     // URL-Params gewinnen und werden persistiert; sonst gespeicherte Vorschau.
-    const preview = fromUrl.primary || fromUrl.secondary ? fromUrl : readStored();
-    if (!preview) return;
+    const preview = Object.keys(fromUrl).length > 0 ? fromUrl : readStored();
 
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(preview));
-    applyPreview(preview);
-    setActive(preview);
+    if (preview) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(preview));
+      applyPreview(preview);
+      setActive(preview);
+    }
+    // ?theme=edit öffnet das Panel — auch ohne gesetzte Farben.
+    if (urlParams.get("theme") === "edit") {
+      setActive((prev) => prev ?? {});
+      setOpen(true);
+    }
   }, []);
 
   if (!active) return null;
 
+  function update(param: string, hex: string) {
+    const next = { ...active, [param]: hex.toUpperCase() };
+    setActive(next);
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    applyPreview(next);
+  }
+
+  function reset() {
+    clearPreview();
+    setActive(null);
+    setOpen(false);
+  }
+
   return (
-    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 rounded-full bg-espresso/95 py-2 pr-4 pl-3 text-creme shadow-lg backdrop-blur">
-      <span className="flex items-center gap-1.5" aria-hidden>
-        {active.primary && (
-          <span
-            className="size-4 rounded-full ring-1 ring-white/30"
-            style={{ background: active.primary }}
-          />
-        )}
-        {active.secondary && (
-          <span
-            className="size-4 rounded-full ring-1 ring-white/30"
-            style={{ background: active.secondary }}
-          />
-        )}
-      </span>
-      <span className="text-[11.5px] font-semibold tracking-[0.08em] uppercase">
-        Farb-Vorschau aktiv
-      </span>
+    <div className="fixed bottom-4 left-4 z-50 flex flex-col items-start gap-2">
+      {/* Floating-Panel: alle Parameter live änderbar */}
+      {open && (
+        <div className="w-[248px] rounded-xl bg-espresso/95 p-4 text-creme shadow-xl backdrop-blur">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-[11px] font-semibold tracking-[0.14em] uppercase">
+              Farben anpassen
+            </span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Panel schließen"
+              className="grid size-6 place-items-center rounded-full text-creme/70 hover:bg-creme/10 hover:text-creme"
+            >
+              <XIcon className="size-3.5" />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            {THEME_PARAMS.map((def) => {
+              const value = active[def.param] ?? def.defaultHex;
+              return (
+                <label
+                  key={def.param}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-md px-1.5 py-1 hover:bg-creme/10"
+                >
+                  <span className="relative inline-block size-6 shrink-0">
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 rounded-full ring-1 ring-white/30"
+                      style={{ background: value }}
+                    />
+                    <input
+                      type="color"
+                      value={value}
+                      onChange={(e) => update(def.param, e.target.value)}
+                      aria-label={def.label}
+                      className="absolute inset-0 cursor-pointer opacity-0"
+                    />
+                  </span>
+                  <span className="flex-1 text-[12px]">{def.label}</span>
+                  <span className="font-mono text-[10.5px] text-creme/60 tabular-nums">
+                    {value.toUpperCase()}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 flex gap-2 border-t border-creme/15 pt-3">
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard
+                  .writeText(buildShareUrl(active))
+                  .then(() => toast.success("Vorschau-Link kopiert"));
+              }}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-creme/40 px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-creme hover:text-espresso"
+            >
+              <CopyIcon className="size-3" /> Link
+            </button>
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex flex-1 items-center justify-center rounded-full border border-creme/40 px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-creme hover:text-espresso"
+            >
+              Zurücksetzen
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Badge = Panel-Trigger */}
       <button
         type="button"
-        onClick={() => {
-          clearPreview();
-          setActive(null);
-        }}
-        className="rounded-full border border-creme/40 px-2.5 py-0.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-creme hover:text-espresso"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-3 rounded-full bg-espresso/95 py-2 pr-4 pl-3 text-creme shadow-lg backdrop-blur transition-transform active:scale-[0.97]"
       >
-        Zurücksetzen
+        <PaletteIcon className="size-4" aria-hidden />
+        <span className="flex items-center gap-1.5" aria-hidden>
+          {THEME_PARAMS.flatMap((def) =>
+            active[def.param]
+              ? [
+                  <span
+                    key={def.param}
+                    title={def.label}
+                    className="size-3.5 rounded-full ring-1 ring-white/30"
+                    style={{ background: active[def.param] }}
+                  />,
+                ]
+              : [],
+          )}
+        </span>
+        <span className="text-[11.5px] font-semibold tracking-[0.08em] uppercase">
+          Farb-Vorschau
+        </span>
       </button>
     </div>
   );
