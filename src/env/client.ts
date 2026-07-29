@@ -13,11 +13,17 @@ export const env = createEnv({
      * URL testen kann. Ist der Schalter an, kann jeder Besucher die Seite über
      * URL-Parameter umfärben. Das ist für eine Demo in Ordnung, vor dem Launch
      * gehört der Wert auf `false`.
+     *
+     * Bewusst nachsichtig geparst statt über `z.stringbool()`: das wirft bei
+     * leerem String, bei Anführungszeichen im Wert und bei führendem
+     * Leerzeichen. Da t3-env beim Import validiert, würde ein versehentlich
+     * leer gesetzter Wert im Deployment den Serverstart abbrechen und damit
+     * die ganze Seite abschalten. Ein Demo-Schalter darf das nicht können.
      */
     VITE_ENABLE_THEME_PREVIEW: z
-      .stringbool()
-      .default(false)
-      .describe("Farb-Vorschau in Produktion freischalten (nur für die Demo)"),
+      .string()
+      .optional()
+      .transform((value) => ["true", "1", "yes", "on"].includes(value?.trim().toLowerCase() ?? "")),
   },
   runtimeEnv: import.meta.env,
 });
