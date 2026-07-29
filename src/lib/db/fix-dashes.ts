@@ -6,7 +6,16 @@
  * Arbeitet ausschließlich mit UPDATE, löscht nichts und lässt damit
  * `order_items.product_id` unangetastet (anders als ein voller Re-Seed).
  *
+ * Lokal, mit Quellcode und Abhängigkeiten:
+ *
  *   node --env-file=.env --import tsx src/lib/db/fix-dashes.ts
+ *
+ * NICHT im App-Container der Produktion: das Runtime-Image enthält nur
+ * `.output`, also weder `src/` noch `node_modules` noch `tsx`, und die
+ * Umgebung kommt aus Coolify statt aus einer `.env`. Dort stattdessen
+ * `fix-dashes.sql` im Postgres-Container ausführen:
+ *
+ *   psql -U caramelka -d caramelka -f fix-dashes.sql
  */
 import { sql } from "drizzle-orm";
 
