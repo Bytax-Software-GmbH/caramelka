@@ -6,6 +6,8 @@ services:
       args:
         # Inlined into the client bundle at build time (full URL incl. https://)
         VITE_BASE_URL: ${SERVICE_URL_APP}
+        # Demo: Farb-Vorschau live testbar. Vor dem Launch auf false setzen.
+        VITE_ENABLE_THEME_PREVIEW: ${VITE_ENABLE_THEME_PREVIEW:-false}
     environment:
       # Coolify auto-generates the FQDN + secrets via these magic variables
       SERVICE_FQDN_APP_3000: ""

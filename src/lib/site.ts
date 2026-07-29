@@ -6,8 +6,10 @@ export const site = {
   url: "https://caramelka.de",
   tagline: "Torten, die in Erinnerung bleiben",
   description:
-    "Caramelka Konditorei — individuelle Torten und feine Patisserie, handgefertigt aus frischen Zutaten. Abholung & Lieferung im Umkreis von 100 km.",
+    "Caramelka Konditorei: individuelle Torten und feine Patisserie, handgefertigt aus frischen Zutaten. Abholung & Lieferung im Umkreis von 100 km.",
   locale: "de_DE",
+  /** Social-Card, ausgeliefert aus `public`. */
+  ogImage: "/images/og-caramelka.jpg",
 
   contact: {
     whatsapp: "+49 123 456789", // TODO: echte Nummer vor Launch
@@ -19,7 +21,7 @@ export const site = {
       zip: "84568",
       city: "Pleiskirchen",
     },
-    hours: "Mo – Sa · 9:00 – 18:00",
+    hours: "Mo bis Sa, 9:00 bis 18:00",
   },
 
   shop: {
@@ -28,7 +30,7 @@ export const site = {
     deliveryFeeCents: 990,
     /** Fallback, wenn ein Produkt keine eigene Vorlaufzeit hat. */
     defaultLeadTimeHours: 48,
-    /** Sonntag geschlossen — keine Abholung/Lieferung. */
+    /** Sonntag geschlossen, keine Abholung/Lieferung. */
     closedWeekdays: [0] as number[],
   },
 } as const;

@@ -10,16 +10,57 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ── Caramelka design tokens ─────────────────────────────────────────────
-   "Polished mix": Editorial Crème base (1a) + warm caramel palette (1b)
-   + espresso/gold boutique accents (1c). Rectangular cards, pill CTAs.
-   Brand palette is exposed as Tailwind colors (bg-creme, text-espresso, …)
-   and wired into shadcn's semantic tokens so primitives inherit the look. */
+   Cold-luxury editorial system. Graphit / Grau / Milchweiß (Kundenwunsch),
+   Playfair Display als Display-Serif, Jost als UI-Sans.
+
+   SHAPE RULE (verbindlich, keine Ausnahmen):
+     · Interaktiv (Buttons, Pills, Chips, Icon-Buttons) → rounded-full
+     · Medien & Flächen (Bilder, Rahmen, Sektionen)     → scharf, 0px
+     · Eingaben (Input, Textarea, Select)               → 2px (--radius)
+
+   FARB-RULE: genau ein Akzent auf der ganzen Seite (--caramel). Text-
+   Hierarchie läuft über --ink / --ink-2 / --ink-3, niemals über Opacity.
+
+   THEME LOCK: Die Seite ist hell. Dark-Tokens sind unten definiert und über
+   `.dark` testbar, aber `prefers-color-scheme` wird bewusst NICHT respektiert
+   (Milchweiß ist eine Markenentscheidung des Kunden). */
 @theme inline {
   --font-display: "Playfair Display Variable", Georgia, serif;
   --font-sans: "Jost Variable", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-heading: var(--font-display);
 
+  /* ── Typografische Rampe ──────────────────────────────────────────────
+     Ein modulares System statt willkürlicher Pixelwerte. */
+  /* Obergrenze so gewählt, dass die längste Hero-Zeile in beiden Sprachen
+     zweizeilig bleibt (Pflicht: Headline max. 2 Zeilen am Desktop). */
+  --text-display-xl: clamp(2.5rem, 5.2vw, 4rem);
+  --text-display-xl--line-height: 1.04;
+  --text-display-xl--letter-spacing: -0.021em;
+
+  --text-display-l: clamp(2.125rem, 4vw, 3.25rem);
+  --text-display-l--line-height: 1.08;
+  --text-display-l--letter-spacing: -0.016em;
+
+  --text-display-m: clamp(1.625rem, 2.4vw, 2.125rem);
+  --text-display-m--line-height: 1.16;
+  --text-display-m--letter-spacing: -0.01em;
+
+  --text-display-s: 1.3125rem;
+  --text-display-s--line-height: 1.28;
+  --text-display-s--letter-spacing: -0.006em;
+
+  --text-body-l: 1.0625rem;
+  --text-body-l--line-height: 1.68;
+  --text-body-m: 0.9375rem;
+  --text-body-m--line-height: 1.66;
+  --text-body-s: 0.8125rem;
+  --text-body-s--line-height: 1.55;
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.1;
+  --text-label--letter-spacing: 0.24em;
+
+  /* ── Markenpalette ──────────────────────────────────────────────────── */
   --color-creme: var(--creme);
   --color-creme-2: var(--creme-2);
   --color-toffee-light: var(--toffee-light);
@@ -29,11 +70,18 @@
   --color-caramel: var(--caramel);
   --color-caramel-deep: var(--caramel-deep);
   --color-toffee: var(--toffee);
+  --color-toffee-deep: var(--toffee-deep);
   --color-gold: var(--gold);
   --color-cream-on-dark: var(--cream-on-dark);
 
-  --shadow-lift: 0 18px 40px rgba(30, 33, 40, 0.14);
-  --shadow-lift-sm: 0 8px 24px rgba(30, 33, 40, 0.1);
+  /* Text-Hierarchie (ersetzt Opacity-Stufen, alle ≥ WCAG AA) */
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-on-dark: var(--ink-on-dark);
+  --color-ink-2-on-dark: var(--ink-2-on-dark);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
 
   /* shadcn semantic → brand */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -67,16 +115,18 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.7);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.5);
-  --radius-2xl: calc(var(--radius) * 2);
-  --radius-3xl: calc(var(--radius) * 2.6);
+
+  /* Shape-Rule, siehe Kommentar oben */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 6px;
+  --radius-3xl: 8px;
 }
 
 :root {
-  /* Brand palette — Kundenwunsch "графит, серый, молочный":
+  /* Markenpalette, Kundenwunsch "графит, серый, молочный":
      milchig-weiße Basis, Graphit-Dunkeltöne, kühl-graue Akzente.
      Token-Namen bleiben (creme/espresso/caramel/gold), damit alle bestehenden
      Utility-Klassen (bg-creme, text-caramel-deep, …) unverändert weiterlaufen. */
@@ -85,46 +135,102 @@
   --toffee-light: #dedddb; /* heller Nebelgrau (Akzentflächen) */
   --espresso: #23262b; /* Graphit (Haupttext, dunkle Buttons) */
   --espresso-2: #3b4046; /* mittlerer Graphit */
-  --dark: #17191c; /* tiefer Graphit (Sektionen, Footer) */
-  --caramel: #6b7178; /* Stahlgrau — Primär-Akzent */
-  --caramel-deep: #52575d; /* dunkles Graphitgrau — Kicker/Hover (AA auf Milchweiß) */
-  --toffee: #878d94; /* Mittelgrau */
-  --gold: #aab0b6; /* helles Silbergrau — Akzent auf Dunkel (Ornamente) */
+  --dark: #17191c; /* tiefer Graphit (Footer) */
+  --caramel: #6b7178; /* Stahlgrau, einziger Akzent der Seite */
+  --caramel-deep: #52575d; /* dunkles Graphitgrau, Hover/Aktiv */
+  --toffee: #7a736c; /* warmes Taupe-Grau, Sekundärfarbe */
+  /* Hover-Tiefe der Sekundärfarbe, ebenfalls abgeleitet, damit die
+     Farbvorschau den Sekundär-CTA in der Kasse mitfärbt. */
+  --toffee-deep: color-mix(in srgb, var(--toffee) 66%, var(--espresso));
+  --gold: #aab0b6; /* helles Silbergrau, Akzent auf Dunkel */
   --cream-on-dark: #e7e8ea; /* helles Grauweiß auf Dunkel */
+
+  /* Text-Hierarchie über echte Farbwerte statt Transparenz.
+     Im Browser gemessen, jeweils WCAG AA für Fließtext:
+       gegen --creme   #f4f3f1:  ink 13.69:1 · ink-2 7.41:1 · ink-3 5.56:1
+       gegen --creme-2 #e8e7e3:  ink 12.27:1 · ink-2 6.64:1 · ink-3 4.98:1
+
+     Bewusst abgeleitet statt fest verdrahtet: die Farbvorschau (/colors und
+     die URL-Parameter) überschreibt nur --espresso, --creme, --dark und
+     --cream-on-dark. Feste Hexwerte hier hätten zur Folge, dass Überschriften
+     und Haarlinien bei einer Vorschau in der alten Farbe stehen bleiben,
+     während der Hintergrund schon wechselt.
+
+     ink-3 bleibt absichtlich dunkler als der Akzent --caramel: gleicher
+     Farbeindruck, aber auf Milchgrau reicht #6b7178 mit 4.05:1 nicht für AA. */
+  --ink: var(--espresso);
+  --ink-2: color-mix(in srgb, var(--espresso) 80%, var(--creme));
+  --ink-3: color-mix(in srgb, var(--espresso) 71%, var(--creme));
+  --ink-on-dark: var(--cream-on-dark);
+  --ink-2-on-dark: color-mix(in srgb, var(--cream-on-dark) 71%, var(--dark));
+
+  /* Haarlinien: eine helle, eine kräftige. Keine Ad-hoc-Opacity mehr. */
+  --rule: color-mix(in srgb, var(--espresso) 10%, var(--creme));
+  --rule-strong: color-mix(in srgb, var(--espresso) 21%, var(--creme));
 
   /* shadcn semantic tokens mapped to the brand */
   --background: var(--creme);
-  --foreground: var(--espresso);
+  --foreground: var(--ink);
   --card: #ffffff;
-  --card-foreground: var(--espresso);
-  --popover: #fffdf9;
-  --popover-foreground: var(--espresso);
-  --primary: var(--espresso);
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--caramel);
   --primary-foreground: var(--creme);
-  --secondary: var(--creme-2);
-  --secondary-foreground: var(--espresso);
+  --secondary: var(--toffee);
+  --secondary-foreground: #ffffff;
   --muted: var(--creme-2);
-  --muted-foreground: #676b70;
+  --muted-foreground: var(--ink-2);
   --accent: var(--toffee-light);
   --accent-foreground: var(--espresso-2);
   --destructive: #a03323;
-  --border: #e0dfdc;
-  --input: #cfceca;
+  --border: var(--rule);
+  --input: var(--rule-strong);
   --ring: var(--caramel);
   --chart-1: var(--caramel);
   --chart-2: var(--gold);
   --chart-3: var(--espresso-2);
   --chart-4: var(--toffee);
   --chart-5: var(--creme-2);
-  --radius: 0.5rem;
+  --radius: 2px;
   --sidebar: var(--creme-2);
-  --sidebar-foreground: var(--espresso);
+  --sidebar-foreground: var(--ink);
   --sidebar-primary: var(--espresso);
-  --sidebar-primary-foreground: var(--gold);
+  --sidebar-primary-foreground: var(--creme);
   --sidebar-accent: var(--toffee-light);
-  --sidebar-accent-foreground: var(--espresso);
-  --sidebar-border: #e0dfdc;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--rule);
   --sidebar-ring: var(--caramel);
+
+  /* schwere, gewichtete Kurve für alle Marken-Bewegungen */
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dunkles Token-Set. Bewusst nur über `.dark` erreichbar, nicht über
+   prefers-color-scheme: die milchweiße Basis ist Markenvorgabe (Section 8.C,
+   "unless the brand insists"). Hierarchie und Akzent bleiben identisch.
+
+   Hier stehen nur die Basisfarben. --ink*, --rule* und --toffee-deep leiten
+   sich oben aus --espresso/--creme ab und drehen dadurch automatisch mit. */
+.dark {
+  --creme: #1b1e21;
+  --creme-2: #22262a;
+  --toffee-light: #2b3035;
+  --espresso: #e7e8ea;
+  --espresso-2: #c6cace;
+  --dark: #121416;
+  --caramel: #9aa1a8;
+  --caramel-deep: #b6bcc2;
+  --toffee: #9c948b;
+  --gold: #aab0b6;
+  --cream-on-dark: #e7e8ea;
+
+  --card: #22262a;
+  --popover: #22262a;
+  --primary-foreground: #16181b;
+  --secondary-foreground: #16181b;
+  --muted-foreground: var(--ink-2);
+  --accent-foreground: var(--ink);
 }
 
 @layer base {
@@ -145,10 +251,12 @@
     cursor: pointer;
   }
   ::selection {
-    background: var(--gold);
-    color: var(--dark);
+    background: var(--espresso);
+    color: var(--creme);
   }
 }
+
+/* ── Typografie-Utilities ────────────────────────────────────────────── */
 
 @utility ck-display {
   font-family: var(--font-display);
@@ -156,24 +264,43 @@
   text-wrap: balance;
 }
 
+/* Kursive Display-Wörter brauchen Platz für Unterlängen (y g j p q). */
+@utility ck-display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.12;
+  padding-bottom: 0.08em;
+}
+
 @utility ck-kicker {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--text-label);
   font-weight: 500;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--caramel-deep);
+  color: var(--ink-3);
 }
 
 @utility ck-nav-link {
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-/* endless marquee strip (from direction 1a) */
+/* Preise und Bestellnummern in der Display-Serif. */
+@utility ck-price {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ── Marken-Bewegung ─────────────────────────────────────────────────── */
+
+/* Endlos-Laufband */
 @keyframes ck-marquee {
   from {
     transform: translateX(0);
@@ -183,7 +310,12 @@
   }
 }
 @utility ck-marquee {
-  animation: ck-marquee 28s linear infinite;
+  animation: ck-marquee 52s linear infinite;
+}
+/* Beim Überfahren anhalten: das Band trägt Inhalt, der lesbar bleiben soll. */
+.ck-marquee-host:hover .ck-marquee,
+.ck-marquee-host:focus-within .ck-marquee {
+  animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
   .ck-marquee {
@@ -191,21 +323,19 @@
   }
 }
 
-/* soft reveal used on section entrances */
+/* Sanfter Auftritt beim Laden */
 @keyframes ck-rise {
   from {
     opacity: 0;
     transform: translateY(18px);
-    filter: blur(6px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 @utility ck-rise {
-  animation: ck-rise 0.9s var(--ease-lux) both;
+  animation: ck-rise 1s var(--ease-lux) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .ck-rise {
@@ -213,45 +343,68 @@
   }
 }
 
-/* ── Luxury layer ──────────────────────────────────────────────────────── */
-
-:root {
-  /* heavy, weighted easing for all brand motion */
-  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+/* Viewport-Reveal (genutzt von <Reveal/>); Startzustand nur wenn JS läuft. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    /* Länger als üblich und bewusst so: hastige Auftritte wirken billig,
+       die gewichtete Kurve braucht Zeit, um schwer zu wirken. */
+    transition:
+      opacity 1.1s var(--ease-lux),
+      transform 1.1s var(--ease-lux);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  [data-reveal="in"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
-/* film-grain overlay for a physical paper feel (fixed, never on scrollers) */
+/* ── Material ────────────────────────────────────────────────────────── */
+
+/* Filmkorn für haptische Papieranmutung. Fix positioniert, nie auf
+   scrollenden Containern (GPU-Repaints). */
 .ck-grain {
   pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 40;
-  opacity: 0.05;
+  opacity: 0.045;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* double-bezel picture frame: crème mat + hairline, concentric radii */
+/* Doppelter Passepartout-Rahmen: weißes Mat, Haarlinie, tiefer Schatten.
+   Scharfe Kanten nach Shape-Rule.
+
+   Die beiden inneren Linien bilden die Fase eines echten Rahmens nach: oben
+   ein heller Grat, unten ein dunklerer Absatz. Zwei Zeilen box-shadow, kein
+   zusätzliches Markup, und der Unterschied zwischen "Bild mit Rand" und
+   "gerahmtes Bild" hängt genau daran. */
 @utility ck-frame {
-  background: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
+  /* Passepartout über --card, damit die Farbvorschau die Rahmenfläche
+     mitfärben kann. Fest verdrahtetes Weiß bliebe unter jeder Palette stehen. */
+  background: var(--card);
+  padding: 14px;
   box-shadow:
+    /* Auf weißem Passepartout ohnehin unsichtbar, auf dunklem sonst zu grell. */
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(35, 38, 43, 0.06),
     0 0 0 1px rgba(35, 38, 43, 0.09),
     0 1px 2px rgba(35, 38, 43, 0.05),
-    0 24px 48px -20px rgba(30, 33, 40, 0.28);
-}
-@utility ck-frame-dark {
-  background: #202327;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow:
-    0 0 0 1px rgba(170, 176, 182, 0.32),
-    inset 0 1px 0 rgba(231, 232, 234, 0.06),
-    0 30px 60px rgba(0, 0, 0, 0.45);
+    0 2px 8px -2px rgba(30, 33, 40, 0.06),
+    0 36px 72px -30px rgba(30, 33, 40, 0.34);
 }
 
-/* animated hairline underline for nav links */
+/* Animierte Haarlinie unter Navigationslinks */
 @utility ck-underline {
   position: relative;
 }
@@ -260,49 +413,19 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -5px;
+  bottom: -6px;
   height: 1px;
-  background: var(--caramel);
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.45s var(--ease-lux);
+  transition: transform 0.5s var(--ease-lux);
 }
 .ck-underline:hover::after,
 .ck-underline.active::after {
   transform: scaleX(1);
 }
-
-/* prices & order numbers in editorial serif */
-@utility ck-price {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-/* viewport reveal (used by <Reveal/>); hidden state only when JS can run */
-@media (scripting: enabled) {
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(22px);
-    filter: blur(6px);
-    transition:
-      opacity 0.9s var(--ease-lux),
-      transform 0.9s var(--ease-lux),
-      filter 0.9s var(--ease-lux);
-    transition-delay: var(--reveal-delay, 0s);
-  }
-  [data-reveal="in"] {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
-    filter: none;
+  .ck-underline::after {
     transition: none;
   }
 }

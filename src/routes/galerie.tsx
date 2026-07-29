@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Placeholder } from "#/components/ck/placeholder";
-import { Kicker, SectionTitle } from "#/components/ck/primitives";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { MasonryGallery } from "#/components/ck/masonry-gallery";
+import { Body, Kicker, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { Reveal } from "#/components/ck/reveal";
 import { useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
@@ -13,51 +14,44 @@ export const Route = createFileRoute("/galerie")({
       { title: `Galerie | ${site.name}` },
       {
         name: "description",
-        content: "Torten aus der Caramelka-Backstube — Hochzeiten, Geburtstage, besondere Momente.",
+        content: "Torten aus der Caramelka-Backstube: Hochzeiten, Geburtstage, besondere Momente.",
       },
     ],
+    links: [{ rel: "canonical", href: `${site.url}/galerie` }],
   }),
   component: GalleryPage,
 });
 
-/** Platzhalter-Motive, bis echte Fotos eingepflegt sind. */
-const shots = [
-  { key: "hochzeit-dreistoeckig", tall: true },
-  { key: "bento-herz", tall: false },
-  { key: "karamell-drip", tall: false },
-  { key: "blumen-buttercreme", tall: true },
-  { key: "kindergeburtstag", tall: false },
-  { key: "lambeth-vintage", tall: true },
-  { key: "schoko-noir", tall: false },
-  { key: "pistazie-himbeer", tall: false },
-  { key: "taufe-pastell", tall: true },
-  { key: "eclair-selection", tall: false },
-  { key: "hochzeit-satin", tall: false },
-  { key: "geburtstag-gold", tall: true },
-];
-
 function GalleryPage() {
   const { t } = useI18n();
+
   return (
     <PublicShell>
-      <section className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-16">
-        <Kicker className="mb-4">{t.gallery.kicker}</Kicker>
-        <SectionTitle as="h1" className="mb-4 text-5xl md:text-[56px]">
+      {/* Kopf: gestapelter Text, keine Spalten. */}
+      <section className={cn(shell, "pt-16 pb-14 md:pt-20 md:pb-16")}>
+        <Kicker className="mb-5">{t.gallery.kicker}</Kicker>
+        <SectionTitle as="h1" size="xl" className="mb-6 max-w-[16ch]">
           {t.gallery.title}
         </SectionTitle>
-        <p className="mb-12 max-w-[60ch] text-[15.5px] leading-[1.65] text-espresso/70">
+        <Body size="l" className="max-w-[54ch]">
           {t.gallery.intro}
-        </p>
+        </Body>
+      </section>
 
-        <div className="columns-2 gap-4 md:columns-3 [&>*]:mb-4">
-          {shots.map((shot) => (
-            <Placeholder
-              key={shot.key}
-              imageKey={shot.key}
-              className={cn("w-full rounded-[4px]", shot.tall ? "aspect-[3/4]" : "aspect-square")}
-            />
-          ))}
-        </div>
+      {/* Mosaik. Das Magnetband bleibt der Startseite vorbehalten, damit
+          dieselben Aufnahmen nicht zweimal auf einer Seite stehen. */}
+      <section className={cn(shell, "pb-24 md:pb-32")}>
+        <MasonryGallery shots={t.home.galleryShots} />
+      </section>
+
+      {/* Abschluss: ein einziger Handlungspfad zurück ins Sortiment. */}
+      <section className={cn(shell, "py-24 text-center md:py-32")}>
+        <Reveal>
+          <SectionTitle className="mx-auto mb-8 max-w-[18ch]">{t.gallery.ctaTitle}</SectionTitle>
+          <Link to="/torten" className={pillVariants.primary}>
+            {t.hero.ctaPrimary}
+          </Link>
+        </Reveal>
       </section>
     </PublicShell>
   );

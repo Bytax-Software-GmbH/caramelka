@@ -1,19 +1,25 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Placeholder } from "#/components/ck/placeholder";
-import { Kicker, Ornament, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { MagneticCarousel } from "#/components/ck/magnetic-carousel";
+import { FramedPhoto } from "#/components/ck/framed-photo";
+import { LineReveal } from "#/components/ck/line-reveal";
+import { Body, Kicker, pillVariants, SectionTitle, TextLink } from "#/components/ck/primitives";
 import { ProductCard } from "#/components/ck/product-card";
 import { Reveal } from "#/components/ck/reveal";
 import { useI18n } from "#/lib/i18n";
 import { catalogQueryOptions } from "#/lib/queries";
 import { site } from "#/lib/site";
+import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(catalogQueryOptions());
   },
+  head: () => ({
+    links: [{ rel: "canonical", href: `${site.url}/` }],
+  }),
   component: HomePage,
 });
 
@@ -24,52 +30,69 @@ function HomePage() {
       <Bestsellers />
       <CraftSection />
       <Steps />
-      <GalleryTeaser />
+      <GalleryBand />
     </PublicShell>
   );
 }
 
+/**
+ * Sektion 1: asymmetrischer Split. Textspalte trägt die Aussage, das
+ * gerahmte Porträt steht bewusst tiefer und schmaler als die halbe Breite.
+ */
 function Hero() {
   const { t } = useI18n();
   return (
-    <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:px-8 md:py-24">
-      <div className="ck-rise">
-        <Kicker className="mb-7">{t.hero.kicker}</Kicker>
-        <h1 className="mb-8 ck-display text-5xl leading-[1.04] md:text-[72px]">
-          {t.hero.titleLead}
-          <br />
-          <em className="text-caramel-deep italic">{t.hero.titleAccent}</em>
+    <section
+      className={cn(
+        shell,
+        "grid items-center gap-14 pt-14 pb-20 md:pt-20 md:pb-28 lg:grid-cols-12 lg:gap-16",
+      )}
+    >
+      <div className="lg:col-span-7 lg:col-start-1">
+        <div className="ck-rise">
+          <Kicker className="mb-8">{t.hero.kicker}</Kicker>
+        </div>
+        <h1 className="mb-8 ck-display text-display-xl text-ink">
+          <LineReveal delay={0.1}>{t.hero.titleLead}</LineReveal>
+          <LineReveal delay={0.22} className="ck-display-italic text-ink-3">
+            {t.hero.titleAccent}
+          </LineReveal>
         </h1>
-        <p className="mb-10 max-w-[52ch] text-[16px] leading-[1.7] text-pretty text-espresso/70 md:text-[16.5px]">
-          {t.hero.text}
-        </p>
-        <div className="flex flex-wrap items-center gap-4">
-          <Link to="/torten" className={pillVariants.primary}>
-            {t.hero.ctaPrimary}
-          </Link>
-          <a
-            href={site.contact.whatsappLink}
-            target="_blank"
-            rel="noreferrer"
-            className={pillVariants.outline}
-          >
-            {t.hero.ctaSecondary}
-          </a>
+        <div className="ck-rise [animation-delay:420ms]">
+          <Body size="l" className="mb-10 max-w-[46ch]">
+            {t.hero.text}
+          </Body>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link to="/torten" className={pillVariants.primary}>
+              {t.hero.ctaPrimary}
+            </Link>
+            <a
+              href={site.contact.whatsappLink}
+              target="_blank"
+              rel="noreferrer"
+              className={pillVariants.outline}
+            >
+              {t.hero.ctaSecondary}
+            </a>
+          </div>
         </div>
       </div>
-      <div className="flex ck-rise flex-col gap-3.5 [animation-delay:150ms]">
+      <div className="lg:col-span-5 lg:col-start-8 lg:justify-self-end">
         <div className="ck-frame">
-          <Placeholder imageKey="signature-torte" className="aspect-[3/3.5] rounded-[4px]" />
-        </div>
-        <div className="flex items-center gap-3 text-[12px] tracking-[0.06em] text-espresso/70">
-          <span aria-hidden className="h-px w-8 bg-caramel/40" />
-          {t.hero.photoCaption}
+          <FramedPhoto
+            imageKey="signature-torte"
+            alt={t.hero.heroImageAlt}
+            curtain={false}
+            priority
+            className="aspect-[4/5]"
+          />
         </div>
       </div>
     </section>
   );
 }
 
+/** Sektion 2: Produktraster, vier Spalten, keine Container. */
 function Bestsellers() {
   const { t } = useI18n();
   const { data } = useSuspenseQuery(catalogQueryOptions());
@@ -77,22 +100,19 @@ function Bestsellers() {
   if (featured.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
+    <section className={cn(shell, "pb-28 md:pb-36")}>
       <Reveal>
-        <div className="mb-10 flex items-baseline justify-between">
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
           <SectionTitle>{t.home.bestsellers}</SectionTitle>
-          <Link
-            to="/torten"
-            className="border-b border-caramel-deep pb-0.5 text-[12.5px] font-semibold tracking-[0.16em] text-caramel-deep uppercase transition-[color,border-color,letter-spacing] duration-500 ease-[var(--ease-lux)] hover:border-espresso hover:tracking-[0.2em] hover:text-espresso"
-          >
-            {t.home.viewAll}
+          <Link to="/torten">
+            <TextLink>{t.home.viewAll}</TextLink>
           </Link>
         </div>
       </Reveal>
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-7">
-        {featured.map((p, i) => (
-          <Reveal key={p.id} delay={i * 100}>
-            <ProductCard product={p} />
+      <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4 md:gap-x-8">
+        {featured.map((product, index) => (
+          <Reveal key={product.id} delay={index * 90}>
+            <ProductCard product={product} />
           </Reveal>
         ))}
       </div>
@@ -100,51 +120,51 @@ function Bestsellers() {
   );
 }
 
-/** Dunkle Boutique-Sektion aus Direction 1c: Espresso, Gold, Spotlight. */
+/**
+ * Sektion 3: Manifest mit Triptychon. Zentrierter Text, darunter drei
+ * gerahmte Aufnahmen auf verschobenen Höhen. Bleibt im hellen Theme.
+ */
 function CraftSection() {
   const { t } = useI18n();
   return (
-    <section className="bg-dark text-cream-on-dark">
-      <div
-        className="mx-auto max-w-6xl px-5 py-24 text-center md:px-8 md:py-32"
-        style={{
-          background:
-            "radial-gradient(ellipse 620px 420px at 50% 58%, rgba(170,176,182,.16), transparent 70%)",
-        }}
-      >
-        <Reveal>
-          <Kicker onDark className="mb-5 tracking-[0.34em]">
-            {t.home.craftKicker}
-          </Kicker>
-          <SectionTitle onDark className="mx-auto mb-6 max-w-[18ch] text-[42px] md:text-[56px]">
-            {t.home.craftTitle}
-          </SectionTitle>
-          <Ornament onDark className="mb-7" />
-          <p className="mx-auto mb-12 max-w-[56ch] text-[16px] leading-[1.75] font-light text-pretty text-cream-on-dark/70">
+    <section className="border-y border-rule bg-creme-2">
+      <div className={cn(shell, "py-24 md:py-32")}>
+        <Reveal className="mx-auto max-w-[52ch] text-center">
+          <Kicker className="mb-5">{t.home.craftKicker}</Kicker>
+          <SectionTitle className="mb-6">{t.home.craftTitle}</SectionTitle>
+          <Body size="l" className="mx-auto">
             {t.home.craftText}
-          </p>
+          </Body>
         </Reveal>
-        <Reveal delay={150}>
-          <div className="mb-12 flex items-end justify-center gap-6 md:gap-10">
-            <Placeholder
+
+        <div className="mt-16 grid grid-cols-1 items-start gap-6 sm:grid-cols-3 md:mt-20 md:gap-8">
+          <div className="ck-frame sm:mt-16">
+            <FramedPhoto
               imageKey="praliné"
-              onDark
-              className="hidden w-[180px] border border-gold/35 md:block md:aspect-[1/1.25]"
-            />
-            <div className="ck-frame-dark">
-              <Placeholder
-                imageKey="signature-torte"
-                onDark
-                className="aspect-[1/1.3] w-[230px] md:w-[260px]"
-              />
-            </div>
-            <Placeholder
-              imageKey="éclair"
-              onDark
-              className="hidden w-[180px] border border-gold/35 md:block md:aspect-[1/1.25]"
+              alt={t.home.craftShotAlts[0]}
+              className="aspect-[3/4]"
             />
           </div>
-          <Link to="/fuellungen" className={pillVariants.gold}>
+          <div className="ck-frame">
+            <FramedPhoto
+              imageKey="hochzeit-grande"
+              alt={t.home.craftShotAlts[1]}
+              delay={0.12}
+              className="aspect-[3/4.4]"
+            />
+          </div>
+          <div className="ck-frame sm:mt-24">
+            <FramedPhoto
+              imageKey="éclair"
+              alt={t.home.craftShotAlts[2]}
+              delay={0.24}
+              className="aspect-[3/4]"
+            />
+          </div>
+        </div>
+
+        <Reveal delay={220} className="mt-16 text-center md:mt-20">
+          <Link to="/fuellungen" className={pillVariants.outline}>
             {t.home.craftCta}
           </Link>
         </Reveal>
@@ -153,62 +173,52 @@ function CraftSection() {
   );
 }
 
+/**
+ * Sektion 4: redaktionelles Register. Jeder Schritt ist eine Zeile über die
+ * volle Breite, oben von einer Haarlinie abgesetzt, Verb und Erklärung auf
+ * gemeinsamer Schriftlinie in ungleichen Spalten.
+ *
+ * Keine Nummerierung: die Lesereihenfolge trägt die Abfolge. Keine Karten,
+ * keine gleichen Drittel, keine senkrechten Trenner, die sich mit dem
+ * Reveal-Hintergrund schlagen.
+ */
 function Steps() {
   const { t } = useI18n();
   return (
-    <section className="mx-auto max-w-6xl px-5 py-24 md:px-8">
+    <section className={cn(shell, "py-24 md:py-28")}>
       <Reveal>
-        <Kicker className="mb-3 text-center">{t.home.stepsKicker}</Kicker>
-        <Ornament className="mb-14" />
+        <SectionTitle className="mb-12 max-w-[14ch] md:mb-16">{t.home.stepsTitle}</SectionTitle>
       </Reveal>
-      <div className="grid gap-12 md:grid-cols-3 md:gap-8">
-        {t.home.steps.map((step, i) => (
-          <Reveal key={step.title} delay={i * 120} className="text-center">
-            <div
-              aria-hidden
-              className="mb-4 ck-display text-[44px] leading-none text-caramel/45 italic"
-            >
-              {String(i + 1).padStart(2, "0")}
-            </div>
-            <h3 className="mb-3 ck-display text-[27px]">{step.title}</h3>
-            <p className="mx-auto max-w-[36ch] text-[14.5px] leading-[1.7] text-pretty text-espresso/65">
+      {t.home.steps.map((step, index) => (
+        <Reveal key={step.title} delay={index * 110}>
+          <div className="grid items-baseline gap-y-3 border-t border-rule py-8 md:grid-cols-12 md:gap-x-8 md:py-10">
+            <h3 className="ck-display text-display-m text-ink md:col-span-4">{step.title}</h3>
+            <Body size="l" className="max-w-[46ch] md:col-span-6 md:col-start-6">
               {step.text}
-            </p>
-          </Reveal>
-        ))}
-      </div>
+            </Body>
+          </div>
+        </Reveal>
+      ))}
     </section>
   );
 }
 
-function GalleryTeaser() {
+/**
+ * Sektion 5: Magnetband. Die Streifen wachsen zum Cursor hin, ein Klick
+ * öffnet die Aufnahme groß. Ersetzt das frühere Quadratraster, das keinen
+ * Klickpfad hatte.
+ */
+function GalleryBand() {
   const { t } = useI18n();
-  const keys = ["hochzeit", "bento", "geburtstag", "karamell", "blumen", "kinder"];
   return (
-    <section className="border-t border-espresso/10 bg-creme-2/60">
-      <div className="mx-auto max-w-6xl px-5 py-24 md:px-8">
-        <Reveal>
-          <div className="mb-10 flex items-baseline justify-between">
-            <div>
-              <Kicker className="mb-3">{t.home.galleryKicker}</Kicker>
-              <SectionTitle>{t.home.galleryTitle}</SectionTitle>
-            </div>
-            <Link
-              to="/galerie"
-              className="border-b border-caramel-deep pb-0.5 text-[12.5px] font-semibold tracking-[0.16em] text-caramel-deep uppercase transition-[color,border-color,letter-spacing] duration-500 ease-[var(--ease-lux)] hover:border-espresso hover:tracking-[0.2em] hover:text-espresso"
-            >
-              {t.home.galleryCta}
-            </Link>
-          </div>
-        </Reveal>
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-4">
-          {keys.map((key, i) => (
-            <Reveal key={key} delay={i * 70}>
-              <Placeholder imageKey={key} className="aspect-square rounded-[4px]" />
-            </Reveal>
-          ))}
-        </div>
+    <section className="overflow-x-clip border-t border-rule bg-creme-2 pt-20 pb-28 md:pt-24 md:pb-32">
+      <div className={cn(shell, "mb-10 flex flex-wrap items-end justify-between gap-6")}>
+        <SectionTitle>{t.home.galleryTitle}</SectionTitle>
+        <Link to="/galerie">
+          <TextLink>{t.home.galleryCta}</TextLink>
+        </Link>
       </div>
+      <MagneticCarousel shots={t.home.galleryShots.slice(0, 8)} />
     </section>
   );
 }

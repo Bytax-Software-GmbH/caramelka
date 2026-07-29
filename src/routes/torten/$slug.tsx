@@ -4,9 +4,9 @@ import { ArrowLeftIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { PublicShell } from "#/components/ck/layout";
+import { PublicShell, shell } from "#/components/ck/layout";
 import { Placeholder } from "#/components/ck/placeholder";
-import { Pill } from "#/components/ck/primitives";
+import { Body, Pill } from "#/components/ck/primitives";
 import { useCart } from "#/lib/cart";
 import { earliestDate, formatDate, formatPrice, toIsoDate } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
@@ -18,11 +18,56 @@ export const Route = createFileRoute("/torten/$slug")({
   loader: async ({ context, params }) => {
     const product = await context.queryClient.ensureQueryData(productQueryOptions(params.slug));
     if (!product) throw notFound();
-    return { title: product.nameDe };
+    return {
+      title: product.nameDe,
+      description: product.descriptionDe,
+      slug: product.slug,
+      imageKey: product.imageKey,
+      fromPriceCents: product.sizes.reduce<number | null>(
+        (min, size) => (min === null || size.priceCents < min ? size.priceCents : min),
+        null,
+      ),
+    };
   },
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.title ?? "Torte"} | ${site.name}` }],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) return {};
+    const url = `${site.url}/torten/${loaderData.slug}`;
+    const image = `${site.url}/images/${loaderData.imageKey}.webp`;
+    return {
+      meta: [
+        { title: `${loaderData.title} | ${site.name}` },
+        { name: "description", content: loaderData.description },
+        { property: "og:title", content: `${loaderData.title} | ${site.name}` },
+        { property: "og:description", content: loaderData.description },
+        { property: "og:image", content: image },
+        { property: "og:url", content: url },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: loaderData.title,
+            description: loaderData.description,
+            image,
+            url,
+            brand: { "@type": "Brand", name: site.name },
+            ...(loaderData.fromPriceCents != null && {
+              offers: {
+                "@type": "Offer",
+                priceCurrency: site.shop.currency,
+                price: (loaderData.fromPriceCents / 100).toFixed(2),
+                availability: "https://schema.org/InStock",
+                url,
+              },
+            }),
+          }),
+        },
+      ],
+    };
+  },
   component: ProductPage,
 });
 
@@ -50,6 +95,7 @@ function ProductPage() {
 
   if (!product) return null;
 
+  const name = pickL(product.nameDe, product.nameRu);
   const selectedSize = product.sizes.find((s) => s.id === sizeId) ?? product.sizes[0];
   const selectedFilling = product.fillings.find((f) => f.id === fillingId) ?? null;
 
@@ -77,55 +123,62 @@ function ProductPage() {
 
   return (
     <PublicShell>
-      <section className="mx-auto max-w-6xl px-5 py-10 md:px-8 md:py-14">
+      <section className={cn(shell, "py-12 md:py-16")}>
         <Link
           to="/torten"
-          className="mb-8 inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.14em] text-caramel-deep uppercase hover:text-espresso"
+          className="ck-nav-link mb-10 inline-flex items-center gap-2 text-ink-2 transition-colors hover:text-ink"
         >
           <ArrowLeftIcon className="size-3.5" aria-hidden /> {t.product.backToCatalog}
         </Link>
 
-        <div className="grid gap-10 md:grid-cols-2 md:gap-14">
-          <div className="h-fit md:sticky md:top-24">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
+          <div className="h-fit lg:sticky lg:top-28 lg:col-span-6">
             <div className="ck-frame">
-              <Placeholder imageKey={product.imageKey} className="aspect-[3/3.4] rounded-[4px]" />
+              <Placeholder imageKey={product.imageKey} alt={name} priority className="aspect-[4/5]" />
             </div>
           </div>
 
-          <div>
-            <h1 className="mb-3 ck-display text-4xl md:text-[44px]">
-              {pickL(product.nameDe, product.nameRu)}
-            </h1>
-            <p className="mb-2 text-[15px] leading-[1.65] text-espresso/70">
+          <div className="lg:col-span-5 lg:col-start-8">
+            <h1 className="mb-4 ck-display text-display-l text-ink">{name}</h1>
+            <Body size="l" className="mb-3">
               {pickL(product.descriptionDe, product.descriptionRu)}
-            </p>
-            <p className="mb-8 text-[13px] text-caramel-deep">{t.product.leadTimeNote(earliest)}</p>
+            </Body>
+            <Body size="s" tone="muted" className="mb-10">
+              {t.product.leadTimeNote(earliest)}
+            </Body>
 
             {/* Größe */}
-            <fieldset className="mb-7">
-              <legend className="mb-3 ck-kicker">{t.product.size}</legend>
-              <div className="flex flex-col gap-2">
+            <fieldset className="mb-9">
+              <legend className="mb-4 ck-kicker">{t.product.size}</legend>
+              <div className="flex flex-col">
                 {product.sizes.map((size) => (
                   <label
                     key={size.id}
                     className={cn(
-                      "flex cursor-pointer items-center justify-between rounded-md border px-4 py-3 transition-colors",
+                      "flex cursor-pointer items-center justify-between border-b py-4 transition-colors",
                       selectedSize?.id === size.id
-                        ? "border-espresso bg-espresso/[0.04]"
-                        : "border-espresso/20 hover:border-espresso/50",
+                        ? "border-espresso"
+                        : "border-rule hover:border-rule-strong",
                     )}
                   >
-                    <span className="flex items-center gap-3">
+                    <span className="flex items-center gap-3.5">
                       <input
                         type="radio"
                         name="size"
                         checked={selectedSize?.id === size.id}
                         onChange={() => setSizeId(size.id)}
-                        className="accent-caramel"
+                        className="accent-espresso"
                       />
-                      <span className="text-[14.5px]">{pickL(size.labelDe, size.labelRu)}</span>
+                      <span
+                        className={cn(
+                          "text-body-m",
+                          selectedSize?.id === size.id ? "text-ink" : "text-ink-2",
+                        )}
+                      >
+                        {pickL(size.labelDe, size.labelRu)}
+                      </span>
                     </span>
-                    <span className="ck-price text-[17px]">
+                    <span className="ck-price text-body-l text-ink">
                       {formatPrice(size.priceCents, locale)}
                     </span>
                   </label>
@@ -135,9 +188,9 @@ function ProductPage() {
 
             {/* Füllung */}
             {product.fillingSelectable ? (
-              <fieldset className="mb-7">
-                <legend className="mb-3 ck-kicker">{t.product.filling}</legend>
-                <div className="flex flex-wrap gap-2">
+              <fieldset className="mb-9">
+                <legend className="mb-4 ck-kicker">{t.product.filling}</legend>
+                <div className="flex flex-wrap gap-2.5">
                   {product.fillings.map((filling) => (
                     <button
                       key={filling.id}
@@ -145,10 +198,10 @@ function ProductPage() {
                       onClick={() => setFillingId(filling.id)}
                       aria-pressed={selectedFilling?.id === filling.id}
                       className={cn(
-                        "rounded-full border px-4 py-2 text-[13px] transition-colors",
+                        "rounded-full border px-4.5 py-2 text-body-s transition-colors duration-300",
                         selectedFilling?.id === filling.id
-                          ? "border-caramel bg-caramel text-creme"
-                          : "border-espresso/25 text-espresso/75 hover:border-caramel hover:text-caramel-deep",
+                          ? "border-espresso bg-espresso text-creme"
+                          : "border-rule-strong text-ink-2 hover:border-espresso hover:text-ink",
                       )}
                     >
                       {pickL(filling.nameDe, filling.nameRu)}
@@ -156,25 +209,27 @@ function ProductPage() {
                   ))}
                 </div>
                 {selectedFilling && (
-                  <div className="mt-3 rounded-md bg-creme-2/70 px-4 py-3 text-[13px] leading-relaxed text-espresso/75">
-                    <p>{pickL(selectedFilling.descriptionDe, selectedFilling.descriptionRu)}</p>
+                  <div className="mt-4 border-l border-espresso bg-creme-2 px-5 py-4">
+                    <Body size="s" tone="primary">
+                      {pickL(selectedFilling.descriptionDe, selectedFilling.descriptionRu)}
+                    </Body>
                     {selectedFilling.allergensDe && (
-                      <p className="mt-1 text-espresso/55">
+                      <Body size="s" tone="muted" className="mt-1.5">
                         {t.product.allergens}:{" "}
                         {pickL(selectedFilling.allergensDe, selectedFilling.allergensRu)}
-                      </p>
+                      </Body>
                     )}
                   </div>
                 )}
               </fieldset>
             ) : (
-              <p className="mb-7 rounded-md bg-creme-2/70 px-4 py-3 text-[13.5px] text-espresso/70">
-                {t.product.fillingByArrangement}
-              </p>
+              <div className="mb-9 border-l border-rule-strong bg-creme-2 px-5 py-4">
+                <Body size="s">{t.product.fillingByArrangement}</Body>
+              </div>
             )}
 
             {/* Aufschrift */}
-            <div className="mb-7">
+            <div className="mb-9">
               <label htmlFor="inscription" className="mb-3 block ck-kicker">
                 {t.product.inscription}
               </label>
@@ -185,41 +240,41 @@ function ProductPage() {
                 value={inscription}
                 onChange={(e) => setInscription(e.target.value)}
                 placeholder={t.product.inscriptionPlaceholder}
-                className="w-full rounded-md border border-espresso/25 bg-white px-4 py-3 text-[14.5px] placeholder:text-espresso/35 focus:border-caramel focus:outline-none"
+                className="w-full rounded-sm border border-rule-strong bg-white px-4 py-3 text-body-m text-ink placeholder:text-ink-3 focus:border-espresso focus:outline-none"
               />
             </div>
 
-            {/* Menge + CTA */}
+            {/* Menge und Warenkorb */}
             <div className="flex flex-wrap items-center gap-4">
               <div
-                className="flex items-center rounded-full border border-espresso/25"
+                className="flex items-center rounded-full border border-rule-strong"
                 aria-label={t.product.quantity}
               >
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="grid size-11 place-items-center text-espresso/70 hover:text-espresso"
-                  aria-label="−"
+                  className="grid size-11 place-items-center text-ink-2 transition-colors hover:text-ink"
+                  aria-label={`${t.product.quantity} verringern`}
                 >
-                  <MinusIcon className="size-4" />
+                  <MinusIcon className="size-4" aria-hidden />
                 </button>
-                <span className="w-8 text-center text-[15px] font-semibold tabular-nums">
+                <span className="w-8 text-center text-body-m font-semibold tabular-nums text-ink">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-                  className="grid size-11 place-items-center text-espresso/70 hover:text-espresso"
-                  aria-label="+"
+                  className="grid size-11 place-items-center text-ink-2 transition-colors hover:text-ink"
+                  aria-label={`${t.product.quantity} erhöhen`}
                 >
-                  <PlusIcon className="size-4" />
+                  <PlusIcon className="size-4" aria-hidden />
                 </button>
               </div>
               <Pill onClick={addToCart} className="flex-1 sm:flex-none">
                 {t.product.addToCart}
                 {selectedSize && (
-                  <span className="opacity-70">
-                    · {formatPrice(selectedSize.priceCents * quantity, locale)}
+                  <span className="opacity-75">
+                    {formatPrice(selectedSize.priceCents * quantity, locale)}
                   </span>
                 )}
               </Pill>

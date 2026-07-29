@@ -19,6 +19,11 @@ FROM base AS build
 ARG VITE_BASE_URL
 ENV VITE_BASE_URL=$VITE_BASE_URL
 
+# Colour preview (?primary=... and /colors). Demo instances only; leave unset
+# or false for a real launch, otherwise any visitor can recolour the site.
+ARG VITE_ENABLE_THEME_PREVIEW=false
+ENV VITE_ENABLE_THEME_PREVIEW=$VITE_ENABLE_THEME_PREVIEW
+
 RUN pnpm build
 
 # --- Runtime stage ---

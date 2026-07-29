@@ -2,17 +2,26 @@ import { availableImages, normalizeImageKey } from "#/lib/image-manifest";
 import { cn } from "#/lib/utils";
 
 /**
- * Produktfoto per `imageKey` aus `public/images/<key>.webp`. Liegt (noch)
- * kein Foto vor, rendert der gestylte Streifen-Platzhalter aus den Design
- * Directions.
+ * Produktfoto per `imageKey` aus `public/images/<key>.webp`.
+ *
+ * `alt` beschreibt das Motiv und macht das Bild für Screenreader nutzbar.
+ * Ohne `alt` gilt das Bild als dekorativ und wird ausgeblendet. Das ist die
+ * Ausnahme, nicht der Normalfall.
+ *
+ * Liegt kein Foto vor, rendert eine ruhige Graphit-Fläche statt eines Fotos.
  */
 export function Placeholder({
   imageKey,
+  alt,
   onDark = false,
+  priority = false,
   className,
 }: {
   imageKey: string;
+  alt?: string;
   onDark?: boolean;
+  /** Für das LCP-Bild: eager laden und hoch priorisieren. */
+  priority?: boolean;
   className?: string;
 }) {
   const key = normalizeImageKey(imageKey);
@@ -20,16 +29,15 @@ export function Placeholder({
   if (availableImages.has(key)) {
     return (
       <div
-        aria-hidden
-        className={cn(
-          "overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07)]",
-          className,
-        )}
+        aria-hidden={alt ? undefined : true}
+        className={cn("overflow-hidden bg-creme-2", className)}
       >
         <img
           src={`/images/${key}.webp`}
-          alt=""
-          loading="lazy"
+          alt={alt ?? ""}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding={priority ? "sync" : "async"}
           className="size-full object-cover"
         />
       </div>
@@ -40,21 +48,10 @@ export function Placeholder({
     <div
       aria-hidden
       className={cn(
-        "grid place-items-center overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,0,0,0.07)]",
-        onDark
-          ? "bg-[repeating-linear-gradient(45deg,#26292E_0_12px,#2E3237_12px_24px)]"
-          : "bg-[repeating-linear-gradient(45deg,#E4E3E0_0_12px,#D8D7D3_12px_24px)]",
+        "grid place-items-center overflow-hidden",
+        onDark ? "bg-espresso-2" : "bg-creme-2",
         className,
       )}
-    >
-      <span
-        className={cn(
-          "rounded-sm px-2.5 py-1 font-mono text-[11px]",
-          onDark ? "bg-dark text-gold" : "bg-creme text-caramel-deep",
-        )}
-      >
-        foto: {imageKey}
-      </span>
-    </div>
+    />
   );
 }

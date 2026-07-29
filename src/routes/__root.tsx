@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 import { ThemeParamSync } from "#/components/ck/theme-preview";
 import { Toaster } from "#/components/ui/sonner";
+import { env } from "#/env/client";
 import type { AuthQueryResult } from "#/lib/auth/queries";
 import { CartProvider } from "#/lib/cart";
 import { $getLocale, I18nProvider, useI18n } from "#/lib/i18n";
@@ -19,6 +20,9 @@ interface MyRouterContext {
   queryClient: QueryClient;
   user: AuthQueryResult;
 }
+
+/** In der Entwicklung immer, in Produktion nur mit gesetztem Schalter. */
+const themePreviewEnabled = import.meta.env.DEV || env.VITE_ENABLE_THEME_PREVIEW;
 
 const bakeryJsonLd = {
   "@context": "https://schema.org",
@@ -45,16 +49,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: `${site.name} — ${site.tagline}` },
+      { title: `${site.name}, ${site.tagline}` },
       { name: "description", content: site.description },
       { name: "robots", content: "index, follow" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: site.name },
       { property: "og:locale", content: site.locale },
-      { property: "og:title", content: `${site.name} — ${site.tagline}` },
+      { property: "og:title", content: `${site.name}, ${site.tagline}` },
       { property: "og:description", content: site.description },
+      { property: "og:image", content: `${site.url}${site.ogImage}` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#FBF8F2" },
+      { name: "twitter:image", content: `${site.url}${site.ogImage}` },
+      { name: "theme-color", content: "#f4f3f1" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
     scripts: [
@@ -87,7 +95,12 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
         <I18nProvider initialLocale={initialLocale}>
           <CartProvider>
             <HtmlLangSync />
-            <ThemeParamSync />
+            {/* Farb-Vorschau über URL-Parameter. In der Entwicklung immer an,
+                in Produktion nur mit VITE_ENABLE_THEME_PREVIEW=true. Auf der
+                Demo-Instanz erwünscht, damit der Kunde Paletten auf der echten
+                URL testen kann; vor dem Launch abschalten, sonst kann jeder
+                Besucher die Seite über `?primary=…` umfärben. */}
+            {themePreviewEnabled && <ThemeParamSync />}
             {children}
             <Toaster richColors />
           </CartProvider>

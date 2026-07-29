@@ -2,9 +2,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import * as z from "zod";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Kicker, SectionTitle } from "#/components/ck/primitives";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { Body, Kicker, SectionTitle } from "#/components/ck/primitives";
 import { ProductCard } from "#/components/ck/product-card";
+import { Reveal } from "#/components/ck/reveal";
 import { useI18n } from "#/lib/i18n";
 import { catalogQueryOptions } from "#/lib/queries";
 import { site } from "#/lib/site";
@@ -25,9 +26,12 @@ export const Route = createFileRoute("/torten/")({
       {
         name: "description",
         content:
-          "Alle Torten von Caramelka: Bento-Törtchen, Klassiker, Hochzeitstorten und feine Patisserie — online bestellen, abholen oder liefern lassen.",
+          "Alle Torten von Caramelka: Bento-Törtchen, Klassiker, Hochzeitstorten und feine Patisserie. Online bestellen, abholen oder liefern lassen.",
       },
     ],
+    // Kategorie-Filter läuft über Query-Params. Kanonisch ist immer die
+    // ungefilterte Liste, sonst entsteht Duplicate Content.
+    links: [{ rel: "canonical", href: `${site.url}/torten` }],
   }),
   component: CatalogPage,
 });
@@ -44,32 +48,40 @@ function CatalogPage() {
 
   return (
     <PublicShell>
-      <section className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-16">
-        <Kicker className="mb-4">{t.catalog.kicker}</Kicker>
-        <SectionTitle as="h1" className="mb-9 text-5xl md:text-[56px]">
+      <section className={cn(shell, "pt-16 pb-24 md:pt-20 md:pb-32")}>
+        <Kicker className="mb-5">{t.catalog.kicker}</Kicker>
+        <SectionTitle as="h1" size="xl" className="mb-10 max-w-[14ch]">
           {t.catalog.title}
         </SectionTitle>
 
         <nav
-          className="mb-10 flex flex-wrap gap-2.5 border-b border-espresso/12 pb-6"
+          className="mb-14 flex flex-wrap gap-2.5 border-b border-rule pb-8"
           aria-label={t.catalog.kicker}
         >
           <CategoryChip to={undefined} active={!activeCategory}>
             {t.catalog.all}
           </CategoryChip>
-          {data.categories.map((c) => (
-            <CategoryChip key={c.id} to={c.slug} active={activeCategory?.id === c.id}>
-              {pickL(c.nameDe, c.nameRu)}
+          {data.categories.map((category) => (
+            <CategoryChip
+              key={category.id}
+              to={category.slug}
+              active={activeCategory?.id === category.id}
+            >
+              {pickL(category.nameDe, category.nameRu)}
             </CategoryChip>
           ))}
         </nav>
 
         {products.length === 0 ? (
-          <p className="py-16 text-center text-espresso/60">{t.catalog.empty}</p>
+          <Body size="l" className="py-24 text-center">
+            {t.catalog.empty}
+          </Body>
         ) : (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 md:gap-x-6 lg:grid-cols-4">
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
+          <div className="grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-3 md:gap-x-8 lg:grid-cols-4">
+            {products.map((product, index) => (
+              <Reveal key={product.id} delay={(index % 4) * 80}>
+                <ProductCard product={product} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -92,10 +104,10 @@ function CategoryChip({
       to="/torten"
       search={to ? { kategorie: to } : {}}
       className={cn(
-        "rounded-full border px-5 py-2 text-[12px] font-semibold tracking-[0.12em] uppercase transition-colors",
+        "rounded-full border px-5 py-2 text-[0.72rem] font-semibold tracking-[0.14em] uppercase transition-colors duration-300",
         active
           ? "border-espresso bg-espresso text-creme"
-          : "border-espresso/25 text-espresso/70 hover:border-espresso hover:text-espresso",
+          : "border-rule-strong text-ink-2 hover:border-espresso hover:text-ink",
       )}
     >
       {children}

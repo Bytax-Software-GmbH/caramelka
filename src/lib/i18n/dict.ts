@@ -13,10 +13,11 @@ export const de = {
     kicker: "Konditorei · Torten auf Bestellung",
     titleLead: "Torten, die in",
     titleAccent: "Erinnerung bleiben.",
-    text: "Individuelle Torten und feine Patisserie — handgefertigt aus frischen, ausgewählten Zutaten. Für Hochzeiten, Geburtstage und alle Momente dazwischen.",
+    text: "Individuelle Torten und feine Patisserie, handgefertigt aus frischen Zutaten. Für Hochzeiten, Geburtstage und alle Momente dazwischen.",
     ctaPrimary: "Sortiment ansehen",
     ctaSecondary: "Per WhatsApp anfragen",
-    photoCaption: "Karamell-Signature · dreistöckig",
+    heroImageAlt:
+      "Dreistöckige Karamelltorte mit Haselnüssen auf einer Tortenplatte vor hellem Leinen",
   },
   marquee: ["Frische Zutaten", "Handgefertigt", "Abholung & Lieferung bis 100 km"],
   home: {
@@ -25,13 +26,18 @@ export const de = {
     craftKicker: "Handwerk",
     craftTitle: "Die Kunst der Torte",
     craftText:
-      "Jede Torte ist ein Einzelstück — von Hand gefertigt, mit Füllungen aus echter Butter, frischen Früchten und Schokolade, die diesen Namen verdient.",
+      "Jede Torte ist ein Einzelstück, von Hand gefertigt, mit Füllungen aus echter Butter, frischen Früchten und Schokolade, die diesen Namen verdient.",
     craftCta: "Füllungen entdecken",
-    stepsKicker: "So einfach geht's",
+    craftShotAlts: [
+      "Handgefertigte Pralinen mit glänzender Schokoladenglasur",
+      "Große Hochzeitstorte mit glatter Buttercreme und feinen Blüten",
+      "Reihe frisch gefüllter Éclairs mit Glasur",
+    ],
+    stepsTitle: "So einfach geht’s",
     steps: [
       {
         title: "Aussuchen",
-        text: "Torte, Größe und Füllung online wählen — oder uns per WhatsApp schreiben.",
+        text: "Torte, Größe und Füllung online wählen, oder uns per WhatsApp schreiben.",
       },
       {
         title: "Bestellen",
@@ -42,9 +48,70 @@ export const de = {
         text: "Abholung in der Backstube oder Lieferung bis 100 km. Bezahlt wird bequem bei Übergabe.",
       },
     ],
-    galleryKicker: "Aus unserer Backstube",
     galleryTitle: "Zuletzt gebacken",
     galleryCta: "Zur Galerie",
+    galleryShots: [
+      {
+        imageKey: "hochzeit-dreistoeckig",
+        caption: "Hochzeitstorte, dreistöckig",
+        alt: "Dreistöckige Hochzeitstorte mit strukturierter Buttercreme und Trockenblumen",
+      },
+      {
+        imageKey: "bento-herz",
+        caption: "Bento-Törtchen",
+        alt: "Kleines Bento-Törtchen in Herzform mit handgeschriebener Aufschrift",
+      },
+      {
+        imageKey: "karamell-drip",
+        caption: "Karamell-Drip",
+        alt: "Torte mit über den Rand laufender Karamellglasur",
+      },
+      {
+        imageKey: "blumen-buttercreme",
+        caption: "Blumen aus Buttercreme",
+        alt: "Torte mit gespritzten Buttercremeblüten in Pastelltönen",
+      },
+      {
+        imageKey: "lambeth-vintage",
+        caption: "Lambeth, Vintage",
+        alt: "Vintage-Torte im Lambeth-Stil mit mehrlagigen Rüschen",
+      },
+      {
+        imageKey: "schoko-noir",
+        caption: "Schokolade Noir",
+        alt: "Dunkle Schokoladentorte mit glatter Ganache",
+      },
+      {
+        imageKey: "pistazie-himbeer",
+        caption: "Pistazie und Himbeere",
+        alt: "Torte mit Pistaziencreme und frischen Himbeeren",
+      },
+      {
+        imageKey: "geburtstag-gold",
+        caption: "Geburtstagstorte",
+        alt: "Geburtstagstorte mit feinen Goldakzenten und Kerzen",
+      },
+      {
+        imageKey: "hochzeit-satin",
+        caption: "Hochzeitstorte, Satin",
+        alt: "Hochzeitstorte mit glatter, satinierter Oberfläche",
+      },
+      {
+        imageKey: "taufe-pastell",
+        caption: "Taufe, Pastell",
+        alt: "Tauftorte in weichen Pastelltönen mit zarter Dekoration",
+      },
+      {
+        imageKey: "eclair-selection",
+        caption: "Éclairs",
+        alt: "Auswahl gefüllter Éclairs mit verschiedenen Glasuren",
+      },
+      {
+        imageKey: "kindergeburtstag",
+        caption: "Kindergeburtstag",
+        alt: "Bunte Kindergeburtstagstorte mit verspielter Dekoration",
+      },
+    ],
   },
   catalog: {
     title: "Unsere Torten",
@@ -52,7 +119,7 @@ export const de = {
     all: "Alle",
     from: "ab",
     leadTime: (h: number) => (h <= 24 ? "bis morgen" : `Vorlauf ${Math.round(h / 24)} Tage`),
-    empty: "In dieser Kategorie ist gerade nichts — schau bald wieder vorbei.",
+    empty: "In dieser Kategorie ist gerade nichts. Schau bald wieder vorbei.",
   },
   product: {
     size: "Größe",
@@ -71,25 +138,27 @@ export const de = {
     kicker: "Geschmack",
     title: "Unsere Füllungen",
     intro:
-      "Jede Torte kann mit jeder unserer Füllungen bestellt werden. Alle werden täglich frisch zubereitet — ohne Fertigmischungen.",
+      "Jede Torte kann mit jeder unserer Füllungen bestellt werden. Alle werden täglich frisch zubereitet, ohne Fertigmischungen.",
     allergens: "Allergene",
   },
   gallery: {
     kicker: "Galerie",
     title: "Torten, die wir gebacken haben",
-    intro: "Ein Blick in unsere Backstube — jede Torte ein Unikat.",
+    intro: "Ein Blick in unsere Backstube. Jede Torte ein Unikat.",
+    ctaTitle: "Deine Torte beginnt hier",
   },
   contact: {
     kicker: "Kontakt",
     title: "Sprich mit uns",
     intro:
-      "Die schnellste Antwort gibt's per WhatsApp — für individuelle Wünsche, Hochzeitstorten oder kurzfristige Fragen.",
+      "Die schnellste Antwort gibt’s per WhatsApp, für individuelle Wünsche, Hochzeitstorten oder kurzfristige Fragen.",
     whatsapp: "WhatsApp schreiben",
     orderLabel: "Bestellung",
     pickupLabel: "Abholung & Lieferung",
     pickupValue: "Im Umkreis von 100 km",
     hoursLabel: "Öffnungszeiten",
     addressLabel: "Backstube",
+    imageAlt: "Blick in die Backstube von Caramelka",
   },
   cart: {
     title: "Warenkorb",
@@ -124,7 +193,7 @@ export const de = {
     notePlaceholder: "Wünsche, Anlass, Klingel …",
     payment: "Bezahlung",
     paymentNote:
-      "Bezahlt wird bequem bei Abholung bzw. Lieferung — bar oder per Karte. Online-Zahlung (PayPal) folgt in Kürze.",
+      "Bezahlt wird bequem bei Abholung bzw. Lieferung, bar oder per Karte. Online-Zahlung (PayPal) folgt in Kürze.",
     submit: "Verbindlich bestellen",
     submitting: "Wird gesendet …",
     legalNote: "Mit der Bestellung akzeptierst du unsere AGB.",
@@ -135,7 +204,7 @@ export const de = {
       street: "Bitte gib die Lieferadresse an.",
       zip: "PLZ fehlt.",
       city: "Ort fehlt.",
-      date: "Bitte wähle einen gültigen Termin (Mo–Sa, mit Vorlauf).",
+      date: "Bitte wähle einen gültigen Termin (Mo bis Sa, mit Vorlauf).",
       generic: "Bestellung konnte nicht gesendet werden. Bitte versuche es erneut.",
     },
   },
@@ -187,10 +256,11 @@ export const ru: Dict = {
     kicker: "Кондитерская · Торты на заказ",
     titleLead: "Торты, которые",
     titleAccent: "запоминаются.",
-    text: "Индивидуальные торты и изысканные десерты — ручная работа из свежих, отборных ингредиентов. Для свадеб, дней рождения и всех моментов между ними.",
+    text: "Индивидуальные торты и изысканные десерты, ручная работа из свежих ингредиентов. Для свадеб, дней рождения и всех моментов между ними.",
     ctaPrimary: "Смотреть ассортимент",
     ctaSecondary: "Написать в WhatsApp",
-    photoCaption: "Фирменный карамельный · три яруса",
+    heroImageAlt:
+      "Трёхъярусный карамельный торт с фундуком на подставке на фоне светлого льна",
   },
   marquee: ["Свежие ингредиенты", "Ручная работа", "Самовывоз и доставка до 100 км"],
   home: {
@@ -199,13 +269,18 @@ export const ru: Dict = {
     craftKicker: "Ремесло",
     craftTitle: "Искусство торта",
     craftText:
-      "Каждый торт — уникален: ручная работа, начинки на настоящем сливочном масле, свежие фрукты и шоколад, достойный своего имени.",
+      "Каждый торт уникален: ручная работа, начинки на настоящем сливочном масле, свежие фрукты и шоколад, достойный своего имени.",
     craftCta: "Посмотреть начинки",
-    stepsKicker: "Как это работает",
+    craftShotAlts: [
+      "Конфеты ручной работы в блестящей шоколадной глазури",
+      "Большой свадебный торт с гладким кремом и тонкими цветами",
+      "Ряд свежих эклеров с глазурью",
+    ],
+    stepsTitle: "Как это работает",
     steps: [
       {
         title: "Выбираете",
-        text: "Торт, размер и начинку онлайн — или напишите нам в WhatsApp.",
+        text: "Торт, размер и начинку онлайн, или напишите нам в WhatsApp.",
       },
       {
         title: "Заказываете",
@@ -216,9 +291,70 @@ export const ru: Dict = {
         text: "Самовывоз из пекарни или доставка до 100 км. Оплата при получении.",
       },
     ],
-    galleryKicker: "Из нашей пекарни",
     galleryTitle: "Недавние работы",
     galleryCta: "В галерею",
+    galleryShots: [
+      {
+        imageKey: "hochzeit-dreistoeckig",
+        caption: "Свадебный торт, три яруса",
+        alt: "Трёхъярусный свадебный торт с фактурным кремом и сухоцветами",
+      },
+      {
+        imageKey: "bento-herz",
+        caption: "Бенто-торт",
+        alt: "Маленький бенто-торт в форме сердца с надписью от руки",
+      },
+      {
+        imageKey: "karamell-drip",
+        caption: "Карамельные подтёки",
+        alt: "Торт со стекающей по краям карамельной глазурью",
+      },
+      {
+        imageKey: "blumen-buttercreme",
+        caption: "Цветы из крема",
+        alt: "Торт с кремовыми цветами в пастельных тонах",
+      },
+      {
+        imageKey: "lambeth-vintage",
+        caption: "Ламбет, винтаж",
+        alt: "Винтажный торт в стиле ламбет с многослойными рюшами",
+      },
+      {
+        imageKey: "schoko-noir",
+        caption: "Тёмный шоколад",
+        alt: "Тёмный шоколадный торт с гладким ганашем",
+      },
+      {
+        imageKey: "pistazie-himbeer",
+        caption: "Фисташка и малина",
+        alt: "Торт с фисташковым кремом и свежей малиной",
+      },
+      {
+        imageKey: "geburtstag-gold",
+        caption: "Торт на день рождения",
+        alt: "Праздничный торт с тонкими золотыми акцентами и свечами",
+      },
+      {
+        imageKey: "hochzeit-satin",
+        caption: "Свадебный торт, сатин",
+        alt: "Свадебный торт с гладкой сатиновой поверхностью",
+      },
+      {
+        imageKey: "taufe-pastell",
+        caption: "Крестины, пастель",
+        alt: "Торт на крестины в мягких пастельных тонах с нежным декором",
+      },
+      {
+        imageKey: "eclair-selection",
+        caption: "Эклеры",
+        alt: "Набор эклеров с разными глазурями",
+      },
+      {
+        imageKey: "kindergeburtstag",
+        caption: "Детский день рождения",
+        alt: "Яркий детский торт с игривым декором",
+      },
+    ],
   },
   catalog: {
     title: "Наши торты",
@@ -226,7 +362,7 @@ export const ru: Dict = {
     all: "Все",
     from: "от",
     leadTime: (h: number) => (h <= 24 ? "к завтрашнему дню" : `за ${Math.round(h / 24)} дня/дней`),
-    empty: "В этой категории пока пусто — загляните позже.",
+    empty: "В этой категории пока пусто. Загляните позже.",
   },
   product: {
     size: "Размер",
@@ -245,25 +381,27 @@ export const ru: Dict = {
     kicker: "Вкус",
     title: "Наши начинки",
     intro:
-      "Любой торт можно заказать с любой из наших начинок. Всё готовится ежедневно и только из свежих продуктов — без готовых смесей.",
+      "Любой торт можно заказать с любой из наших начинок. Всё готовится ежедневно и только из свежих продуктов, без готовых смесей.",
     allergens: "Аллергены",
   },
   gallery: {
     kicker: "Галерея",
     title: "Торты, которые мы испекли",
-    intro: "Загляните в нашу пекарню — каждый торт неповторим.",
+    intro: "Загляните в нашу пекарню. Каждый торт неповторим.",
+    ctaTitle: "Ваш торт начинается здесь",
   },
   contact: {
     kicker: "Контакты",
     title: "Свяжитесь с нами",
     intro:
-      "Быстрее всего мы отвечаем в WhatsApp — по индивидуальным пожеланиям, свадебным тортам и срочным вопросам.",
+      "Быстрее всего мы отвечаем в WhatsApp, по индивидуальным пожеланиям, свадебным тортам и срочным вопросам.",
     whatsapp: "Написать в WhatsApp",
     orderLabel: "Заказ",
     pickupLabel: "Самовывоз и доставка",
     pickupValue: "В радиусе 100 км",
     hoursLabel: "Часы работы",
     addressLabel: "Пекарня",
+    imageAlt: "Вид на пекарню Caramelka",
   },
   cart: {
     title: "Корзина",
@@ -285,7 +423,7 @@ export const ru: Dict = {
     delivery: "Доставка",
     deliveryHint: (fee: string, km: number) => `${fee} · до ${km} км`,
     date: "Желаемая дата",
-    dateHint: (d: string) => `Ближайшая дата для вашего заказа: ${d}. Воскресенье — выходной.`,
+    dateHint: (d: string) => `Ближайшая дата для вашего заказа: ${d}. Воскресенье выходной.`,
     contactData: "Ваши данные",
     name: "Имя",
     email: "E-mail",
@@ -298,7 +436,7 @@ export const ru: Dict = {
     notePlaceholder: "Пожелания, повод, домофон …",
     payment: "Оплата",
     paymentNote:
-      "Оплата при получении — наличными или картой. Онлайн-оплата (PayPal) появится в ближайшее время.",
+      "Оплата при получении, наличными или картой. Онлайн-оплата (PayPal) появится в ближайшее время.",
     submit: "Заказать",
     submitting: "Отправляем …",
     legalNote: "Оформляя заказ, вы принимаете наши условия (AGB).",
@@ -309,7 +447,7 @@ export const ru: Dict = {
       street: "Укажите адрес доставки.",
       zip: "Не указан индекс.",
       city: "Не указан город.",
-      date: "Выберите корректную дату (пн–сб, с учётом срока изготовления).",
+      date: "Выберите корректную дату (пн, вт, ср, чт, пт, сб, с учётом срока изготовления).",
       generic: "Не удалось отправить заказ. Попробуйте ещё раз.",
     },
   },

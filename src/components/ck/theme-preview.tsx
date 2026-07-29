@@ -61,6 +61,12 @@ export const THEME_PARAMS: ParamDef[] = [
   },
   { param: "bg2", label: "Fläche 2", cssVar: "--creme-2", defaultHex: "#E8E7E3" },
   { param: "surface", label: "Akzentfläche", cssVar: "--toffee-light", defaultHex: "#DEDDDB" },
+  /**
+   * Passepartout der Bilderrahmen (und Kartenfläche im Admin). Getrennt
+   * steuerbar, weil sich aus Hintergrund und Text nicht ableiten lässt, ob
+   * eine Vorschau-Palette hell oder dunkel gemeint ist.
+   */
+  { param: "card", label: "Rahmenfläche", cssVar: "--card", defaultHex: "#FFFFFF" },
   {
     param: "text",
     label: "Text/Buttons",

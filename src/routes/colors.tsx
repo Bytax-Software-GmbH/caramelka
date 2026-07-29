@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import {
   CheckIcon,
   CopyIcon,
@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PublicShell } from "#/components/ck/layout";
-import { Kicker, Ornament, SectionTitle } from "#/components/ck/primitives";
+import { Kicker, SectionTitle } from "#/components/ck/primitives";
 import {
   buildShareUrl,
   getActiveThemePreview,
@@ -28,6 +28,7 @@ import {
   ramp,
   readableText,
 } from "#/lib/color";
+import { env } from "#/env/client";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
 
@@ -43,6 +44,7 @@ interface BrandToken {
  * Die CSS-Var-Namen ermöglichen Live-Vorschau (setProperty) und den Export.
  */
 const DEFAULT_BRAND: BrandToken[] = [
+  { cssVar: "--card", name: "Rahmenfläche", hex: "#FFFFFF" },
   { cssVar: "--creme", name: "Milchweiß", hex: "#F4F3F1" },
   { cssVar: "--creme-2", name: "Milchgrau", hex: "#E8E7E3" },
   { cssVar: "--toffee-light", name: "Nebelgrau", hex: "#DEDDDB" },
@@ -65,6 +67,13 @@ const HARMONIES: { key: HarmonyKind; label: string }[] = [
 ];
 
 export const Route = createFileRoute("/colors")({
+  /**
+   * Der Editor hängt am selben Schalter wie die Vorschau selbst, damit vor dem
+   * Launch ein einziger Wert genügt. Ist er aus, existiert die Route nicht.
+   */
+  beforeLoad: () => {
+    if (!import.meta.env.DEV && !env.VITE_ENABLE_THEME_PREVIEW) throw notFound();
+  },
   head: () => ({
     meta: [
       { title: `Farbpalette-Editor | ${site.name}` },
@@ -355,7 +364,7 @@ function ColorsPage() {
           </p>
         </div>
 
-        <Ornament className="mb-14" />
+        <hr className="mb-14 border-rule" />
 
         {/* ── Generator ── */}
         <h2 className="mb-2 ck-display text-3xl">Paletten-Generator</h2>
