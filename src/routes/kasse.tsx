@@ -2,8 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Kicker, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { Button, buttonVariants } from "#/components/ck/button";
+import { Input, Textarea } from "#/components/ck/input";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { Eyebrow, Lede, PageHead, Price } from "#/components/ck/primitives";
+import { Radio } from "#/components/ck/radio";
 import { useCart } from "#/lib/cart";
 import { earliestDate, formatDate, formatPrice, toIsoDate } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
@@ -18,29 +21,12 @@ export const Route = createFileRoute("/kasse")({
   component: CheckoutPage,
 });
 
-const inputCls =
-  "w-full rounded-md border border-espresso/25 bg-white px-4 py-3 text-[14.5px] placeholder:text-espresso/35 focus:border-caramel focus:outline-none";
+const legendClass = "mb-4 ck-eyebrow text-rosegold-600";
 
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string | undefined;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-[12px] font-semibold tracking-[0.12em] text-espresso/70 uppercase">
-        {label}
-      </span>
-      {children}
-      {error && <span className="mt-1 block text-[12.5px] text-destructive">{error}</span>}
-    </label>
-  );
-}
-
+/**
+ * Kasse: Formular links in Gruppen mit Eyebrow-Legende, rechts die klebende
+ * Zusammenfassung mit Roségold-Oberkante und dem einen Primär-Button.
+ */
 function CheckoutPage() {
   const { t, locale, pickL } = useI18n();
   const cart = useCart();
@@ -128,9 +114,9 @@ function CheckoutPage() {
   if (cart.items.length === 0) {
     return (
       <PublicShell>
-        <section className="mx-auto max-w-3xl px-5 py-20 text-center md:px-8">
-          <p className="mb-7 text-espresso/60">{t.cart.empty}</p>
-          <Link to="/torten" className={pillVariants.primary}>
+        <section className={cn(shell, "max-w-narrow py-20 text-center")}>
+          <Lede>{t.cart.empty}</Lede>
+          <Link to="/torten" className={cn(buttonVariants({ variant: "secondary" }), "mt-6")}>
             {t.cart.emptyCta}
           </Link>
         </section>
@@ -140,213 +126,184 @@ function CheckoutPage() {
 
   return (
     <PublicShell>
-      <section className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-16">
-        <Kicker className="mb-4">{site.name}</Kicker>
-        <SectionTitle as="h1" className="mb-10 text-5xl">
-          {t.checkout.title}
-        </SectionTitle>
+      <section className={cn(shell, "pt-14 pb-20")}>
+        <PageHead eyebrow={t.bag.items(cart.count)} title={t.checkout.title} />
 
-        <form onSubmit={submit} className="grid gap-12 lg:grid-cols-[1fr_380px]" noValidate>
-          <div className="space-y-10">
+        <form
+          onSubmit={submit}
+          className="mt-10 grid gap-12 lg:grid-cols-[1fr_380px] lg:gap-16"
+          noValidate
+        >
+          <div className="flex flex-col gap-10">
             {/* Abholung / Lieferung */}
             <fieldset>
-              <legend className="mb-4 ck-kicker">{t.checkout.fulfilment}</legend>
+              <legend className={legendClass}>{t.checkout.fulfilment}</legend>
               <div className="grid gap-3 sm:grid-cols-2">
-                {(
-                  [
-                    { value: "pickup", label: t.checkout.pickup, hint: t.checkout.pickupHint },
-                    {
-                      value: "delivery",
-                      label: t.checkout.delivery,
-                      hint: t.checkout.deliveryHint(
-                        formatPrice(site.shop.deliveryFeeCents, locale),
-                        site.shop.deliveryRadiusKm,
-                      ),
-                    },
-                  ] as const
-                ).map((opt) => (
-                  <label
-                    key={opt.value}
-                    aria-label={opt.label}
-                    className={cn(
-                      "cursor-pointer rounded-md border px-5 py-4 transition-colors",
-                      fulfilment === opt.value
-                        ? "border-espresso bg-espresso/[0.04]"
-                        : "border-espresso/20 hover:border-espresso/50",
-                    )}
-                  >
-                    <span className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="fulfilment"
-                        checked={fulfilment === opt.value}
-                        onChange={() => setFulfilment(opt.value)}
-                        className="accent-caramel"
-                      />
-                      <span>
-                        <span className="block text-[15px] font-semibold">{opt.label}</span>
-                        <span className="block text-[13px] text-espresso/55">{opt.hint}</span>
-                      </span>
-                    </span>
-                  </label>
-                ))}
+                <Radio
+                  card
+                  name="fulfilment"
+                  label={t.checkout.pickup}
+                  description={t.checkout.pickupHint}
+                  meta={t.common.free}
+                  checked={fulfilment === "pickup"}
+                  onChange={() => setFulfilment("pickup")}
+                />
+                <Radio
+                  card
+                  name="fulfilment"
+                  label={t.checkout.delivery}
+                  description={t.checkout.deliveryHint(
+                    formatPrice(site.shop.deliveryFeeCents, locale),
+                    site.shop.deliveryRadiusKm,
+                  )}
+                  meta={formatPrice(site.shop.deliveryFeeCents, locale)}
+                  checked={fulfilment === "delivery"}
+                  onChange={() => setFulfilment("delivery")}
+                />
               </div>
             </fieldset>
 
             {/* Wunschtermin */}
             <fieldset>
-              <legend className="mb-4 ck-kicker">{t.checkout.date}</legend>
-              <Field label={t.checkout.date} error={errors.date}>
-                <input
-                  type="date"
-                  required
-                  min={minDateIso}
-                  value={form.date}
-                  onChange={(e) => set("date", e.target.value)}
-                  className={cn(inputCls, "max-w-xs")}
-                />
-              </Field>
-              <p className="mt-2 text-[13px] text-espresso/55">
-                {t.checkout.dateHint(formatDate(minDateIso, locale))}
-              </p>
+              <legend className={legendClass}>{t.checkout.date}</legend>
+              <Input
+                className="max-w-xs"
+                aria-label={t.checkout.date}
+                type="date"
+                required
+                min={minDateIso}
+                value={form.date}
+                onChange={(e) => set("date", e.target.value)}
+                error={errors.date}
+                hint={t.checkout.dateHint(formatDate(minDateIso, locale))}
+              />
             </fieldset>
 
             {/* Kontaktdaten */}
             <fieldset>
-              <legend className="mb-4 ck-kicker">{t.checkout.contactData}</legend>
+              <legend className={legendClass}>{t.checkout.contactData}</legend>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label={t.checkout.name} error={errors.name}>
-                  <input
-                    type="text"
-                    autoComplete="name"
-                    value={form.name}
-                    onChange={(e) => set("name", e.target.value)}
-                    className={inputCls}
-                  />
-                </Field>
-                <Field label={t.checkout.phone} error={errors.phone}>
-                  <input
-                    type="tel"
-                    autoComplete="tel"
-                    value={form.phone}
-                    onChange={(e) => set("phone", e.target.value)}
-                    className={inputCls}
-                  />
-                </Field>
-                <div className="sm:col-span-2">
-                  <Field label={t.checkout.email} error={errors.email}>
-                    <input
-                      type="email"
-                      autoComplete="email"
-                      value={form.email}
-                      onChange={(e) => set("email", e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
-                </div>
+                <Input
+                  label={t.checkout.name}
+                  type="text"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  error={errors.name}
+                />
+                <Input
+                  label={t.checkout.phone}
+                  type="tel"
+                  autoComplete="tel"
+                  value={form.phone}
+                  onChange={(e) => set("phone", e.target.value)}
+                  error={errors.phone}
+                />
+                <Input
+                  className="sm:col-span-2"
+                  label={t.checkout.email}
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  error={errors.email}
+                />
               </div>
             </fieldset>
 
             {/* Lieferadresse */}
             {fulfilment === "delivery" && (
               <fieldset>
-                <legend className="mb-4 ck-kicker">{t.checkout.address}</legend>
+                <legend className={legendClass}>{t.checkout.address}</legend>
                 <div className="grid gap-5 sm:grid-cols-[1fr_140px_1fr]">
-                  <Field label={t.checkout.street} error={errors.street}>
-                    <input
-                      type="text"
-                      autoComplete="street-address"
-                      value={form.street}
-                      onChange={(e) => set("street", e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label={t.checkout.zip} error={errors.zip}>
-                    <input
-                      type="text"
-                      autoComplete="postal-code"
-                      value={form.zip}
-                      onChange={(e) => set("zip", e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label={t.checkout.city} error={errors.city}>
-                    <input
-                      type="text"
-                      autoComplete="address-level2"
-                      value={form.city}
-                      onChange={(e) => set("city", e.target.value)}
-                      className={inputCls}
-                    />
-                  </Field>
+                  <Input
+                    label={t.checkout.street}
+                    type="text"
+                    autoComplete="street-address"
+                    value={form.street}
+                    onChange={(e) => set("street", e.target.value)}
+                    error={errors.street}
+                  />
+                  <Input
+                    label={t.checkout.zip}
+                    type="text"
+                    autoComplete="postal-code"
+                    value={form.zip}
+                    onChange={(e) => set("zip", e.target.value)}
+                    error={errors.zip}
+                  />
+                  <Input
+                    label={t.checkout.city}
+                    type="text"
+                    autoComplete="address-level2"
+                    value={form.city}
+                    onChange={(e) => set("city", e.target.value)}
+                    error={errors.city}
+                  />
                 </div>
               </fieldset>
             )}
 
             {/* Anmerkung */}
-            <Field label={t.checkout.note}>
-              <textarea
-                rows={3}
-                value={form.note}
-                onChange={(e) => set("note", e.target.value)}
-                placeholder={t.checkout.notePlaceholder}
-                className={inputCls}
-              />
-            </Field>
+            <Textarea
+              label={t.checkout.note}
+              rows={3}
+              value={form.note}
+              onChange={(e) => set("note", e.target.value)}
+              placeholder={t.checkout.notePlaceholder}
+            />
           </div>
 
           {/* Zusammenfassung */}
-          <aside className="h-fit rounded-md border border-espresso/15 bg-white p-6 lg:sticky lg:top-24">
-            <h2 className="mb-5 ck-kicker">{t.confirmation.summary}</h2>
-            <ul className="mb-5 space-y-3 text-[13.5px]">
+          <aside className="h-fit rounded-md border border-t-2 border-hairline border-t-accent bg-surface p-6 lg:sticky lg:top-24">
+            <Eyebrow>{t.confirmation.summary}</Eyebrow>
+            <ul className="mt-5 flex flex-col gap-3 ck-body-sm">
               {cart.items.map((item) => (
                 <li key={item.key} className="flex justify-between gap-4">
-                  <span className="text-espresso/75">
+                  <span className="text-ink">
                     {item.quantity} × {pickL(item.nameDe, item.nameRu)}
-                    <span className="block text-[12px] text-espresso/70">
+                    <span className="block text-ink-muted">
                       {pickL(item.sizeLabelDe, item.sizeLabelRu)}
                       {item.fillingNameDe
                         ? ` · ${pickL(item.fillingNameDe, item.fillingNameRu ?? item.fillingNameDe)}`
                         : ""}
                     </span>
                   </span>
-                  <span className="font-semibold whitespace-nowrap">
+                  <Price className="text-md whitespace-nowrap">
                     {formatPrice(item.unitPriceCents * item.quantity, locale)}
-                  </span>
+                  </Price>
                 </li>
               ))}
             </ul>
-            <dl className="space-y-2 border-t border-espresso/10 pt-4 text-[14px]">
+            <dl className="mt-5 flex flex-col gap-2 border-t border-hairline pt-4 ck-body-sm">
               <div className="flex justify-between">
-                <dt className="text-espresso/60">{t.cart.subtotal}</dt>
+                <dt className="text-ink-muted">{t.cart.subtotal}</dt>
                 <dd>{formatPrice(cart.subtotalCents, locale)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-espresso/60">{t.common.deliveryFee}</dt>
+                <dt className="text-ink-muted">{t.common.deliveryFee}</dt>
                 <dd>
                   {deliveryFeeCents === 0 ? t.common.free : formatPrice(deliveryFeeCents, locale)}
                 </dd>
               </div>
-              <div className="flex justify-between border-t border-espresso/10 pt-3">
-                <dt className="font-semibold">{t.common.total}</dt>
-                <dd className="ck-display text-[24px]">{formatPrice(totalCents, locale)}</dd>
+              <div className="flex items-baseline justify-between border-t border-hairline pt-3">
+                <dt className="ck-label">{t.common.total}</dt>
+                <dd>
+                  <Price className="text-2xl">{formatPrice(totalCents, locale)}</Price>
+                </dd>
               </div>
             </dl>
 
-            <div className="mt-5 rounded-md bg-creme-2/80 px-4 py-3 text-[12.5px] leading-relaxed text-espresso/70">
-              <span className="mb-1 block ck-kicker text-[10px]">{t.checkout.payment}</span>
+            <div className="mt-5 rounded-sm bg-sunken px-4 py-3 text-ink-muted ck-body-sm">
+              <span className="mb-1 block ck-eyebrow text-rosegold-600">{t.checkout.payment}</span>
               {t.checkout.paymentNote}
             </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className={cn(pillVariants.caramel, "mt-6 w-full")}
-            >
+            <Button type="submit" size="lg" block disabled={submitting} className="mt-6">
               {submitting ? t.checkout.submitting : t.checkout.submit}
-            </button>
-            <p className="mt-3 text-center text-[11.5px] text-espresso/70">
-              <Link to="/agb" className="underline hover:text-espresso">
+            </Button>
+            <p className="mt-3 text-center text-ink-muted ck-body-sm">
+              <Link to="/agb" className="border-b border-hairline-accent text-brand">
                 {t.checkout.legalNote}
               </Link>
             </p>

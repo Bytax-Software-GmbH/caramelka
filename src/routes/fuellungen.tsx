@@ -1,9 +1,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { buttonVariants } from "#/components/ck/button";
+import { Card, CardBody, CardDescription, CardMedia, CardTitle } from "#/components/ck/card";
 import { PublicShell, shell } from "#/components/ck/layout";
 import { Placeholder } from "#/components/ck/placeholder";
-import { Body, Kicker, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { PageHead } from "#/components/ck/primitives";
 import { Reveal } from "#/components/ck/reveal";
 import { useI18n } from "#/lib/i18n";
 import { fillingsQueryOptions } from "#/lib/queries";
@@ -28,56 +30,49 @@ export const Route = createFileRoute("/fuellungen")({
   component: FillingsPage,
 });
 
-/** Wechselnde Bildformate geben dem Raster Rhythmus statt Gleichtakt. */
-const shotRatio = ["aspect-[4/5]", "aspect-square", "aspect-[5/4]"];
-
+/** Füllungen als Karten, dreispaltig, mit Allergenen als stille Zeile. */
 function FillingsPage() {
   const { t, pickL } = useI18n();
   const { data: fillings } = useSuspenseQuery(fillingsQueryOptions());
 
   return (
     <PublicShell>
-      <section className={cn(shell, "pt-16 pb-20 md:pt-20 md:pb-24")}>
-        <Kicker className="mb-5">{t.fillings.kicker}</Kicker>
-        <SectionTitle as="h1" size="xl" className="mb-6 max-w-[14ch]">
-          {t.fillings.title}
-        </SectionTitle>
-        <Body size="l" className="max-w-[56ch]">
-          {t.fillings.intro}
-        </Body>
+      <section className={cn(shell, "pt-14 pb-12 lg:pt-16")}>
+        <PageHead eyebrow={t.fillings.kicker} title={t.fillings.title} lede={t.fillings.intro} />
       </section>
 
-      <section className={cn(shell, "pb-28 md:pb-36")}>
-        <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+      <section className={cn(shell, "pb-20 lg:pb-24")}>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {fillings.map((filling, index) => {
             const name = pickL(filling.nameDe, filling.nameRu);
             return (
-              <Reveal key={filling.id} delay={(index % 3) * 90}>
-                <article className="flex flex-col gap-5">
-                  <Placeholder
-                    imageKey={filling.imageKey === "fuellung" ? filling.slug : filling.imageKey}
-                    alt={name}
-                    className={shotRatio[index % shotRatio.length]}
-                  />
-                  <div>
-                    <h2 className="mb-3 ck-display text-display-m text-ink">{name}</h2>
-                    <Body className="mb-3">
+              <Reveal key={filling.id} delay={(index % 3) * 90} className="h-full">
+                <Card className="h-full">
+                  <CardMedia>
+                    <Placeholder
+                      imageKey={filling.imageKey === "fuellung" ? filling.slug : filling.imageKey}
+                      alt={name}
+                    />
+                  </CardMedia>
+                  <CardBody>
+                    <CardTitle as="h2">{name}</CardTitle>
+                    <CardDescription>
                       {pickL(filling.descriptionDe, filling.descriptionRu)}
-                    </Body>
+                    </CardDescription>
                     {filling.allergensDe && (
-                      <Body size="s" tone="muted">
+                      <p className="mt-2 text-ink-subtle ck-body-sm">
                         {t.fillings.allergens}: {pickL(filling.allergensDe, filling.allergensRu)}
-                      </Body>
+                      </p>
                     )}
-                  </div>
-                </article>
+                  </CardBody>
+                </Card>
               </Reveal>
             );
           })}
         </div>
 
-        <div className="mt-24 border-t border-rule pt-16 text-center">
-          <Link to="/torten" className={pillVariants.primary}>
+        <div className="mt-16 border-t border-hairline pt-12 text-center">
+          <Link to="/torten" className={buttonVariants({ variant: "secondary" })}>
             {t.hero.ctaPrimary}
           </Link>
         </div>

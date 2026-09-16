@@ -1,10 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import {
+  AdminEmpty,
+  AdminHeading,
+  AdminTable,
+  adminTd,
+  adminTh,
+  adminTheadTr,
+  adminTr,
+} from "#/components/ck/admin";
+import { Badge } from "#/components/ck/badge";
+import { Price } from "#/components/ck/primitives";
 import { formatDate, formatPrice } from "#/lib/format";
 import { ORDER_STATUS } from "#/lib/order-status";
 import { $adminListOrders } from "#/lib/server/admin";
-import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/_auth/app/")({
   component: OrdersPage,
@@ -19,69 +29,59 @@ function OrdersPage() {
 
   return (
     <div>
-      <h1 className="mb-6 ck-display text-3xl">Bestellungen</h1>
+      <AdminHeading eyebrow="Übersicht" title="Bestellungen" />
       {isPending ? (
-        <p className="py-12 text-center text-espresso/50">Laden …</p>
+        <AdminEmpty>Laden …</AdminEmpty>
       ) : !orders || orders.length === 0 ? (
-        <p className="py-12 text-center text-espresso/50">Noch keine Bestellungen.</p>
+        <AdminEmpty>Noch keine Bestellungen.</AdminEmpty>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-espresso/15 bg-white">
-          <table className="w-full text-left text-[13.5px]">
-            <thead>
-              <tr className="border-b border-espresso/10 text-[11px] tracking-[0.14em] text-espresso/50 uppercase">
-                <th className="px-4 py-3">Nr.</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Kunde</th>
-                <th className="px-4 py-3">Termin</th>
-                <th className="px-4 py-3">Art</th>
-                <th className="px-4 py-3 text-right">Summe</th>
-                <th className="px-4 py-3">Eingang</th>
+        <AdminTable>
+          <thead>
+            <tr className={adminTheadTr}>
+              <th className={adminTh}>Nr.</th>
+              <th className={adminTh}>Status</th>
+              <th className={adminTh}>Kunde</th>
+              <th className={adminTh}>Termin</th>
+              <th className={adminTh}>Art</th>
+              <th className={`${adminTh} text-right`}>Summe</th>
+              <th className={adminTh}>Eingang</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.id} className={adminTr}>
+                <td className={adminTd}>
+                  <Link
+                    to="/app/bestellungen/$id"
+                    params={{ id: order.id }}
+                    className="font-mono text-brand underline-offset-[3px] hover:underline"
+                  >
+                    {order.orderNo}
+                  </Link>
+                </td>
+                <td className={adminTd}>
+                  <Badge tone={ORDER_STATUS[order.status].tone}>
+                    {ORDER_STATUS[order.status].label}
+                  </Badge>
+                </td>
+                <td className={adminTd}>{order.customerName}</td>
+                <td className={adminTd}>{formatDate(order.desiredDate)}</td>
+                <td className={adminTd}>
+                  {order.fulfilment === "pickup" ? "Abholung" : "Lieferung"}
+                </td>
+                <td className={`${adminTd} text-right`}>
+                  <Price className="text-md">{formatPrice(order.totalCents)}</Price>
+                </td>
+                <td className={`${adminTd} text-ink-muted`}>
+                  {new Intl.DateTimeFormat("de-DE", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  }).format(order.createdAt)}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr
-                  key={order.id}
-                  className="border-b border-espresso/5 last:border-0 hover:bg-creme-2/50"
-                >
-                  <td className="px-4 py-3">
-                    <Link
-                      to="/app/bestellungen/$id"
-                      params={{ id: order.id }}
-                      className="font-mono font-semibold text-caramel-deep hover:underline"
-                    >
-                      {order.orderNo}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-1 text-[11px] font-semibold",
-                        ORDER_STATUS[order.status].className,
-                      )}
-                    >
-                      {ORDER_STATUS[order.status].label}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">{order.customerName}</td>
-                  <td className="px-4 py-3">{formatDate(order.desiredDate)}</td>
-                  <td className="px-4 py-3">
-                    {order.fulfilment === "pickup" ? "Abholung" : "Lieferung"}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    {formatPrice(order.totalCents)}
-                  </td>
-                  <td className="px-4 py-3 text-espresso/55">
-                    {new Intl.DateTimeFormat("de-DE", {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    }).format(order.createdAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
     </div>
   );

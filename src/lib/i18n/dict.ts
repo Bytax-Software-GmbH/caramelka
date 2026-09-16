@@ -1,5 +1,16 @@
 /** UI-Wörterbuch DE (Standard) / RU. Admin bleibt bewusst einsprachig DE. */
 
+/** Russische Mehrzahl: 1 торт · 2–4 торта · 5+ тортов (mit 11–14-Ausnahme). */
+function pluralRu(one: string, few: string, many: string) {
+  return (n: number) => {
+    const m10 = n % 10;
+    const m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return `${n} ${one}`;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return `${n} ${few}`;
+    return `${n} ${many}`;
+  };
+}
+
 export const de = {
   nav: {
     torten: "Torten",
@@ -8,6 +19,8 @@ export const de = {
     kontakt: "Kontakt",
     warenkorb: "Warenkorb",
     whatsapp: "WhatsApp",
+    menu: "Menü",
+    close: "Schließen",
   },
   hero: {
     kicker: "Konditorei · Torten auf Bestellung",
@@ -19,7 +32,6 @@ export const de = {
     heroImageAlt:
       "Dreistöckige Karamelltorte mit Haselnüssen auf einer Tortenplatte vor hellem Leinen",
   },
-  marquee: ["Frische Zutaten", "Handgefertigt", "Abholung & Lieferung bis 100 km"],
   home: {
     bestsellers: "Beliebte Torten",
     viewAll: "Alle ansehen",
@@ -120,6 +132,9 @@ export const de = {
     from: "ab",
     leadTime: (h: number) => (h <= 24 ? "bis morgen" : `Vorlauf ${Math.round(h / 24)} Tage`),
     empty: "In dieser Kategorie ist gerade nichts. Schau bald wieder vorbei.",
+    count: (n: number) => (n === 1 ? "1 Torte" : `${n} Torten`),
+    view: "Ansehen",
+    featuredBadge: "Beliebt",
   },
   product: {
     size: "Größe",
@@ -133,6 +148,27 @@ export const de = {
     leadTimeNote: (d: string) => `Frühester Termin: ${d}`,
     allergens: "Allergene",
     backToCatalog: "Zurück zum Sortiment",
+    priceNote: "inkl. MwSt.",
+    viewBag: "Warenkorb ansehen",
+    delivery: (km: number) => `Lieferung bis ${km} km`,
+    tabs: {
+      description: "Beschreibung",
+      ordering: "Bestellung & Termin",
+      allergens: "Allergene",
+    },
+    orderingText: (earliest: string, km: number) =>
+      `Frühester Termin: ${earliest}. Abholung in der Backstube oder Lieferung bis ${km} km. Bezahlt wird bequem bei Übergabe.`,
+    allergensByFilling: "Die Allergene richten sich nach der gewählten Füllung.",
+    allergensNone: "Allergene nach Absprache.",
+  },
+  bag: {
+    title: "Dein Warenkorb",
+    items: (n: number) => (n === 1 ? "1 Torte" : `${n} Torten`),
+    close: "Warenkorb schließen",
+    removeTitle: "Torte entfernen?",
+    removeText: "Sie wird aus dem Warenkorb entfernt. Du kannst sie jederzeit wieder hinzufügen.",
+    keep: "Behalten",
+    deliveryNote: (fee: string, km: number) => `Abholung kostenlos · Lieferung ${fee} bis ${km} km`,
   },
   fillings: {
     kicker: "Geschmack",
@@ -231,6 +267,9 @@ export const de = {
     datenschutz: "Datenschutz",
     agb: "AGB",
     claim: "Handgemachte Torten & Patisserie",
+    assortment: "Sortiment",
+    contact: "Kontakt",
+    instagram: "Instagram",
   },
   common: {
     from: "ab",
@@ -238,6 +277,7 @@ export const de = {
     deliveryFee: "Lieferung",
     free: "kostenlos",
     photo: "foto",
+    close: "Schließen",
   },
 };
 
@@ -251,6 +291,8 @@ export const ru: Dict = {
     kontakt: "Контакты",
     warenkorb: "Корзина",
     whatsapp: "WhatsApp",
+    menu: "Меню",
+    close: "Закрыть",
   },
   hero: {
     kicker: "Кондитерская · Торты на заказ",
@@ -259,10 +301,8 @@ export const ru: Dict = {
     text: "Индивидуальные торты и изысканные десерты, ручная работа из свежих ингредиентов. Для свадеб, дней рождения и всех моментов между ними.",
     ctaPrimary: "Смотреть ассортимент",
     ctaSecondary: "Написать в WhatsApp",
-    heroImageAlt:
-      "Трёхъярусный карамельный торт с фундуком на подставке на фоне светлого льна",
+    heroImageAlt: "Трёхъярусный карамельный торт с фундуком на подставке на фоне светлого льна",
   },
-  marquee: ["Свежие ингредиенты", "Ручная работа", "Самовывоз и доставка до 100 км"],
   home: {
     bestsellers: "Популярные торты",
     viewAll: "Смотреть все",
@@ -363,6 +403,9 @@ export const ru: Dict = {
     from: "от",
     leadTime: (h: number) => (h <= 24 ? "к завтрашнему дню" : `за ${Math.round(h / 24)} дня/дней`),
     empty: "В этой категории пока пусто. Загляните позже.",
+    count: pluralRu("торт", "торта", "тортов"),
+    view: "Смотреть",
+    featuredBadge: "Хит",
   },
   product: {
     size: "Размер",
@@ -376,6 +419,27 @@ export const ru: Dict = {
     leadTimeNote: (d: string) => `Ближайшая дата: ${d}`,
     allergens: "Аллергены",
     backToCatalog: "Назад к ассортименту",
+    priceNote: "вкл. НДС",
+    viewBag: "Открыть корзину",
+    delivery: (km: number) => `Доставка до ${km} км`,
+    tabs: {
+      description: "Описание",
+      ordering: "Заказ и дата",
+      allergens: "Аллергены",
+    },
+    orderingText: (earliest: string, km: number) =>
+      `Ближайшая дата: ${earliest}. Самовывоз из пекарни или доставка до ${km} км. Оплата при получении.`,
+    allergensByFilling: "Аллергены зависят от выбранной начинки.",
+    allergensNone: "Аллергены по согласованию.",
+  },
+  bag: {
+    title: "Ваша корзина",
+    items: pluralRu("торт", "торта", "тортов"),
+    close: "Закрыть корзину",
+    removeTitle: "Убрать торт?",
+    removeText: "Он будет удалён из корзины. Вы сможете добавить его снова в любой момент.",
+    keep: "Оставить",
+    deliveryNote: (fee: string, km: number) => `Самовывоз бесплатно · Доставка ${fee} до ${km} км`,
   },
   fillings: {
     kicker: "Вкус",
@@ -474,6 +538,9 @@ export const ru: Dict = {
     datenschutz: "Защита данных",
     agb: "Условия (AGB)",
     claim: "Торты и десерты ручной работы",
+    assortment: "Ассортимент",
+    contact: "Контакты",
+    instagram: "Instagram",
   },
   common: {
     from: "от",
@@ -481,6 +548,7 @@ export const ru: Dict = {
     deliveryFee: "Доставка",
     free: "бесплатно",
     photo: "фото",
+    close: "Закрыть",
   },
 };
 

@@ -3,9 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import * as z from "zod";
 
 import { PublicShell, shell } from "#/components/ck/layout";
-import { Body, Kicker, SectionTitle } from "#/components/ck/primitives";
+import { Lede, PageHead } from "#/components/ck/primitives";
 import { ProductCard } from "#/components/ck/product-card";
 import { Reveal } from "#/components/ck/reveal";
+import { tagVariants } from "#/components/ck/tag";
 import { useI18n } from "#/lib/i18n";
 import { catalogQueryOptions } from "#/lib/queries";
 import { site } from "#/lib/site";
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/torten/")({
   component: CatalogPage,
 });
 
+/** Shop: zentrierter Kopf, Filter-Tags, dreispaltiges Kartenraster. */
 function CatalogPage() {
   const { t, pickL } = useI18n();
   const { kategorie } = Route.useSearch();
@@ -46,71 +48,47 @@ function CatalogPage() {
     ? data.products.filter((p) => p.categoryId === activeCategory.id)
     : data.products;
 
+  const categoryName = (id: number) => {
+    const category = data.categories.find((c) => c.id === id);
+    return category ? pickL(category.nameDe, category.nameRu) : undefined;
+  };
+
   return (
     <PublicShell>
-      <section className={cn(shell, "pt-16 pb-24 md:pt-20 md:pb-32")}>
-        <Kicker className="mb-5">{t.catalog.kicker}</Kicker>
-        <SectionTitle as="h1" size="xl" className="mb-10 max-w-[14ch]">
-          {t.catalog.title}
-        </SectionTitle>
+      <section className={cn(shell, "pt-14 pb-20 lg:pt-16 lg:pb-24")}>
+        <PageHead eyebrow={t.catalog.kicker} title={t.catalog.title} />
 
-        <nav
-          className="mb-14 flex flex-wrap gap-2.5 border-b border-rule pb-8"
-          aria-label={t.catalog.kicker}
-        >
-          <CategoryChip to={undefined} active={!activeCategory}>
-            {t.catalog.all}
-          </CategoryChip>
-          {data.categories.map((category) => (
-            <CategoryChip
-              key={category.id}
-              to={category.slug}
-              active={activeCategory?.id === category.id}
-            >
-              {pickL(category.nameDe, category.nameRu)}
-            </CategoryChip>
-          ))}
-        </nav>
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
+          <nav className="flex flex-wrap gap-2" aria-label={t.catalog.kicker}>
+            <Link to="/torten" search={{}} className={tagVariants({ selected: !activeCategory })}>
+              {t.catalog.all}
+            </Link>
+            {data.categories.map((category) => (
+              <Link
+                key={category.id}
+                to="/torten"
+                search={{ kategorie: category.slug }}
+                className={tagVariants({ selected: activeCategory?.id === category.id })}
+              >
+                {pickL(category.nameDe, category.nameRu)}
+              </Link>
+            ))}
+          </nav>
+          <span className="text-ink-muted ck-body-sm">{t.catalog.count(products.length)}</span>
+        </div>
 
         {products.length === 0 ? (
-          <Body size="l" className="py-24 text-center">
-            {t.catalog.empty}
-          </Body>
+          <Lede className="py-24 text-center">{t.catalog.empty}</Lede>
         ) : (
-          <div className="grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-3 md:gap-x-8 lg:grid-cols-4">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product, index) => (
-              <Reveal key={product.id} delay={(index % 4) * 80}>
-                <ProductCard product={product} />
+              <Reveal key={product.id} delay={(index % 3) * 80} className="h-full">
+                <ProductCard product={product} eyebrow={categoryName(product.categoryId)} />
               </Reveal>
             ))}
           </div>
         )}
       </section>
     </PublicShell>
-  );
-}
-
-function CategoryChip({
-  to,
-  active,
-  children,
-}: {
-  to: string | undefined;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      to="/torten"
-      search={to ? { kategorie: to } : {}}
-      className={cn(
-        "rounded-full border px-5 py-2 text-[0.72rem] font-semibold tracking-[0.14em] uppercase transition-colors duration-300",
-        active
-          ? "border-espresso bg-espresso text-creme"
-          : "border-rule-strong text-ink-2 hover:border-espresso hover:text-ink",
-      )}
-    >
-      {children}
-    </Link>
   );
 }

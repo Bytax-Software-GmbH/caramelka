@@ -4,7 +4,10 @@ export const site = {
   nameCyrillic: "Карамелька",
   domain: "caramelka.de",
   url: "https://caramelka.de",
-  tagline: "Torten, die in Erinnerung bleiben",
+  /** Zeile unter dem Logo, "— SWEET BY NATURE —". Bleibt in beiden Sprachen. */
+  tagline: "Sweet by nature",
+  /** Deutscher Claim für Titel und Social Cards. */
+  claim: "Torten, die in Erinnerung bleiben",
   description:
     "Caramelka Konditorei: individuelle Torten und feine Patisserie, handgefertigt aus frischen Zutaten. Abholung & Lieferung im Umkreis von 100 km.",
   locale: "de_DE",

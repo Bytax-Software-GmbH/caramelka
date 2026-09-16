@@ -32,8 +32,8 @@ export const Route = createFileRoute("/agb")({
       </p>
       <h2>5. Widerruf</h2>
       <p>
-        Torten sind individuell angefertigte, verderbliche Waren. Das gesetzliche Widerrufsrecht
-        ist gemäß § 312g Abs. 2 BGB ausgeschlossen. Stornierungen sind bis 72 Stunden vor dem
+        Torten sind individuell angefertigte, verderbliche Waren. Das gesetzliche Widerrufsrecht ist
+        gemäß § 312g Abs. 2 BGB ausgeschlossen. Stornierungen sind bis 72 Stunden vor dem
         Wunschtermin kostenfrei möglich.
       </p>
     </SimplePage>

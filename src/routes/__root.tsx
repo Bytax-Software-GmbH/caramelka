@@ -10,6 +10,7 @@ import { ThemeParamSync } from "#/components/ck/theme-preview";
 import { Toaster } from "#/components/ui/sonner";
 import { env } from "#/env/client";
 import type { AuthQueryResult } from "#/lib/auth/queries";
+import { BagDrawerProvider } from "#/lib/bag-drawer";
 import { CartProvider } from "#/lib/cart";
 import { $getLocale, I18nProvider, useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
@@ -49,20 +50,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: `${site.name}, ${site.tagline}` },
+      { title: `${site.name}, ${site.claim}` },
       { name: "description", content: site.description },
       { name: "robots", content: "index, follow" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: site.name },
       { property: "og:locale", content: site.locale },
-      { property: "og:title", content: `${site.name}, ${site.tagline}` },
+      { property: "og:title", content: `${site.name}, ${site.claim}` },
       { property: "og:description", content: site.description },
       { property: "og:image", content: `${site.url}${site.ogImage}` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: `${site.url}${site.ogImage}` },
-      { name: "theme-color", content: "#f4f3f1" },
+      { name: "theme-color", content: "#fbf6f0" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
     scripts: [
@@ -94,15 +95,17 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
       <body>
         <I18nProvider initialLocale={initialLocale}>
           <CartProvider>
-            <HtmlLangSync />
-            {/* Farb-Vorschau über URL-Parameter. In der Entwicklung immer an,
+            <BagDrawerProvider>
+              <HtmlLangSync />
+              {/* Farb-Vorschau über URL-Parameter. In der Entwicklung immer an,
                 in Produktion nur mit VITE_ENABLE_THEME_PREVIEW=true. Auf der
                 Demo-Instanz erwünscht, damit der Kunde Paletten auf der echten
                 URL testen kann; vor dem Launch abschalten, sonst kann jeder
                 Besucher die Seite über `?primary=…` umfärben. */}
-            {themePreviewEnabled && <ThemeParamSync />}
-            {children}
-            <Toaster richColors />
+              {themePreviewEnabled && <ThemeParamSync />}
+              {children}
+              <Toaster position="bottom-right" />
+            </BagDrawerProvider>
           </CartProvider>
         </I18nProvider>
 

@@ -25,10 +25,11 @@ export const Route = createFileRoute("/_guest")({
   },
 });
 
+/** Anmeldung im Panel mit Roségold-Oberkante, wie der Dialog des Systems. */
 function RouteComponent() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-page p-6">
+      <div className="w-full max-w-sm rounded-md border border-t-2 border-hairline border-t-accent bg-surface p-8 shadow-md">
         <Outlet />
       </div>
     </div>

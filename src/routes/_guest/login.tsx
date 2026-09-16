@@ -3,10 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LoaderCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 
+import { Button } from "#/components/ck/button";
+import { Input } from "#/components/ck/input";
 import { Logo } from "#/components/ck/logo";
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
+import { Eyebrow } from "#/components/ck/primitives";
 import { authClient } from "#/lib/auth/auth-client";
 
 export const Route = createFileRoute("/_guest/login")({
@@ -43,37 +43,35 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col items-center gap-3">
-            <Link to="/" aria-label="Zur Startseite">
-              <Logo />
-            </Link>
-            <h1 className="ck-kicker">Admin-Anmeldung</h1>
-          </div>
-          <div className="flex flex-col gap-5">
-            <div className="grid gap-2">
-              <Label htmlFor="email">E-Mail</Label>
-              <Input id="email" name="email" type="email" readOnly={isPending} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Passwort</Label>
-              <Input id="password" name="password" type="password" readOnly={isPending} required />
-            </div>
-            <Button type="submit" className="mt-2 w-full" size="lg" disabled={isPending}>
-              {isPending && <LoaderCircleIcon className="animate-spin" />}
-              {isPending ? "Anmelden …" : "Anmelden"}
-            </Button>
-          </div>
-        </div>
-      </form>
-      <div className="text-center text-sm text-muted-foreground">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="flex flex-col items-center gap-4">
+        <Link to="/" aria-label="Zur Startseite">
+          <Logo />
+        </Link>
+        <Eyebrow as="p" dashed>
+          Admin-Anmeldung
+        </Eyebrow>
+      </div>
+      <div className="flex flex-col gap-4">
+        <Input label="E-Mail" name="email" type="email" readOnly={isPending} required />
+        <Input label="Passwort" name="password" type="password" readOnly={isPending} required />
+        <Button
+          type="submit"
+          size="lg"
+          block
+          className="mt-2"
+          disabled={isPending}
+          icon={isPending ? <LoaderCircleIcon className="animate-spin" /> : undefined}
+        >
+          {isPending ? "Anmelden …" : "Anmelden"}
+        </Button>
+      </div>
+      <p className="text-center text-ink-muted ck-body-sm">
         Noch kein Konto?{" "}
-        <Link to="/signup" className="underline underline-offset-4">
+        <Link to="/signup" className="border-b border-hairline-accent text-brand">
           Registrieren
         </Link>
-      </div>
-    </div>
+      </p>
+    </form>
   );
 }

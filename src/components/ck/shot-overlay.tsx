@@ -3,6 +3,9 @@ import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { textLinkClass } from "#/components/ck/primitives";
+import { cn } from "#/lib/utils";
+
 /**
  * Gemeinsame Großansicht für alle Galerie-Darstellungen (Magnetband,
  * Snap-Streifen, Mosaik). Eine Implementierung, ein Verhalten: Escape,
@@ -98,7 +101,7 @@ export function ShotOverlay({
             aria-hidden
             tabIndex={-1}
             onClick={onClose}
-            className="absolute inset-0 cursor-default bg-dark/80 backdrop-blur-sm"
+            className="absolute inset-0 cursor-default bg-scrim"
           />
           <div className="relative flex w-full max-w-[min(88vw,600px)] flex-col gap-4">
             <motion.div layoutId={shotLayoutId(shot.imageKey)} className="aspect-square w-full">
@@ -109,12 +112,12 @@ export function ShotOverlay({
               />
             </motion.div>
             <div className="flex items-baseline justify-between gap-6">
-              <p className="ck-display text-display-s text-cream-on-dark">{shot.caption}</p>
+              <p className="text-on-inverse ck-subheading">{shot.caption}</p>
               {shot.slug && openLinkLabel && (
                 <Link
                   to="/torten/$slug"
                   params={{ slug: shot.slug }}
-                  className="ck-nav-link shrink-0 border-b border-gold pb-1 text-gold transition-colors hover:border-cream-on-dark hover:text-cream-on-dark"
+                  className={cn(textLinkClass(true), "shrink-0")}
                 >
                   {openLinkLabel}
                 </Link>
@@ -126,9 +129,9 @@ export function ShotOverlay({
             type="button"
             onClick={onClose}
             aria-label="Schließen"
-            className="absolute top-5 right-5 grid size-11 place-items-center rounded-full border border-gold/40 text-cream-on-dark transition-colors hover:border-gold hover:bg-gold/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="absolute top-5 right-5 grid size-11 place-items-center rounded-sm border border-hairline-inverse text-rosegold-300 transition-colors duration-(--dur-fast) ease-out hover:bg-rosegold-500/12"
           >
-            <XIcon className="size-5" aria-hidden />
+            <XIcon className="size-5" strokeWidth={1.5} aria-hidden />
           </button>
         </motion.div>
       )}

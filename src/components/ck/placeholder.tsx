@@ -2,24 +2,21 @@ import { availableImages, normalizeImageKey } from "#/lib/image-manifest";
 import { cn } from "#/lib/utils";
 
 /**
- * Produktfoto per `imageKey` aus `public/images/<key>.webp`.
+ * Produktfoto per `imageKey` aus `public/images/<key>.webp`, gerendert als
+ * <img>, das seinen Container füllt. Der Aufrufer gibt Format und Rahmen
+ * vor (CardMedia, ck-frame, aspect-*).
  *
- * `alt` beschreibt das Motiv und macht das Bild für Screenreader nutzbar.
- * Ohne `alt` gilt das Bild als dekorativ und wird ausgeblendet. Das ist die
- * Ausnahme, nicht der Normalfall.
- *
- * Liegt kein Foto vor, rendert eine ruhige Graphit-Fläche statt eines Fotos.
+ * `alt` beschreibt das Motiv. Ohne `alt` gilt das Bild als dekorativ.
+ * Liegt kein Foto vor, rendert eine ruhige Creme-Fläche.
  */
 export function Placeholder({
   imageKey,
   alt,
-  onDark = false,
   priority = false,
   className,
 }: {
   imageKey: string;
   alt?: string;
-  onDark?: boolean;
   /** Für das LCP-Bild: eager laden und hoch priorisieren. */
   priority?: boolean;
   className?: string;
@@ -28,30 +25,16 @@ export function Placeholder({
 
   if (availableImages.has(key)) {
     return (
-      <div
-        aria-hidden={alt ? undefined : true}
-        className={cn("overflow-hidden bg-creme-2", className)}
-      >
-        <img
-          src={`/images/${key}.webp`}
-          alt={alt ?? ""}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
-          decoding={priority ? "sync" : "async"}
-          className="size-full object-cover"
-        />
-      </div>
+      <img
+        src={`/images/${key}.webp`}
+        alt={alt ?? ""}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding={priority ? "sync" : "async"}
+        className={cn("size-full object-cover", className)}
+      />
     );
   }
 
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        "grid place-items-center overflow-hidden",
-        onDark ? "bg-espresso-2" : "bg-creme-2",
-        className,
-      )}
-    />
-  );
+  return <div aria-hidden className={cn("size-full bg-sunken", className)} />;
 }

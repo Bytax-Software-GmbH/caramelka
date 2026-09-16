@@ -4,9 +4,12 @@ import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
+import { AdminPanel } from "#/components/ck/admin";
+import { Button } from "#/components/ck/button";
+import { Checkbox } from "#/components/ck/checkbox";
+import { IconButton } from "#/components/ck/icon-button";
+import { Input, Textarea } from "#/components/ck/input";
+import { Select } from "#/components/ck/select";
 import { $adminUpsertProduct } from "#/lib/server/admin";
 
 interface SizeRow {
@@ -102,196 +105,152 @@ export function AdminProductForm({
     setValues((prev) => ({ ...prev, [key]: v }));
   }
 
+  function setSize(index: number, patch: Partial<SizeRow>) {
+    setSizes((s) => s.map((row, j) => (j === index ? { ...row, ...patch } : row)));
+  }
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         mutation.mutate();
       }}
-      className="max-w-3xl space-y-8"
+      className="flex max-w-3xl flex-col gap-6"
     >
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor="nameDe">Name (DE)</Label>
+      <AdminPanel title="Stammdaten">
+        <div className="grid gap-5 sm:grid-cols-2">
           <Input
-            id="nameDe"
+            label="Name (DE)"
             value={values.nameDe}
             onChange={(e) => set("nameDe", e.target.value)}
             required
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="nameRu">Name (RU)</Label>
           <Input
-            id="nameRu"
+            label="Name (RU)"
             value={values.nameRu}
             onChange={(e) => set("nameRu", e.target.value)}
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="slug">Slug (URL)</Label>
           <Input
-            id="slug"
+            label="Slug (URL)"
             value={values.slug}
             onChange={(e) => set("slug", e.target.value)}
             pattern="[a-z0-9-]+"
             required
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="categoryId">Kategorie</Label>
-          <select
-            id="categoryId"
-            value={values.categoryId}
+          <Select
+            label="Kategorie"
+            value={String(values.categoryId)}
             onChange={(e) => set("categoryId", Number(e.target.value))}
-            className="h-10 rounded-md border border-input bg-white px-3 text-sm"
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nameDe}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor="descriptionDe">Beschreibung (DE)</Label>
-          <textarea
-            id="descriptionDe"
+            options={categories.map((c) => ({ value: String(c.id), label: c.nameDe }))}
+          />
+          <Textarea
+            label="Beschreibung (DE)"
             rows={3}
             value={values.descriptionDe}
             onChange={(e) => set("descriptionDe", e.target.value)}
-            className="rounded-md border border-input bg-white px-3 py-2 text-sm"
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="descriptionRu">Beschreibung (RU)</Label>
-          <textarea
-            id="descriptionRu"
+          <Textarea
+            label="Beschreibung (RU)"
             rows={3}
             value={values.descriptionRu}
             onChange={(e) => set("descriptionRu", e.target.value)}
-            className="rounded-md border border-input bg-white px-3 py-2 text-sm"
           />
         </div>
-      </div>
+      </AdminPanel>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <div className="grid gap-2">
-          <Label htmlFor="imageKey">Bild-Key (Platzhalter)</Label>
+      <AdminPanel title="Darstellung & Bestellung">
+        <div className="grid gap-5 sm:grid-cols-3">
           <Input
-            id="imageKey"
+            label="Bild-Key"
+            hint="Datei unter public/images/<key>.webp"
             value={values.imageKey}
             onChange={(e) => set("imageKey", e.target.value)}
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="leadTimeHours">Vorlauf (Stunden)</Label>
           <Input
-            id="leadTimeHours"
+            label="Vorlauf (Stunden)"
             type="number"
             min={0}
             value={values.leadTimeHours}
             onChange={(e) => set("leadTimeHours", Number(e.target.value))}
           />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="sort">Sortierung</Label>
           <Input
-            id="sort"
+            label="Sortierung"
             type="number"
             min={0}
             value={values.sort}
             onChange={(e) => set("sort", Number(e.target.value))}
           />
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-6 text-sm">
-        {(
-          [
-            ["fillingSelectable", "Füllung wählbar"],
-            ["featured", "Auf Startseite"],
-            ["active", "Aktiv (im Shop sichtbar)"],
-          ] as const
-        ).map(([key, label]) => (
-          <label key={key} className="flex items-center gap-2">
-            <input
-              type="checkbox"
+        <div className="mt-5 flex flex-wrap gap-6">
+          {(
+            [
+              ["fillingSelectable", "Füllung wählbar"],
+              ["featured", "Auf Startseite"],
+              ["active", "Aktiv (im Shop sichtbar)"],
+            ] as const
+          ).map(([key, label]) => (
+            <Checkbox
+              key={key}
+              label={label}
               checked={values[key]}
               onChange={(e) => set(key, e.target.checked)}
-              className="accent-caramel"
             />
-            {label}
-          </label>
-        ))}
-      </div>
+          ))}
+        </div>
+      </AdminPanel>
 
-      <fieldset>
-        <legend className="mb-3 ck-kicker">Größen & Preise</legend>
-        <div className="space-y-2.5">
+      <AdminPanel title="Größen & Preise">
+        <div className="flex flex-col gap-2.5">
           {sizes.map((size, i) => (
             // eslint-disable-next-line react/no-array-index-key
-            <div key={i} className="grid grid-cols-[1fr_1fr_120px_40px] gap-2.5">
+            <div key={i} className="grid grid-cols-[1fr_1fr_120px_36px] items-center gap-2.5">
               <Input
+                aria-label="Label DE"
                 placeholder="Label DE, z. B. Ø 16 cm · 8 Stücke"
                 value={size.labelDe}
-                onChange={(e) =>
-                  setSizes((s) =>
-                    s.map((row, j) => (j === i ? { ...row, labelDe: e.target.value } : row)),
-                  )
-                }
+                onChange={(e) => setSize(i, { labelDe: e.target.value })}
               />
               <Input
+                aria-label="Label RU"
                 placeholder="Label RU"
                 value={size.labelRu}
-                onChange={(e) =>
-                  setSizes((s) =>
-                    s.map((row, j) => (j === i ? { ...row, labelRu: e.target.value } : row)),
-                  )
-                }
+                onChange={(e) => setSize(i, { labelRu: e.target.value })}
               />
               <Input
+                aria-label="Preis in Euro"
                 placeholder="€, z. B. 42,00"
                 inputMode="decimal"
                 value={size.priceEuro}
-                onChange={(e) =>
-                  setSizes((s) =>
-                    s.map((row, j) => (j === i ? { ...row, priceEuro: e.target.value } : row)),
-                  )
-                }
+                onChange={(e) => setSize(i, { priceEuro: e.target.value })}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Größe entfernen"
+              <IconButton
+                size="sm"
+                label="Größe entfernen"
                 disabled={sizes.length === 1}
                 onClick={() => setSizes((s) => s.filter((_, j) => j !== i))}
               >
-                <Trash2Icon className="size-4" />
-              </Button>
+                <Trash2Icon strokeWidth={1.5} />
+              </IconButton>
             </div>
           ))}
         </div>
         <Button
           type="button"
-          variant="outline"
+          variant="secondary"
           size="sm"
-          className="mt-3"
+          className="mt-4"
+          icon={<PlusIcon strokeWidth={1.5} />}
           onClick={() => setSizes((s) => [...s, { ...emptySize }])}
         >
-          <PlusIcon className="size-4" /> Größe hinzufügen
+          Größe hinzufügen
         </Button>
-      </fieldset>
+      </AdminPanel>
 
       <div className="flex gap-3">
         <Button type="submit" disabled={mutation.isPending}>
           {mutation.isPending ? "Speichern …" : "Speichern"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => navigate({ to: "/app/produkte" })}>
+        <Button type="button" variant="ghost" onClick={() => navigate({ to: "/app/produkte" })}>
           Abbrechen
         </Button>
       </div>

@@ -7,7 +7,8 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "#/components/ck/button";
+import { Display, Eyebrow, Lede } from "#/components/ck/primitives";
 
 export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
   const router = useRouter();
@@ -19,39 +20,42 @@ export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
   console.error(error);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4">
-      <ErrorComponent error={error} />
-      <div className="flex flex-wrap items-center gap-2">
+    <section className="mx-auto flex max-w-narrow flex-col items-center gap-6 px-6 py-24 text-center">
+      <div>
+        <Eyebrow dashed>Fehler</Eyebrow>
+        <Display as="h1" className="mt-5">
+          Etwas ist schiefgelaufen
+        </Display>
+        <Lede className="mt-4">Bitte versuche es noch einmal.</Lede>
+      </div>
+      <div className="w-full overflow-auto rounded-md border border-hairline bg-surface p-4 text-left ck-body-sm">
+        <ErrorComponent error={error} />
+      </div>
+      <div className="flex flex-wrap justify-center gap-3">
         <Button
-          type="button"
           onClick={() => {
             router.invalidate();
           }}
         >
-          Try Again
+          Erneut versuchen
         </Button>
         {isRoot ? (
-          <Button render={<Link to="/" />} variant="secondary" nativeButton={false}>
-            Home
-          </Button>
+          <Link to="/" className={buttonVariants({ variant: "secondary" })}>
+            Zur Startseite
+          </Link>
         ) : (
-          <Button
-            render={
-              <Link
-                to="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.history.back();
-                }}
-              />
-            }
-            variant="secondary"
-            nativeButton={false}
+          <Link
+            to="/"
+            className={buttonVariants({ variant: "secondary" })}
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.back();
+            }}
           >
-            Go Back
-          </Button>
+            Zurück
+          </Link>
         )}
       </div>
-    </div>
+    </section>
   );
 }

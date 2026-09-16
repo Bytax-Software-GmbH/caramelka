@@ -1,19 +1,35 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "#/components/ck/button";
+import { PublicShell } from "#/components/ck/layout";
+import { PageHead } from "#/components/ck/primitives";
 
+/**
+ * 404 mit dem Seitenkopf aller Unterseiten: Monogramm als Siegel, Cinzel-
+ * Titel. Unter /app rendert die Admin-Shell drumherum, sonst das Shop-Shell.
+ */
 export function DefaultNotFound() {
-  return (
-    <div className="space-y-2 p-2">
-      <p>The page you are looking for does not exist.</p>
-      <p className="flex flex-wrap items-center gap-2">
-        <Button type="button" onClick={() => window.history.back()}>
-          Go back
+  const { pathname } = useLocation();
+  const inAdmin = pathname.startsWith("/app");
+
+  const body = (
+    <section className="mx-auto max-w-narrow px-6 py-24 text-center">
+      <PageHead
+        seal
+        eyebrow="Seite nicht gefunden"
+        title="404"
+        lede="Diese Seite gibt es nicht oder nicht mehr."
+      />
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <Button variant="secondary" onClick={() => window.history.back()}>
+          Zurück
         </Button>
-        <Button render={<Link to="/" />} variant="secondary" nativeButton={false}>
-          Home
-        </Button>
-      </p>
-    </div>
+        <Link to={inAdmin ? "/app" : "/"} className={buttonVariants()}>
+          {inAdmin ? "Zum Admin" : "Zur Startseite"}
+        </Link>
+      </div>
+    </section>
   );
+
+  return inAdmin ? body : <PublicShell>{body}</PublicShell>;
 }

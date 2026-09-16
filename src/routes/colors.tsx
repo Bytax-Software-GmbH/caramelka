@@ -10,8 +10,8 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Kicker, SectionTitle } from "#/components/ck/primitives";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { PageHead } from "#/components/ck/primitives";
 import {
   buildShareUrl,
   getActiveThemePreview,
@@ -19,6 +19,7 @@ import {
   reapplyThemePreview,
   THEME_PARAMS,
 } from "#/components/ck/theme-preview";
+import { env } from "#/env/client";
 import {
   contrastRatio,
   type HarmonyKind,
@@ -28,7 +29,6 @@ import {
   ramp,
   readableText,
 } from "#/lib/color";
-import { env } from "#/env/client";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
 
@@ -40,22 +40,23 @@ interface BrandToken {
 }
 
 /**
- * Editierbare Marken-Token (Reihenfolge = hell → dunkel). Quelle: styles.css.
+ * Editierbare Marken-Token (Reihenfolge = hell → dunkel). Quelle: styles.css,
+ * Rampen des Caramelka Lily Design Systems.
  * Die CSS-Var-Namen ermöglichen Live-Vorschau (setProperty) und den Export.
  */
 const DEFAULT_BRAND: BrandToken[] = [
-  { cssVar: "--card", name: "Rahmenfläche", hex: "#FFFFFF" },
-  { cssVar: "--creme", name: "Milchweiß", hex: "#F4F3F1" },
-  { cssVar: "--creme-2", name: "Milchgrau", hex: "#E8E7E3" },
-  { cssVar: "--toffee-light", name: "Nebelgrau", hex: "#DEDDDB" },
-  { cssVar: "--cream-on-dark", name: "Grauweiß", hex: "#E7E8EA" },
-  { cssVar: "--gold", name: "Silbergrau", hex: "#AAB0B6" },
-  { cssVar: "--toffee", name: "Mittelgrau", hex: "#878D94" },
-  { cssVar: "--caramel", name: "Stahlgrau", hex: "#6B7178" },
-  { cssVar: "--caramel-deep", name: "Graphitgrau", hex: "#52575D" },
-  { cssVar: "--espresso-2", name: "Graphit 2", hex: "#3B4046" },
-  { cssVar: "--espresso", name: "Graphit", hex: "#23262B" },
-  { cssVar: "--dark", name: "Tiefgraphit", hex: "#17191C" },
+  { cssVar: "--cream-50", name: "Creme, Fläche", hex: "#FDFAF6" },
+  { cssVar: "--cream-100", name: "Creme, Seite", hex: "#FBF6F0" },
+  { cssVar: "--cream-200", name: "Creme, vertieft", hex: "#F7EFE6" },
+  { cssVar: "--cream-400", name: "Haarlinie", hex: "#E3D3C2" },
+  { cssVar: "--rosegold-300", name: "Roségold, hell", hex: "#ECC3A7" },
+  { cssVar: "--rosegold-500", name: "Roségold", hex: "#D3A488" },
+  { cssVar: "--rosegold-600", name: "Roségold, Schatten", hex: "#C28F79" },
+  { cssVar: "--burgundy-500", name: "Burgund, hell", hex: "#87242C" },
+  { cssVar: "--burgundy-700", name: "Burgund", hex: "#5C1216" },
+  { cssVar: "--burgundy-800", name: "Burgund, tief", hex: "#4B0F14" },
+  { cssVar: "--cocoa-500", name: "Kakao, gedämpft", hex: "#7A625B" },
+  { cssVar: "--cocoa-800", name: "Kakao", hex: "#2A1A17" },
 ];
 
 const HARMONIES: { key: HarmonyKind; label: string }[] = [
@@ -119,7 +120,7 @@ function Swatch({
       title={`${hex} kopieren`}
       style={{ background: hex, color: text }}
       className={cn(
-        "group relative flex min-h-[76px] flex-col justify-end gap-0.5 rounded-md p-3 text-left ring-1 ring-espresso/10 transition-transform duration-300 ease-[var(--ease-lux)] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-caramel active:scale-[0.98]",
+        "group relative flex min-h-[76px] flex-col justify-end gap-0.5 rounded-md p-3 text-left ring-1 ring-hairline transition-transform duration-(--dur-fast) ease-out hover:ring-hairline-accent",
         className,
       )}
     >
@@ -148,7 +149,7 @@ function EditableSwatch({
   return (
     <div
       style={{ background: token.hex, color: text }}
-      className="group relative flex min-h-[104px] flex-col justify-end gap-0.5 rounded-md p-3 ring-1 ring-espresso/10 transition-transform duration-300 ease-[var(--ease-lux)] hover:-translate-y-0.5"
+      className="group relative flex min-h-[104px] flex-col justify-end gap-0.5 rounded-md p-3 ring-1 ring-hairline transition-transform duration-(--dur-fast) ease-out hover:ring-hairline-accent"
     >
       {/* Ganzer Swatch klickbar → nativer Farbwähler */}
       <input
@@ -248,7 +249,7 @@ function ColorsPage() {
   }
 
   // ── Generator ──────────────────────────────────────────────────────────
-  const [base, setBase] = useState("#6B7178");
+  const [base, setBase] = useState("#5C1216");
   const [seed, setSeed] = useState(7);
   const scale = useMemo(() => ramp(base), [base]);
   const hsl = useMemo(() => hexToHsl(base), [base]);
@@ -266,21 +267,18 @@ function ColorsPage() {
 
   return (
     <PublicShell>
-      <section className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-16">
-        <Kicker className="mb-4">Design-Werkzeug</Kicker>
-        <SectionTitle as="h1" className="mb-4 text-5xl md:text-[56px]">
-          Farbpalette-Editor
-        </SectionTitle>
-        <p className="mb-10 max-w-[62ch] text-[15.5px] leading-[1.65] text-pretty text-espresso/70">
-          Jede Marken-Farbe ist anklickbar und anpassbar — Änderungen sind sofort auf der ganzen
-          Seite sichtbar (Live-Vorschau). Unten lässt sich die fertige Konfiguration als CSS
-          exportieren.
-        </p>
+      <section className={cn(shell, "pt-14 pb-20")}>
+        <PageHead
+          className="mb-12"
+          eyebrow="Design-Werkzeug"
+          title="Farbpalette-Editor"
+          lede="Jede Marken-Farbe ist anklickbar und anpassbar — Änderungen sind sofort auf der ganzen Seite sichtbar (Live-Vorschau). Unten lässt sich die fertige Konfiguration als CSS exportieren."
+        />
 
         {/* ── Editierbare Markenpalette ── */}
         <div className="mb-10">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 className="mr-auto ck-display text-2xl">Markenpalette</h2>
+            <h2 className="mr-auto text-xl ck-title text-brand">Markenpalette</h2>
             <button
               type="button"
               onClick={() => {
@@ -300,7 +298,7 @@ function ColorsPage() {
                 }
                 copy(buildShareUrl(params), "Vorschau-Link kopiert");
               }}
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-caramel-deep uppercase transition-colors hover:text-espresso"
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-brand uppercase transition-colors hover:text-ink"
             >
               <Share2Icon className="size-3.5" /> Link teilen
             </button>
@@ -310,7 +308,7 @@ function ColorsPage() {
                 setBrand(DEFAULT_BRAND);
                 toast.success("Auf Standard zurückgesetzt");
               }}
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-caramel-deep uppercase transition-colors hover:text-espresso"
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.12em] text-brand uppercase transition-colors hover:text-ink"
             >
               <RotateCcwIcon className="size-3.5" /> Zurücksetzen
             </button>
@@ -327,62 +325,62 @@ function ColorsPage() {
         </div>
 
         {/* ── Export ── */}
-        <div className="mb-16 rounded-lg border border-espresso/12 bg-white/60 p-5">
+        <div className="mb-16 rounded-md border border-hairline bg-surface p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="ck-kicker">Konfiguration exportieren</h2>
+            <h2 className="ck-eyebrow text-rosegold-600">Konfiguration exportieren</h2>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => copy(cssExport, "CSS kopiert")}
-                className="inline-flex items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-espresso uppercase transition-colors hover:border-espresso hover:bg-espresso/5"
+                className="inline-flex items-center gap-2 rounded-sm border border-hairline-strong px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-ink uppercase transition-colors hover:border-hairline-accent hover:bg-accent-soft"
               >
                 <CopyIcon className="size-3.5" /> CSS
               </button>
               <button
                 type="button"
                 onClick={() => copy(jsonExport, "JSON kopiert")}
-                className="inline-flex items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-espresso uppercase transition-colors hover:border-espresso hover:bg-espresso/5"
+                className="inline-flex items-center gap-2 rounded-sm border border-hairline-strong px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-ink uppercase transition-colors hover:border-hairline-accent hover:bg-accent-soft"
               >
                 <CopyIcon className="size-3.5" /> JSON
               </button>
               <button
                 type="button"
                 onClick={download}
-                className="inline-flex items-center gap-2 rounded-full bg-espresso px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-creme uppercase transition-[background-color,transform] duration-500 ease-[var(--ease-lux)] hover:bg-caramel-deep active:scale-[0.96]"
+                className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-cream-100 uppercase transition-[background-color,transform] duration-(--dur-base) ease-out hover:bg-primary-hover"
               >
                 <DownloadIcon className="size-3.5" /> .css
               </button>
             </div>
           </div>
-          <pre className="max-h-64 overflow-auto rounded-md bg-espresso p-4 font-mono text-[12px] leading-relaxed text-cream-on-dark">
+          <pre className="max-h-64 overflow-auto rounded-md bg-primary p-4 font-mono text-[12px] leading-relaxed text-cream-100">
             {cssExport}
           </pre>
-          <p className="mt-2 text-[12px] text-espresso/55">
+          <p className="mt-2 text-[12px] text-ink-muted">
             In <span className="font-mono">src/styles.css</span> im{" "}
             <span className="font-mono">:root</span>
             -Block einsetzen, um die Farben dauerhaft zu übernehmen.
           </p>
         </div>
 
-        <hr className="mb-14 border-rule" />
+        <hr className="mb-14 border-hairline" />
 
         {/* ── Generator ── */}
-        <h2 className="mb-2 ck-display text-3xl">Paletten-Generator</h2>
-        <p className="mb-8 max-w-[58ch] text-[14.5px] text-espresso/65">
+        <h2 className="mb-2 ck-title text-brand">Paletten-Generator</h2>
+        <p className="mb-8 max-w-[58ch] text-ink-muted ck-body">
           Basisfarbe wählen — Tint-/Shade-Rampe und Harmonien werden live erzeugt. Klick auf ein
           Feld kopiert den Hex-Wert.
         </p>
 
-        <div className="mb-12 flex flex-wrap items-end gap-5 rounded-lg border border-espresso/12 bg-white/60 p-5">
+        <div className="mb-12 flex flex-wrap items-end gap-5 rounded-md border border-hairline bg-surface p-5">
           <label className="flex flex-col gap-2">
-            <span className="ck-kicker">Basisfarbe</span>
+            <span className="ck-eyebrow text-rosegold-600">Basisfarbe</span>
             <span className="flex items-center gap-3">
               <input
                 type="color"
-                value={validHex ? (base.startsWith("#") ? base : `#${base}`) : "#6B7178"}
+                value={validHex ? (base.startsWith("#") ? base : `#${base}`) : "#5C1216"}
                 onChange={(e) => setBase(e.target.value)}
                 aria-label="Farbwähler"
-                className="size-12 cursor-pointer rounded-md border border-espresso/20 bg-transparent p-0.5"
+                className="size-12 cursor-pointer rounded-md border border-hairline-strong bg-transparent p-0.5"
               />
               <input
                 type="text"
@@ -391,8 +389,10 @@ function ColorsPage() {
                 spellCheck={false}
                 aria-label="Hex-Wert"
                 className={cn(
-                  "w-32 rounded-md border bg-white px-3 py-2.5 font-mono text-[14px] uppercase focus:outline-none",
-                  validHex ? "border-espresso/25 focus:border-caramel" : "border-destructive",
+                  "w-32 rounded-md border bg-surface px-3 py-2.5 font-mono text-[14px] uppercase focus:outline-none",
+                  validHex
+                    ? "border-hairline-strong focus:border-hairline-accent"
+                    : "border-destructive",
                 )}
               />
             </span>
@@ -400,8 +400,8 @@ function ColorsPage() {
 
           {hsl && (
             <div className="flex flex-col gap-1.5">
-              <span className="ck-kicker">HSL</span>
-              <span className="font-mono text-[13px] text-espresso/70 tabular-nums">
+              <span className="ck-eyebrow text-rosegold-600">HSL</span>
+              <span className="font-mono text-[13px] text-ink-muted tabular-nums">
                 {hsl.h}° · {hsl.s}% · {hsl.l}%
               </span>
             </div>
@@ -410,14 +410,14 @@ function ColorsPage() {
           <button
             type="button"
             onClick={randomize}
-            className="ml-auto inline-flex items-center gap-2 rounded-full bg-espresso px-6 py-3 text-[12.5px] font-semibold tracking-[0.12em] text-creme uppercase transition-[background-color,transform] duration-500 ease-[var(--ease-lux)] hover:bg-caramel-deep active:scale-[0.96]"
+            className="ml-auto inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 text-[12.5px] font-semibold tracking-[0.12em] text-cream-100 uppercase transition-[background-color,transform] duration-(--dur-base) ease-out hover:bg-primary-hover"
           >
             <RefreshCwIcon className="size-4" /> Zufall
           </button>
         </div>
 
         <div className="mb-14">
-          <h3 className="mb-4 ck-display text-2xl">Rampe (50 – 950)</h3>
+          <h3 className="mb-4 text-ink ck-subheading">Rampe (50 – 950)</h3>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11">
             {scale.map((s) => (
               <Swatch
@@ -432,11 +432,11 @@ function ColorsPage() {
         </div>
 
         <div>
-          <h3 className="mb-4 ck-display text-2xl">Harmonien</h3>
+          <h3 className="mb-4 text-ink ck-subheading">Harmonien</h3>
           <div className="grid gap-6 md:grid-cols-2">
             {harmonies.map((h) => (
               <div key={h.key}>
-                <div className="mb-2 ck-kicker">{h.label}</div>
+                <div className="mb-2 ck-eyebrow text-rosegold-600">{h.label}</div>
                 <div className="flex gap-2">
                   {h.colors.map((hex, i) => (
                     <Swatch

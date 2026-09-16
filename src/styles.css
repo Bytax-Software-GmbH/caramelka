@@ -3,85 +3,136 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@import "@fontsource-variable/playfair-display";
-@import "@fontsource-variable/playfair-display/wght-italic.css";
+/* Webfonts, selbst gehostet. Das Design System nennt Cinzel (≈ Trajan-Kapitalen
+   des Logotyps), Cormorant Garamond (Editorial-Serif) und Jost (UI-Sans). */
+@import "@fontsource-variable/cinzel";
+@import "@fontsource-variable/cormorant-garamond";
+@import "@fontsource-variable/cormorant-garamond/wght-italic.css";
 @import "@fontsource-variable/jost";
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── Caramelka design tokens ─────────────────────────────────────────────
-   Cold-luxury editorial system. Graphit / Grau / Milchweiß (Kundenwunsch),
-   Playfair Display als Display-Serif, Jost als UI-Sans.
+/* ── Caramelka Lily Design System ─────────────────────────────────────────
+   Quelle: claude.ai/design → "Caramelka Lily Design System" (tokens/*.css).
 
-   SHAPE RULE (verbindlich, keine Ausnahmen):
-     · Interaktiv (Buttons, Pills, Chips, Icon-Buttons) → rounded-full
-     · Medien & Flächen (Bilder, Rahmen, Sektionen)     → scharf, 0px
-     · Eingaben (Input, Textarea, Select)               → 2px (--radius)
-
-   FARB-RULE: genau ein Akzent auf der ganzen Seite (--caramel). Text-
-   Hierarchie läuft über --ink / --ink-2 / --ink-3, niemals über Opacity.
-
-   THEME LOCK: Die Seite ist hell. Dark-Tokens sind unten definiert und über
-   `.dark` testbar, aber `prefers-color-scheme` wird bewusst NICHT respektiert
-   (Milchweiß ist eine Markenentscheidung des Kunden). */
+   Farbe:   Burgund ist der Markengrund, Roségold der Akzent (lebt vor allem
+            AUF Burgund). Helle Flächen sind warme Cremes, Text ist Kakao-
+            braun, nie Schwarz. Pro Seite 1–2 Hintergründe: Creme-Body,
+            Burgund für Hero / Footer / Feature-Bänder.
+   Schrift: Cinzel für Display-Kapitalen (gesperrt .22–.32em), Cormorant
+            Garamond für Überschriften, Ledes (kursiv) und Preise, Jost für
+            Fließtext und UI. Skala 11 → 64 px, Body 16/1.65.
+   Form:    fast eckig (0–4 px). Pille nur für Filter-Tags und Zähler.
+   Linien:  1-px-Haarlinien tragen die Struktur; Roségold-Haarlinien
+            markieren Betonung, Auswahl und das "LILY"-Motiv.
+   Schatten: sparsam, warm getönt; lg nur für Dialoge, Drawer, Toasts.
+   Bewegung: langsames ease-out (160/280/520 ms), Fades und 8–12-px-Rises.
+            Kein Bounce, kein Scale beim Drücken. */
 @theme inline {
-  --font-display: "Playfair Display Variable", Georgia, serif;
-  --font-sans: "Jost Variable", system-ui, sans-serif;
-  --font-heading: var(--font-display);
+  /* Cinzel hat kein Kyrillisch: für RU fallen die Glyphen auf Cormorant. */
+  --font-display: "Cinzel Variable", "Cormorant Garamond Variable", "Trajan Pro", Georgia, serif;
+  --font-serif: "Cormorant Garamond Variable", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Jost Variable", "Futura", "Avenir Next", "Helvetica Neue", sans-serif;
+  --font-heading: var(--font-serif);
 
-  /* ── Typografische Rampe ──────────────────────────────────────────────
-     Ein modulares System statt willkürlicher Pixelwerte. */
-  /* Obergrenze so gewählt, dass die längste Hero-Zeile in beiden Sprachen
-     zweizeilig bleibt (Pflicht: Headline max. 2 Zeilen am Desktop). */
-  --text-display-xl: clamp(2.5rem, 5.2vw, 4rem);
-  --text-display-xl--line-height: 1.04;
-  --text-display-xl--letter-spacing: -0.021em;
+  /* Skala des Design Systems (11 → 64 px) auf den Tailwind-Namen. */
+  --text-2xs: 11px;
+  --text-2xs--line-height: 1;
+  --text-xs: 12px;
+  --text-xs--line-height: 1.5;
+  --text-sm: 14px;
+  --text-sm--line-height: 1.5;
+  --text-base: 16px;
+  --text-base--line-height: 1.65;
+  --text-md: 16px;
+  --text-md--line-height: 1.65;
+  --text-lg: 18px;
+  --text-lg--line-height: 1.5;
+  --text-xl: 22px;
+  --text-xl--line-height: 1.25;
+  --text-2xl: 28px;
+  --text-2xl--line-height: 1.1;
+  --text-3xl: 36px;
+  --text-3xl--line-height: 1.25;
+  --text-4xl: 48px;
+  --text-4xl--line-height: 1.1;
+  --text-5xl: 64px;
+  --text-5xl--line-height: 1.1;
 
-  --text-display-l: clamp(2.125rem, 4vw, 3.25rem);
-  --text-display-l--line-height: 1.08;
-  --text-display-l--letter-spacing: -0.016em;
+  --tracking-caps: 0.22em;
+  --tracking-caps-wide: 0.32em;
+  --tracking-label: 0.08em;
+  --tracking-tight: -0.01em;
 
-  --text-display-m: clamp(1.625rem, 2.4vw, 2.125rem);
-  --text-display-m--line-height: 1.16;
-  --text-display-m--letter-spacing: -0.01em;
+  /* Rampen */
+  --color-burgundy-900: var(--burgundy-900);
+  --color-burgundy-800: var(--burgundy-800);
+  --color-burgundy-700: var(--burgundy-700);
+  --color-burgundy-600: var(--burgundy-600);
+  --color-burgundy-500: var(--burgundy-500);
+  --color-burgundy-100: var(--burgundy-100);
+  --color-rosegold-700: var(--rosegold-700);
+  --color-rosegold-600: var(--rosegold-600);
+  --color-rosegold-500: var(--rosegold-500);
+  --color-rosegold-400: var(--rosegold-400);
+  --color-rosegold-300: var(--rosegold-300);
+  --color-rosegold-200: var(--rosegold-200);
+  --color-rosegold-100: var(--rosegold-100);
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+  --color-cream-400: var(--cream-400);
+  --color-cream-500: var(--cream-500);
+  --color-cocoa-900: var(--cocoa-900);
+  --color-cocoa-800: var(--cocoa-800);
+  --color-cocoa-700: var(--cocoa-700);
+  --color-cocoa-600: var(--cocoa-600);
+  --color-cocoa-500: var(--cocoa-500);
+  --color-cocoa-400: var(--cocoa-400);
+  --color-cocoa-300: var(--cocoa-300);
+  --color-sage-600: var(--sage-600);
+  --color-sage-100: var(--sage-100);
+  --color-caramel-600: var(--caramel-600);
+  --color-caramel-100: var(--caramel-100);
+  --color-cherry-600: var(--cherry-600);
+  --color-cherry-100: var(--cherry-100);
+  --color-slate-600: var(--slate-600);
+  --color-slate-100: var(--slate-100);
 
-  --text-display-s: 1.3125rem;
-  --text-display-s--line-height: 1.28;
-  --text-display-s--letter-spacing: -0.006em;
-
-  --text-body-l: 1.0625rem;
-  --text-body-l--line-height: 1.68;
-  --text-body-m: 0.9375rem;
-  --text-body-m--line-height: 1.66;
-  --text-body-s: 0.8125rem;
-  --text-body-s--line-height: 1.55;
-
-  --text-label: 0.6875rem;
-  --text-label--line-height: 1.1;
-  --text-label--letter-spacing: 0.24em;
-
-  /* ── Markenpalette ──────────────────────────────────────────────────── */
-  --color-creme: var(--creme);
-  --color-creme-2: var(--creme-2);
-  --color-toffee-light: var(--toffee-light);
-  --color-espresso: var(--espresso);
-  --color-espresso-2: var(--espresso-2);
-  --color-dark: var(--dark);
-  --color-caramel: var(--caramel);
-  --color-caramel-deep: var(--caramel-deep);
-  --color-toffee: var(--toffee);
-  --color-toffee-deep: var(--toffee-deep);
-  --color-gold: var(--gold);
-  --color-cream-on-dark: var(--cream-on-dark);
-
-  /* Text-Hierarchie (ersetzt Opacity-Stufen, alle ≥ WCAG AA) */
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-ink-on-dark: var(--ink-on-dark);
-  --color-ink-2-on-dark: var(--ink-2-on-dark);
-  --color-rule: var(--rule);
-  --color-rule-strong: var(--rule-strong);
+  /* Semantische Rollen */
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-sunken: var(--bg-sunken);
+  --color-inverse: var(--bg-inverse);
+  --color-inverse-deep: var(--bg-inverse-deep);
+  --color-accent-soft: var(--bg-accent-soft);
+  --color-ink: var(--text-body);
+  --color-ink-muted: var(--text-muted);
+  --color-ink-subtle: var(--text-subtle);
+  --color-on-inverse: var(--text-on-inverse);
+  --color-on-inverse-muted: var(--text-on-inverse-muted);
+  --color-brand: var(--text-brand);
+  --color-hairline: var(--border-default);
+  --color-hairline-strong: var(--border-strong);
+  --color-hairline-accent: var(--border-accent);
+  --color-hairline-inverse: var(--border-on-inverse);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-scrim: var(--scrim);
+  --color-glass: var(--surface-glass);
 
   /* shadcn semantic → brand */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -116,121 +167,168 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
 
-  /* Shape-Rule, siehe Kommentar oben */
-  --radius-sm: 2px;
-  --radius-md: 2px;
+  /* Radien: fast eckig. Pille über rounded-full. */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
   --radius-lg: 4px;
   --radius-xl: 4px;
   --radius-2xl: 6px;
   --radius-3xl: 8px;
+  --radius-4xl: 4px;
+
+  /* Schatten: warm getönt, sparsam. */
+  --shadow-sm: 0 1px 2px rgba(58, 11, 15, 0.06);
+  --shadow-md: 0 6px 18px -6px rgba(58, 11, 15, 0.14);
+  --shadow-lg: 0 24px 48px -16px rgba(58, 11, 15, 0.24);
+
+  /* Container */
+  --container-page: 1200px;
+  --container-narrow: 720px;
+
+  /* Bewegung */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 :root {
-  /* Markenpalette, Kundenwunsch "графит, серый, молочный":
-     milchig-weiße Basis, Graphit-Dunkeltöne, kühl-graue Akzente.
-     Token-Namen bleiben (creme/espresso/caramel/gold), damit alle bestehenden
-     Utility-Klassen (bg-creme, text-caramel-deep, …) unverändert weiterlaufen. */
-  --creme: #f4f3f1; /* Milchweiß, neutral-kühl */
-  --creme-2: #e8e7e3; /* Milchgrau */
-  --toffee-light: #dedddb; /* heller Nebelgrau (Akzentflächen) */
-  --espresso: #23262b; /* Graphit (Haupttext, dunkle Buttons) */
-  --espresso-2: #3b4046; /* mittlerer Graphit */
-  --dark: #17191c; /* tiefer Graphit (Footer) */
-  --caramel: #6b7178; /* Stahlgrau, einziger Akzent der Seite */
-  --caramel-deep: #52575d; /* dunkles Graphitgrau, Hover/Aktiv */
-  --toffee: #7a736c; /* warmes Taupe-Grau, Sekundärfarbe */
-  /* Hover-Tiefe der Sekundärfarbe, ebenfalls abgeleitet, damit die
-     Farbvorschau den Sekundär-CTA in der Kasse mitfärbt. */
-  --toffee-deep: color-mix(in srgb, var(--toffee) 66%, var(--espresso));
-  --gold: #aab0b6; /* helles Silbergrau, Akzent auf Dunkel */
-  --cream-on-dark: #e7e8ea; /* helles Grauweiß auf Dunkel */
+  /* ── Marke, gesampelt aus caramelka_logo.jpg ────────────────────────── */
+  --burgundy-900: #3a0b0f;
+  --burgundy-800: #4b0f14;
+  --burgundy-700: #5c1216;
+  --burgundy-600: #701a21;
+  --burgundy-500: #87242c;
+  --burgundy-100: #f3e4e4;
+  --rosegold-700: #b57f68;
+  --rosegold-600: #c28f79;
+  --rosegold-500: #d3a488;
+  --rosegold-400: #e0b79e;
+  --rosegold-300: #ecc3a7;
+  --rosegold-200: #f3dccb;
+  --rosegold-100: #f9eee6;
 
-  /* Text-Hierarchie über echte Farbwerte statt Transparenz.
-     Im Browser gemessen, jeweils WCAG AA für Fließtext:
-       gegen --creme   #f4f3f1:  ink 13.69:1 · ink-2 7.41:1 · ink-3 5.56:1
-       gegen --creme-2 #e8e7e3:  ink 12.27:1 · ink-2 6.64:1 · ink-3 4.98:1
+  /* ── Neutrale, warm auf Creme-Basis ─────────────────────────────────── */
+  --cream-50: #fdfaf6;
+  --cream-100: #fbf6f0;
+  --cream-200: #f7efe6;
+  --cream-300: #efe3d6;
+  --cream-400: #e3d3c2;
+  --cream-500: #cdb9a5;
+  --cocoa-900: #1f1210;
+  --cocoa-800: #2a1a17;
+  --cocoa-700: #3e2b27;
+  --cocoa-600: #5a443e;
+  --cocoa-500: #7a625b;
+  --cocoa-400: #9c857e;
+  --cocoa-300: #bfaea8;
 
-     Bewusst abgeleitet statt fest verdrahtet: die Farbvorschau (/colors und
-     die URL-Parameter) überschreibt nur --espresso, --creme, --dark und
-     --cream-on-dark. Feste Hexwerte hier hätten zur Folge, dass Überschriften
-     und Haarlinien bei einer Vorschau in der alten Farbe stehen bleiben,
-     während der Hintergrund schon wechselt.
+  /* ── Semantische Farbtöne, gedämpft und warm ────────────────────────── */
+  --sage-600: #4f7a5a;
+  --sage-100: #e6efe8;
+  --caramel-600: #b87a2e;
+  --caramel-100: #f7ebda;
+  --cherry-600: #a83232;
+  --cherry-100: #f6e3e3;
+  --slate-600: #5e6b7e;
+  --slate-100: #e7eaef;
 
-     ink-3 bleibt absichtlich dunkler als der Akzent --caramel: gleicher
-     Farbeindruck, aber auf Milchgrau reicht #6b7178 mit 4.05:1 nicht für AA. */
-  --ink: var(--espresso);
-  --ink-2: color-mix(in srgb, var(--espresso) 80%, var(--creme));
-  --ink-3: color-mix(in srgb, var(--espresso) 71%, var(--creme));
-  --ink-on-dark: var(--cream-on-dark);
-  --ink-2-on-dark: color-mix(in srgb, var(--cream-on-dark) 71%, var(--dark));
+  /* ── Rollen ─────────────────────────────────────────────────────────── */
+  --bg-page: var(--cream-100);
+  --bg-surface: var(--cream-50);
+  --bg-sunken: var(--cream-200);
+  --bg-inverse: var(--burgundy-700);
+  --bg-inverse-deep: var(--burgundy-800);
+  --bg-accent-soft: var(--rosegold-100);
+  --text-body: var(--cocoa-800);
+  --text-muted: var(--cocoa-500);
+  --text-subtle: var(--cocoa-400);
+  --text-on-inverse: var(--cream-100);
+  --text-on-inverse-muted: var(--rosegold-300);
+  --text-accent: var(--rosegold-600);
+  --text-brand: var(--burgundy-700);
+  --border-default: var(--cream-400);
+  --border-strong: var(--cream-500);
+  --border-accent: var(--rosegold-500);
+  --border-on-inverse: rgba(211, 164, 136, 0.35);
+  --accent: var(--rosegold-500);
+  --accent-hover: var(--rosegold-600);
+  --accent-active: var(--rosegold-700);
+  --accent-contrast: var(--burgundy-900);
+  --primary: var(--burgundy-700);
+  --primary-hover: var(--burgundy-600);
+  --primary-active: var(--burgundy-800);
+  --primary-contrast: var(--cream-100);
+  --success: var(--sage-600);
+  --success-bg: var(--sage-100);
+  --warning: var(--caramel-600);
+  --warning-bg: var(--caramel-100);
+  --error: var(--cherry-600);
+  --error-bg: var(--cherry-100);
+  --info: var(--slate-600);
+  --info-bg: var(--slate-100);
+  --focus-ring: 0 0 0 3px rgba(211, 164, 136, 0.45);
 
-  /* Haarlinien: eine helle, eine kräftige. Keine Ad-hoc-Opacity mehr. */
-  --rule: color-mix(in srgb, var(--espresso) 10%, var(--creme));
-  --rule-strong: color-mix(in srgb, var(--espresso) 21%, var(--creme));
+  /* ── Effekte ────────────────────────────────────────────────────────── */
+  --hairline: 1px solid var(--border-default);
+  --hairline-accent: 1px solid var(--border-accent);
+  --hairline-inverse: 1px solid var(--border-on-inverse);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 520ms;
+  --scrim: rgba(31, 18, 16, 0.55);
+  --protect-bottom: linear-gradient(to top, rgba(31, 18, 16, 0.7), rgba(31, 18, 16, 0) 60%);
+  --sheen: linear-gradient(
+    135deg,
+    var(--rosegold-300),
+    var(--rosegold-500) 45%,
+    var(--rosegold-700)
+  );
+  --blur-glass: 12px;
+  --surface-glass: rgba(251, 246, 240, 0.82);
 
-  /* shadcn semantic tokens mapped to the brand */
-  --background: var(--creme);
-  --foreground: var(--ink);
-  --card: #ffffff;
-  --card-foreground: var(--ink);
-  --popover: #ffffff;
-  --popover-foreground: var(--ink);
-  --primary: var(--caramel);
-  --primary-foreground: var(--creme);
-  --secondary: var(--toffee);
-  --secondary-foreground: #ffffff;
-  --muted: var(--creme-2);
-  --muted-foreground: var(--ink-2);
-  --accent: var(--toffee-light);
-  --accent-foreground: var(--espresso-2);
-  --destructive: #a03323;
-  --border: var(--rule);
-  --input: var(--rule-strong);
-  --ring: var(--caramel);
-  --chart-1: var(--caramel);
-  --chart-2: var(--gold);
-  --chart-3: var(--espresso-2);
-  --chart-4: var(--toffee);
-  --chart-5: var(--creme-2);
-  --radius: 2px;
-  --sidebar: var(--creme-2);
-  --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--espresso);
-  --sidebar-primary-foreground: var(--creme);
-  --sidebar-accent: var(--toffee-light);
-  --sidebar-accent-foreground: var(--ink);
-  --sidebar-border: var(--rule);
-  --sidebar-ring: var(--caramel);
+  /* ── Typografische Rollen (font-Kurzschreibweise) ───────────────────── */
+  --type-display: 500 var(--text-4xl) / 1.1 var(--font-display);
+  --type-title: 500 var(--text-2xl) / 1.1 var(--font-display);
+  --type-heading: 500 var(--text-3xl) / 1.25 var(--font-serif);
+  --type-subheading: 500 var(--text-xl) / 1.25 var(--font-serif);
+  --type-lede: italic 400 var(--text-xl) / 1.65 var(--font-serif);
+  --type-body: 400 var(--text-md) / 1.65 var(--font-sans);
+  --type-body-sm: 400 var(--text-sm) / 1.5 var(--font-sans);
+  --type-label: 400 var(--text-xs) / 1 var(--font-sans);
+  --type-eyebrow: 400 var(--text-2xs) / 1 var(--font-sans);
+  --type-price: 500 var(--text-lg) / 1 var(--font-serif);
 
-  /* schwere, gewichtete Kurve für alle Marken-Bewegungen */
-  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Dunkles Token-Set. Bewusst nur über `.dark` erreichbar, nicht über
-   prefers-color-scheme: die milchweiße Basis ist Markenvorgabe (Section 8.C,
-   "unless the brand insists"). Hierarchie und Akzent bleiben identisch.
-
-   Hier stehen nur die Basisfarben. --ink*, --rule* und --toffee-deep leiten
-   sich oben aus --espresso/--creme ab und drehen dadurch automatisch mit. */
-.dark {
-  --creme: #1b1e21;
-  --creme-2: #22262a;
-  --toffee-light: #2b3035;
-  --espresso: #e7e8ea;
-  --espresso-2: #c6cace;
-  --dark: #121416;
-  --caramel: #9aa1a8;
-  --caramel-deep: #b6bcc2;
-  --toffee: #9c948b;
-  --gold: #aab0b6;
-  --cream-on-dark: #e7e8ea;
-
-  --card: #22262a;
-  --popover: #22262a;
-  --primary-foreground: #16181b;
-  --secondary-foreground: #16181b;
-  --muted-foreground: var(--ink-2);
-  --accent-foreground: var(--ink);
+  /* ── shadcn semantic tokens → Marke ─────────────────────────────────── */
+  --background: var(--bg-page);
+  --foreground: var(--text-body);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-body);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-body);
+  --primary-foreground: var(--primary-contrast);
+  --secondary: var(--bg-accent-soft);
+  --secondary-foreground: var(--text-brand);
+  --muted: var(--bg-sunken);
+  --muted-foreground: var(--text-muted);
+  --accent-foreground: var(--accent-contrast);
+  --destructive: var(--cherry-600);
+  --border: var(--border-default);
+  --input: var(--border-strong);
+  --ring: var(--accent);
+  --chart-1: var(--burgundy-700);
+  --chart-2: var(--rosegold-500);
+  --chart-3: var(--cocoa-600);
+  --chart-4: var(--sage-600);
+  --chart-5: var(--cream-400);
+  --radius: 3px;
+  --sidebar: var(--bg-sunken);
+  --sidebar-foreground: var(--text-body);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-contrast);
+  --sidebar-accent: var(--bg-accent-soft);
+  --sidebar-accent-foreground: var(--text-body);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: var(--accent);
 }
 
 @layer base {
@@ -241,93 +339,139 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-sans);
+    background: var(--bg-page);
+    color: var(--text-body);
+    font: var(--type-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 500;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
   ::selection {
-    background: var(--espresso);
-    color: var(--creme);
+    background: var(--rosegold-300);
+    color: var(--burgundy-900);
+  }
+  /* Fokus: 3-px-Roségold-Ring bei 45 %. Als Outline, damit er sich nicht
+     mit Karten- und Dialogschatten schlägt. */
+  :focus-visible {
+    outline: 3px solid rgba(211, 164, 136, 0.45);
+    outline-offset: 1px;
   }
 }
 
-/* ── Typografie-Utilities ────────────────────────────────────────────── */
+/* ── Typografische Rollen als Utilities ─────────────────────────────────── */
 
+/* Cinzel-Kapitalen, gesperrt. Größe skaliert mit dem Viewport innerhalb der
+   Skala (28 → 48 px), damit lange deutsche und russische Zeilen zweizeilig
+   bleiben. */
 @utility ck-display {
-  font-family: var(--font-display);
-  font-weight: 500;
+  font: 500 clamp(1.75rem, 1.1rem + 2.4vw, 3rem) / 1.15 var(--font-display);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
   text-wrap: balance;
 }
-
-/* Kursive Display-Wörter brauchen Platz für Unterlängen (y g j p q). */
-@utility ck-display-italic {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.12;
-  padding-bottom: 0.08em;
-}
-
-@utility ck-kicker {
-  font-family: var(--font-sans);
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: 0.24em;
+@utility ck-title {
+  font: var(--type-title);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--ink-3);
+  text-wrap: balance;
 }
-
-@utility ck-nav-link {
-  font-family: var(--font-sans);
-  font-size: 0.78125rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+@utility ck-heading {
+  font: 500 clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem) / 1.25 var(--font-serif);
+  text-wrap: balance;
+}
+@utility ck-subheading {
+  font: var(--type-subheading);
+}
+@utility ck-lede {
+  font: var(--type-lede);
+  text-wrap: pretty;
+}
+@utility ck-body {
+  font: var(--type-body);
+}
+@utility ck-body-sm {
+  font: var(--type-body-sm);
+}
+@utility ck-label {
+  font: 400 var(--ck-label-size, var(--text-xs)) / 1 var(--font-sans);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
-
-/* Preise und Bestellnummern in der Display-Serif. */
+@utility ck-eyebrow {
+  font: var(--type-eyebrow);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
 @utility ck-price {
-  font-family: var(--font-display);
-  font-weight: 500;
+  font: var(--type-price);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
 }
-
-/* ── Marken-Bewegung ─────────────────────────────────────────────────── */
-
-/* Endlos-Laufband */
-@keyframes ck-marquee {
-  from {
-    transform: translateX(0);
+/* Fließtext-Seiten (Rechtliches). */
+@utility ck-prose {
+  color: var(--text-muted);
+  & > * + * {
+    margin-top: 1rem;
   }
-  to {
-    transform: translateX(-50%);
+  & h2 {
+    margin-top: 2.5rem;
+    font: var(--type-subheading);
+    color: var(--text-body);
   }
-}
-@utility ck-marquee {
-  animation: ck-marquee 52s linear infinite;
-}
-/* Beim Überfahren anhalten: das Band trägt Inhalt, der lesbar bleiben soll. */
-.ck-marquee-host:hover .ck-marquee,
-.ck-marquee-host:focus-within .ck-marquee {
-  animation-play-state: paused;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ck-marquee {
-    animation: none;
+  & strong {
+    font-weight: 500;
+    color: var(--text-body);
+  }
+  & a {
+    color: var(--text-brand);
+    border-bottom: 1px solid var(--border-accent);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  & a:hover {
+    color: var(--accent-hover);
   }
 }
 
-/* Sanfter Auftritt beim Laden */
+/* ── Material ───────────────────────────────────────────────────────────── */
+
+/* Metallischer Schimmer: nur für Folien-Momente (Trenner, Hero-Linie). */
+@utility ck-sheen {
+  background: var(--sheen);
+}
+/* Schutzverlauf über Fotografie, damit Bildunterschriften lesbar bleiben. */
+@utility ck-protect {
+  background: var(--protect-bottom);
+}
+/* Bildrahmen: Haarlinie mit 4 px Luft, wie die Galerie-Thumbnails im Kit. */
+@utility ck-frame {
+  padding: 4px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+@utility ck-frame-accent {
+  padding: 4px;
+  border: 1px solid var(--border-accent);
+}
+@utility ck-frame-inverse {
+  padding: 4px;
+  border: 1px solid var(--border-on-inverse);
+}
+
+/* ── Bewegung ───────────────────────────────────────────────────────────── */
+
+/* Auftritt beim Laden: 12-px-Rise, langsames ease-out. */
 @keyframes ck-rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -335,7 +479,7 @@
   }
 }
 @utility ck-rise {
-  animation: ck-rise 1s var(--ease-lux) both;
+  animation: ck-rise var(--dur-slow) var(--ease-out) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .ck-rise {
@@ -347,12 +491,10 @@
 @media (scripting: enabled) {
   [data-reveal] {
     opacity: 0;
-    transform: translateY(26px);
-    /* Länger als üblich und bewusst so: hastige Auftritte wirken billig,
-       die gewichtete Kurve braucht Zeit, um schwer zu wirken. */
+    transform: translateY(12px);
     transition:
-      opacity 1.1s var(--ease-lux),
-      transform 1.1s var(--ease-lux);
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out);
     transition-delay: var(--reveal-delay, 0s);
   }
   [data-reveal="in"] {
@@ -368,64 +510,41 @@
   }
 }
 
-/* ── Material ────────────────────────────────────────────────────────── */
-
-/* Filmkorn für haptische Papieranmutung. Fix positioniert, nie auf
-   scrollenden Containern (GPU-Repaints). */
-.ck-grain {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  opacity: 0.045;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+/* ── Toasts (sonner) im Stil des DS-Toasts ──────────────────────────────── */
+[data-sonner-toast].cn-toast {
+  background: var(--cocoa-800);
+  color: var(--cream-100);
+  border: 0;
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  font: var(--type-body-sm);
 }
-
-/* Doppelter Passepartout-Rahmen: weißes Mat, Haarlinie, tiefer Schatten.
-   Scharfe Kanten nach Shape-Rule.
-
-   Die beiden inneren Linien bilden die Fase eines echten Rahmens nach: oben
-   ein heller Grat, unten ein dunklerer Absatz. Zwei Zeilen box-shadow, kein
-   zusätzliches Markup, und der Unterschied zwischen "Bild mit Rand" und
-   "gerahmtes Bild" hängt genau daran. */
-@utility ck-frame {
-  /* Passepartout über --card, damit die Farbvorschau die Rahmenfläche
-     mitfärben kann. Fest verdrahtetes Weiß bliebe unter jeder Palette stehen. */
-  background: var(--card);
-  padding: 14px;
-  box-shadow:
-    /* Auf weißem Passepartout ohnehin unsichtbar, auf dunklem sonst zu grell. */
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(35, 38, 43, 0.06),
-    0 0 0 1px rgba(35, 38, 43, 0.09),
-    0 1px 2px rgba(35, 38, 43, 0.05),
-    0 2px 8px -2px rgba(30, 33, 40, 0.06),
-    0 36px 72px -30px rgba(30, 33, 40, 0.34);
+[data-sonner-toast].cn-toast [data-title] {
+  font-weight: 500;
+  color: var(--rosegold-300);
 }
-
-/* Animierte Haarlinie unter Navigationslinks */
-@utility ck-underline {
-  position: relative;
+[data-sonner-toast].cn-toast [data-description] {
+  color: var(--cream-300);
 }
-.ck-underline::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -6px;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.5s var(--ease-lux);
+[data-sonner-toast].cn-toast [data-icon] {
+  color: var(--rosegold-300);
 }
-.ck-underline:hover::after,
-.ck-underline.active::after {
-  transform: scaleX(1);
+[data-sonner-toast][data-type="success"].cn-toast {
+  border-left-color: var(--sage-600);
 }
-@media (prefers-reduced-motion: reduce) {
-  .ck-underline::after {
-    transition: none;
-  }
+[data-sonner-toast][data-type="error"].cn-toast {
+  border-left-color: var(--cherry-600);
+}
+[data-sonner-toast].cn-toast [data-button] {
+  background: transparent;
+  color: var(--rosegold-300);
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: 0;
+  height: auto;
+}
+[data-sonner-toast].cn-toast [data-button]:hover {
+  color: var(--cream-100);
 }

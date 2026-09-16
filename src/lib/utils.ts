@@ -2,28 +2,14 @@ import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
- * tailwind-merge kennt nur die eingebaute Schriftgrößen-Skala. Ohne diesen
- * Hinweis hält es `text-display-xl` für eine Textfarbe und wirft die Klasse
- * weg, sobald im selben Aufruf auch `text-ink` steht. Die Rampe aus
- * `styles.css` muss deshalb hier gespiegelt werden.
+ * tailwind-merge kennt nur die eingebaute Schriftgrößen-Skala. Die Skala des
+ * Design Systems (`text-2xs`, `text-md`) wird hier gespiegelt, damit sie
+ * neben `text-ink` nicht als Farbe gelesen und verworfen wird.
  */
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      "font-size": [
-        {
-          text: [
-            "display-xl",
-            "display-l",
-            "display-m",
-            "display-s",
-            "body-l",
-            "body-m",
-            "body-s",
-            "label",
-          ],
-        },
-      ],
+      "font-size": [{ text: ["2xs", "md"] }],
     },
   },
 });

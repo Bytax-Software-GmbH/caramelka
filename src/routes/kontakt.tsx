@@ -2,9 +2,10 @@ import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { ClockIcon, MapPinIcon, TruckIcon } from "lucide-react";
 
+import { buttonVariants } from "#/components/ck/button";
 import { PublicShell, shell } from "#/components/ck/layout";
-import { FramedPhoto } from "#/components/ck/framed-photo";
-import { Body, Kicker, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { Placeholder } from "#/components/ck/placeholder";
+import { PageHead, textLinkClass } from "#/components/ck/primitives";
 import { useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
@@ -27,63 +28,50 @@ function ContactPage() {
   const { t } = useI18n();
   const { contact } = site;
 
+  const entries = [
+    { icon: SiWhatsapp, label: t.contact.orderLabel, value: contact.whatsapp },
+    { icon: TruckIcon, label: t.contact.pickupLabel, value: t.contact.pickupValue },
+    { icon: ClockIcon, label: t.contact.hoursLabel, value: contact.hours },
+    {
+      icon: MapPinIcon,
+      label: t.contact.addressLabel,
+      value: `${contact.address.street}, ${contact.address.zip} ${contact.address.city}`,
+    },
+  ];
+
   return (
     <PublicShell>
-      <section className={cn(shell, "grid gap-14 py-16 md:py-24 lg:grid-cols-12 lg:gap-20")}>
-        <div className="lg:col-span-6">
-          <Kicker className="mb-5">{t.contact.kicker}</Kicker>
-          <SectionTitle as="h1" size="xl" className="mb-6 max-w-[12ch]">
-            {t.contact.title}
-          </SectionTitle>
-          <Body size="l" className="mb-10 max-w-[48ch]">
-            {t.contact.intro}
-          </Body>
+      <section className={cn(shell, "pt-14 pb-12 lg:pt-16")}>
+        <PageHead eyebrow={t.contact.kicker} title={t.contact.title} lede={t.contact.intro} />
+      </section>
 
+      <section className={cn(shell, "grid gap-12 pb-20 lg:grid-cols-12 lg:gap-16 lg:pb-24")}>
+        <div className="lg:col-span-6">
           <a
             href={contact.whatsappLink}
             target="_blank"
             rel="noreferrer"
-            className={pillVariants.primary}
+            className={buttonVariants({ size: "lg" })}
           >
             <SiWhatsapp className="size-4" aria-hidden /> {t.contact.whatsapp}
           </a>
 
-          <dl className="mt-14 grid gap-10 border-t border-rule pt-10 sm:grid-cols-2">
-            <div>
-              <dt className="mb-2.5 flex items-center gap-2 ck-kicker">
-                <SiWhatsapp className="size-3.5" aria-hidden /> {t.contact.orderLabel}
-              </dt>
-              <dd className="ck-display text-display-s text-ink">{contact.whatsapp}</dd>
-            </div>
-            <div>
-              <dt className="mb-2.5 flex items-center gap-2 ck-kicker">
-                <TruckIcon className="size-3.5" aria-hidden /> {t.contact.pickupLabel}
-              </dt>
-              <dd className="ck-display text-display-s text-ink">{t.contact.pickupValue}</dd>
-            </div>
-            <div>
-              <dt className="mb-2.5 flex items-center gap-2 ck-kicker">
-                <ClockIcon className="size-3.5" aria-hidden /> {t.contact.hoursLabel}
-              </dt>
-              <dd className="ck-display text-display-s text-ink">{contact.hours}</dd>
-            </div>
-            <div>
-              <dt className="mb-2.5 flex items-center gap-2 ck-kicker">
-                <MapPinIcon className="size-3.5" aria-hidden /> {t.contact.addressLabel}
-              </dt>
-              <dd className="ck-display text-display-s text-ink">
-                {contact.address.street}
-                <br />
-                {contact.address.zip} {contact.address.city}
-              </dd>
-            </div>
+          <dl className="mt-10 grid gap-8 border-t border-hairline pt-8 sm:grid-cols-2">
+            {entries.map(({ icon: Icon, label, value }) => (
+              <div key={label}>
+                <dt className="flex items-center gap-2 ck-eyebrow text-rosegold-600">
+                  <Icon className="size-3.5" strokeWidth={1.5} aria-hidden /> {label}
+                </dt>
+                <dd className="mt-2.5 text-ink ck-subheading">{value}</dd>
+              </div>
+            ))}
           </dl>
 
           <a
             href={contact.instagram}
             target="_blank"
             rel="noreferrer"
-            className="ck-nav-link mt-12 inline-flex items-center gap-2.5 border-b border-rule-strong pb-1 text-ink-2 transition-colors hover:border-espresso hover:text-ink"
+            className={cn(textLinkClass(), "mt-10")}
           >
             <SiInstagram className="size-4" aria-hidden /> Instagram
           </a>
@@ -91,7 +79,9 @@ function ContactPage() {
 
         <div className="lg:col-span-5 lg:col-start-8">
           <div className="ck-frame">
-            <FramedPhoto imageKey="backstube" alt={t.contact.imageAlt} className="aspect-[4/5]" />
+            <div className="aspect-[4/5] overflow-hidden">
+              <Placeholder imageKey="backstube" alt={t.contact.imageAlt} />
+            </div>
           </div>
         </div>
       </section>

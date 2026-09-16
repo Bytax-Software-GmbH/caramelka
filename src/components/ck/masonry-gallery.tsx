@@ -1,12 +1,7 @@
 import { motion } from "motion/react";
 
 import { Reveal } from "#/components/ck/reveal";
-import {
-  ShotOverlay,
-  shotLayoutId,
-  useShotOverlay,
-  type Shot,
-} from "#/components/ck/shot-overlay";
+import { ShotOverlay, shotLayoutId, useShotOverlay, type Shot } from "#/components/ck/shot-overlay";
 import { cn } from "#/lib/utils";
 
 /**
@@ -62,7 +57,7 @@ export function MasonryGallery({
               onClick={() => setOpen(index)}
               aria-label={shot.caption}
               className={cn(
-                "group relative block w-full overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-caramel",
+                "group relative block w-full overflow-hidden",
                 TILE_RHYTHM[index % TILE_RHYTHM.length],
               )}
             >
@@ -71,13 +66,13 @@ export function MasonryGallery({
                   src={`/images/${shot.imageKey}.webp`}
                   alt={shot.alt}
                   loading="lazy"
-                  className="size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-lux)] group-hover:scale-[1.045]"
+                  className="size-full object-cover transition-transform duration-(--dur-slow) ease-out group-hover:scale-[1.03]"
                 />
               </motion.div>
-              {/* Haarlinie, die beim Hover einläuft. Gleiche Sprache wie die Produktkarte. */}
+              {/* Roségold-Haarlinie, die beim Hover einläuft. */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-3 border border-white/0 transition-[border-color] duration-500 ease-[var(--ease-lux)] group-hover:border-white/45"
+                className="pointer-events-none absolute inset-3 border border-rosegold-300/0 transition-[border-color] duration-(--dur-slow) ease-out group-hover:border-rosegold-300/70"
               />
             </button>
           </Reveal>

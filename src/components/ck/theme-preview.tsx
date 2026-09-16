@@ -6,9 +6,10 @@ import { darken, normalizeHex } from "#/lib/color";
 
 /**
  * Sitewide Farb-Vorschau über URL-Parameter, damit der Kunde Kombis live
- * testen kann — Akzente UND Hintergründe/Text/Dunkel-Sektionen:
+ * testen kann. Die Parameter zeigen auf die Rampen des Design Systems;
+ * Nachbarstufen (hover, active, Haarlinien) werden abgeleitet:
  *
- *   /?primary=6B7178&secondary=AAB0B6&bg=F4F3F1&text=23262B&dark=17191C
+ *   /?primary=5C1216&accent=D3A488&bg=FBF6F0&text=2A1A17&dark=4B0F14
  *
  * Hex ohne #; jeder Parameter ist optional, ungültige Werte werden ignoriert.
  * Persistenz in sessionStorage → Kombi überlebt Navigation + Reload im Tab.
@@ -24,7 +25,7 @@ interface ParamDef {
   label: string;
   /** Haupt-Token. */
   cssVar: string;
-  /** Standardwert (Graphit-Palette) — für Panel-Anzeige & Diff im Share-Link. */
+  /** Standardwert (Design-System-Palette), für Panel-Anzeige & Diff im Share-Link. */
   defaultHex: string;
   /**
    * Automatisch abgeleitete Nachbar-Tokens (Lightness-Offset), damit eine
@@ -37,51 +38,64 @@ interface ParamDef {
 export const THEME_PARAMS: ParamDef[] = [
   {
     param: "primary",
-    label: "Primär-Akzent",
-    cssVar: "--caramel",
-    defaultHex: "#6B7178",
-    derived: [{ cssVar: "--caramel-deep", delta: 12 }],
+    label: "Burgund (Primär)",
+    cssVar: "--burgundy-700",
+    defaultHex: "#5C1216",
+    derived: [
+      { cssVar: "--burgundy-600", delta: -6 },
+      { cssVar: "--burgundy-500", delta: -12 },
+      { cssVar: "--burgundy-800", delta: 5 },
+      { cssVar: "--burgundy-900", delta: 9 },
+    ],
   },
   {
-    param: "secondary",
-    label: "Sekundär-Akzent",
-    cssVar: "--gold",
-    defaultHex: "#AAB0B6",
-    derived: [{ cssVar: "--toffee", delta: 8 }],
+    param: "accent",
+    label: "Roségold (Akzent)",
+    cssVar: "--rosegold-500",
+    defaultHex: "#D3A488",
+    derived: [
+      { cssVar: "--rosegold-600", delta: 7 },
+      { cssVar: "--rosegold-700", delta: 14 },
+      { cssVar: "--rosegold-400", delta: -7 },
+      { cssVar: "--rosegold-300", delta: -12 },
+      { cssVar: "--rosegold-200", delta: -20 },
+      { cssVar: "--rosegold-100", delta: -26 },
+    ],
   },
   {
     param: "bg",
-    label: "Hintergrund",
-    cssVar: "--creme",
-    defaultHex: "#F4F3F1",
+    label: "Creme (Hintergrund)",
+    cssVar: "--cream-100",
+    defaultHex: "#FBF6F0",
     derived: [
-      { cssVar: "--creme-2", delta: 5 },
-      { cssVar: "--toffee-light", delta: 9 },
+      { cssVar: "--cream-50", delta: -1 },
+      { cssVar: "--cream-200", delta: 3 },
+      { cssVar: "--cream-300", delta: 8 },
+      { cssVar: "--cream-400", delta: 14 },
+      { cssVar: "--cream-500", delta: 25 },
     ],
   },
-  { param: "bg2", label: "Fläche 2", cssVar: "--creme-2", defaultHex: "#E8E7E3" },
-  { param: "surface", label: "Akzentfläche", cssVar: "--toffee-light", defaultHex: "#DEDDDB" },
-  /**
-   * Passepartout der Bilderrahmen (und Kartenfläche im Admin). Getrennt
-   * steuerbar, weil sich aus Hintergrund und Text nicht ableiten lässt, ob
-   * eine Vorschau-Palette hell oder dunkel gemeint ist.
-   */
-  { param: "card", label: "Rahmenfläche", cssVar: "--card", defaultHex: "#FFFFFF" },
+  { param: "surface", label: "Kartenfläche", cssVar: "--cream-50", defaultHex: "#FDFAF6" },
   {
     param: "text",
-    label: "Text/Buttons",
-    cssVar: "--espresso",
-    defaultHex: "#23262B",
-    derived: [{ cssVar: "--espresso-2", delta: -10 }],
+    label: "Kakao (Text)",
+    cssVar: "--cocoa-800",
+    defaultHex: "#2A1A17",
+    derived: [
+      { cssVar: "--cocoa-900", delta: 4 },
+      { cssVar: "--cocoa-700", delta: -8 },
+      { cssVar: "--cocoa-600", delta: -18 },
+      { cssVar: "--cocoa-500", delta: -30 },
+      { cssVar: "--cocoa-400", delta: -42 },
+      { cssVar: "--cocoa-300", delta: -55 },
+    ],
   },
   {
     param: "dark",
-    label: "Dunkle Sektion",
-    cssVar: "--dark",
-    defaultHex: "#17191C",
-    derived: [{ cssVar: "--cream-on-dark", delta: -74 }],
+    label: "Footer (tiefes Burgund)",
+    cssVar: "--burgundy-800",
+    defaultHex: "#4B0F14",
   },
-  { param: "ondark", label: "Text auf Dunkel", cssVar: "--cream-on-dark", defaultHex: "#E7E8EA" },
 ];
 
 /** cssVar → URL-Param (für „Link teilen" im /colors-Editor). */
@@ -212,7 +226,7 @@ export function ThemeParamSync() {
     <div className="fixed bottom-4 left-4 z-50 flex flex-col items-start gap-2">
       {/* Floating-Panel: alle Parameter live änderbar */}
       {open && (
-        <div className="w-[248px] rounded-xl bg-espresso/95 p-4 text-creme shadow-xl backdrop-blur">
+        <div className="w-[248px] rounded-md bg-cocoa-800 p-4 text-cream-100 shadow-lg">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[11px] font-semibold tracking-[0.14em] uppercase">
               Farben anpassen
@@ -221,7 +235,7 @@ export function ThemeParamSync() {
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Panel schließen"
-              className="grid size-6 place-items-center rounded-full text-creme/70 hover:bg-creme/10 hover:text-creme"
+              className="grid size-6 place-items-center rounded-full text-cream-300 hover:bg-cream-100/10 hover:text-cream-100"
             >
               <XIcon className="size-3.5" />
             </button>
@@ -233,7 +247,7 @@ export function ThemeParamSync() {
               return (
                 <label
                   key={def.param}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-md px-1.5 py-1 hover:bg-creme/10"
+                  className="flex cursor-pointer items-center gap-2.5 rounded-md px-1.5 py-1 hover:bg-cream-100/10"
                 >
                   <span className="relative inline-block size-6 shrink-0">
                     <span
@@ -250,7 +264,7 @@ export function ThemeParamSync() {
                     />
                   </span>
                   <span className="flex-1 text-[12px]">{def.label}</span>
-                  <span className="font-mono text-[10.5px] text-creme/60 tabular-nums">
+                  <span className="font-mono text-[10.5px] text-cream-300 tabular-nums">
                     {value.toUpperCase()}
                   </span>
                 </label>
@@ -258,7 +272,7 @@ export function ThemeParamSync() {
             })}
           </div>
 
-          <div className="mt-3 flex gap-2 border-t border-creme/15 pt-3">
+          <div className="mt-3 flex gap-2 border-t border-hairline-inverse pt-3">
             <button
               type="button"
               onClick={() => {
@@ -266,14 +280,14 @@ export function ThemeParamSync() {
                   .writeText(buildShareUrl(active))
                   .then(() => toast.success("Vorschau-Link kopiert"));
               }}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-creme/40 px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-creme hover:text-espresso"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm border border-hairline-inverse px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-cream-100 hover:text-ink"
             >
               <CopyIcon className="size-3" /> Link
             </button>
             <button
               type="button"
               onClick={reset}
-              className="inline-flex flex-1 items-center justify-center rounded-full border border-creme/40 px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-creme hover:text-espresso"
+              className="inline-flex flex-1 items-center justify-center rounded-sm border border-hairline-inverse px-3 py-1.5 text-[10.5px] font-semibold tracking-[0.08em] uppercase transition-colors hover:bg-cream-100 hover:text-ink"
             >
               Zurücksetzen
             </button>
@@ -286,7 +300,7 @@ export function ThemeParamSync() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex items-center gap-3 rounded-full bg-espresso/95 py-2 pr-4 pl-3 text-creme shadow-lg backdrop-blur transition-transform active:scale-[0.97]"
+        className="flex items-center gap-3 rounded-sm bg-cocoa-800 py-2 pr-4 pl-3 text-cream-100 shadow-lg transition-colors"
       >
         <PaletteIcon className="size-4" aria-hidden />
         <span className="flex items-center gap-1.5" aria-hidden>

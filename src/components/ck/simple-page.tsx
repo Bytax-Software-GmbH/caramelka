@@ -1,7 +1,8 @@
-import { PublicShell } from "#/components/ck/layout";
-import { Kicker, SectionTitle } from "#/components/ck/primitives";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { PageHead } from "#/components/ck/primitives";
+import { cn } from "#/lib/utils";
 
-/** Schmale Text-Seite (Rechtliches etc.). */
+/** Schmale Text-Seite (Rechtliches etc.), 720 breit. */
 export function SimplePage({
   kicker,
   title,
@@ -13,14 +14,9 @@ export function SimplePage({
 }) {
   return (
     <PublicShell>
-      <section className="mx-auto max-w-3xl px-5 py-14 md:px-8 md:py-16">
-        <Kicker className="mb-4">{kicker}</Kicker>
-        <SectionTitle as="h1" className="mb-8">
-          {title}
-        </SectionTitle>
-        <div className="space-y-4 text-[15px] leading-[1.7] text-espresso/80 [&_h2]:mt-8 [&_h2]:ck-display [&_h2]:text-[24px] [&_h2]:text-espresso">
-          {children}
-        </div>
+      <section className={cn(shell, "max-w-narrow pt-14 pb-20")}>
+        <PageHead eyebrow={kicker} title={title} />
+        <div className="ck-prose mt-10 border-t border-hairline pt-8">{children}</div>
       </section>
     </PublicShell>
   );

@@ -1,68 +1,19 @@
+import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { Link } from "@tanstack/react-router";
 import { MenuIcon, ShoppingBagIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { Logo } from "#/components/ck/logo";
+import { BagDrawer } from "#/components/ck/bag-drawer";
+import { IconButton, iconButtonVariants } from "#/components/ck/icon-button";
+import { Logo, LogoLockup } from "#/components/ck/logo";
+import { useBagDrawer } from "#/lib/bag-drawer";
 import { useCart } from "#/lib/cart";
 import { useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
 
-/** Einheitliche Seitenbreite. Eine Regel, überall dieselbe. */
-export const shell = "mx-auto w-full max-w-7xl px-6 md:px-10";
-
-function LocaleSwitch({ onDark = false }: { onDark?: boolean }) {
-  const { locale, setLocale } = useI18n();
-  const active = onDark ? "text-cream-on-dark" : "text-ink";
-  const inactive = onDark
-    ? "text-ink-2-on-dark hover:text-cream-on-dark"
-    : "text-ink-3 hover:text-ink";
-  return (
-    <div
-      className="flex items-center gap-2 text-[0.75rem] font-semibold tracking-[0.12em]"
-      aria-label="Sprache / Язык"
-    >
-      <button
-        type="button"
-        onClick={() => setLocale("de")}
-        className={cn("transition-colors", locale === "de" ? active : inactive)}
-        aria-pressed={locale === "de"}
-      >
-        DE
-      </button>
-      <span aria-hidden className={onDark ? "text-ink-2-on-dark/50" : "text-rule-strong"}>
-        /
-      </span>
-      <button
-        type="button"
-        onClick={() => setLocale("ru")}
-        className={cn("transition-colors", locale === "ru" ? active : inactive)}
-        aria-pressed={locale === "ru"}
-      >
-        RU
-      </button>
-    </div>
-  );
-}
-
-function CartButton() {
-  const { count } = useCart();
-  const { t } = useI18n();
-  return (
-    <Link
-      to="/warenkorb"
-      aria-label={t.nav.warenkorb}
-      className="relative grid size-10 place-items-center rounded-full border border-rule-strong text-ink transition-colors duration-300 hover:border-espresso hover:bg-espresso hover:text-creme"
-    >
-      <ShoppingBagIcon className="size-[18px]" aria-hidden />
-      {count > 0 && (
-        <span className="absolute -top-1 -right-1 grid min-w-[18px] place-items-center rounded-full bg-espresso px-1 text-[0.65rem] leading-[18px] font-bold text-creme">
-          {count}
-        </span>
-      )}
-    </Link>
-  );
-}
+/** Einheitliche Seitenbreite: Container 1200 mit 24-px-Gutter. */
+export const shell = "mx-auto w-full max-w-page px-6";
 
 const navItems = [
   { to: "/torten", key: "torten" },
@@ -71,77 +22,119 @@ const navItems = [
   { to: "/kontakt", key: "kontakt" },
 ] as const;
 
+const navLink =
+  "ck-label border-b border-transparent pb-0.5 text-rosegold-300 transition-colors duration-(--dur-fast) ease-out hover:text-cream-100 [&.active]:border-rosegold-500 [&.active]:text-rosegold-500";
+
+function LocaleSwitch({ className }: { className?: string }) {
+  const { locale, setLocale } = useI18n();
+  return (
+    <div className={cn("flex items-center gap-2 ck-label", className)} aria-label="Sprache / Язык">
+      {(["de", "ru"] as const).map((l, index) => (
+        <span key={l} className="flex items-center gap-2">
+          {index > 0 && (
+            <span aria-hidden className="text-rosegold-500/50">
+              /
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setLocale(l)}
+            aria-pressed={locale === l}
+            className={cn(
+              "transition-colors duration-(--dur-fast) ease-out",
+              locale === l ? "text-rosegold-500" : "text-rosegold-300 hover:text-cream-100",
+            )}
+          >
+            {l.toUpperCase()}
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Klebender Header auf Burgund, drei Spalten: Navigation / Wortmarke /
+ * Aktionen. Auf jeder Seite gleich; auf der Startseite geht er nahtlos in
+ * den Hero über.
+ */
 export function Header() {
   const { t } = useI18n();
+  const { count } = useCart();
+  const { openBag } = useBagDrawer();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-creme/85 backdrop-blur-md">
-      <div className={cn(shell, "flex h-[72px] items-center justify-between gap-6")}>
-        <Link to="/" aria-label="Caramelka, Startseite" onClick={() => setOpen(false)}>
-          <Logo size="sm" />
-        </Link>
-
-        <nav className="hidden items-center gap-9 lg:flex" aria-label="Hauptnavigation">
+    <header className="sticky top-0 z-40 border-b border-hairline-inverse bg-inverse">
+      <div className={cn(shell, "grid h-[72px] grid-cols-[1fr_auto_1fr] items-center gap-4")}>
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Hauptnavigation">
           {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="ck-underline ck-nav-link text-ink-2 transition-colors duration-300 hover:text-ink [&.active]:text-ink"
-            >
+            <Link key={item.to} to={item.to} className={navLink}>
               {t.nav[item.key]}
             </Link>
           ))}
         </nav>
+        <div className="lg:hidden">
+          <IconButton
+            variant="inverse"
+            label={open ? t.nav.close : t.nav.menu}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <XIcon strokeWidth={1.5} /> : <MenuIcon strokeWidth={1.5} />}
+          </IconButton>
+        </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:block">
-            <LocaleSwitch />
-          </div>
+        <Link
+          to="/"
+          aria-label="Caramelka Lily, Startseite"
+          className="justify-self-center"
+          onClick={() => setOpen(false)}
+        >
+          <Logo size="sm" onDark />
+        </Link>
+
+        <div className="flex items-center justify-end gap-1">
+          <LocaleSwitch className="mr-3 hidden sm:flex" />
           <a
             href={site.contact.whatsappLink}
             target="_blank"
             rel="noreferrer"
-            className="hidden rounded-full border border-rule-strong px-6 py-2.5 text-[0.72rem] font-semibold tracking-[0.14em] text-ink uppercase transition-[background-color,color,transform] duration-500 ease-[var(--ease-lux)] hover:bg-espresso hover:text-creme active:scale-[0.97] md:inline-flex"
+            aria-label={t.nav.whatsapp}
+            title={t.nav.whatsapp}
+            className={iconButtonVariants({ variant: "inverse" })}
           >
-            {t.nav.whatsapp}
+            <SiWhatsapp className="size-[18px]" />
           </a>
-          <CartButton />
-          <button
-            type="button"
-            className="grid size-10 place-items-center rounded-full border border-rule-strong text-ink lg:hidden"
-            aria-expanded={open}
-            aria-label="Menü"
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <XIcon className="size-[18px]" /> : <MenuIcon className="size-[18px]" />}
-          </button>
+          <IconButton variant="inverse" label={t.nav.warenkorb} badge={count} onClick={openBag}>
+            <ShoppingBagIcon strokeWidth={1.5} />
+          </IconButton>
         </div>
       </div>
 
       {open && (
         <nav
-          className={cn(shell, "border-t border-rule bg-creme py-5 lg:hidden")}
+          className={cn(shell, "border-t border-hairline-inverse py-4 lg:hidden")}
           aria-label="Mobile Navigation"
         >
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col">
             {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="ck-nav-link text-[0.95rem] text-ink"
+                className={cn(navLink, "border-b-0 py-3 text-sm")}
               >
                 {t.nav[item.key]}
               </Link>
             ))}
-            <div className="flex items-center justify-between border-t border-rule pt-4">
+            <div className="mt-2 flex items-center justify-between border-t border-hairline-inverse pt-4">
               <LocaleSwitch />
               <a
                 href={site.contact.whatsappLink}
                 target="_blank"
                 rel="noreferrer"
-                className="ck-nav-link text-ink-2"
+                className={cn(navLink, "border-b-0")}
               >
                 {t.nav.whatsapp}
               </a>
@@ -153,79 +146,104 @@ export function Header() {
   );
 }
 
-/** Laufband-Streifen. Genau eines pro Seite. */
-export function Marquee() {
-  const { t } = useI18n();
-  const items = [...t.marquee, ...t.marquee, ...t.marquee];
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="ck-marquee-host overflow-hidden border-b border-rule bg-creme-2">
-      <div className="flex w-max ck-marquee py-3">
-        {[0, 1].map((half) => (
-          <div
-            key={half}
-            aria-hidden={half === 1}
-            className="flex gap-16 pr-16 text-[0.6875rem] font-medium tracking-[0.24em] whitespace-nowrap text-ink-3 uppercase"
-          >
-            {items.map((item, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <span key={index}>{item}</span>
-            ))}
-          </div>
-        ))}
-      </div>
+    <div>
+      <div className="ck-eyebrow text-rosegold-400">{title}</div>
+      <div className="mt-4 flex flex-col gap-2.5 text-cream-300 ck-body-sm">{children}</div>
     </div>
   );
 }
 
-/**
- * Abschluss-Block in Graphit. Einziger dunkler Bereich der Seite und
- * bewusst terminal: er beendet das Dokument, er unterbricht es nicht.
- */
+const footerLink =
+  "transition-colors duration-(--dur-fast) ease-out hover:text-cream-100 hover:underline underline-offset-[3px]";
+
+/** Tiefes Burgund als Abschluss der Seite. */
 export function Footer() {
   const { t } = useI18n();
+  const { contact } = site;
   return (
-    <footer className="mt-auto bg-dark text-cream-on-dark">
-      <div className={cn(shell, "grid gap-12 py-20 md:grid-cols-3 md:py-24")}>
+    <footer className="mt-auto bg-inverse-deep text-on-inverse">
+      <div
+        className={cn(
+          shell,
+          "grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:pb-10",
+        )}
+      >
         <div>
-          <div className="mb-4 ck-kicker text-ink-2-on-dark">{t.footer.order}</div>
-          <a
-            href={site.contact.whatsappLink}
-            target="_blank"
-            rel="noreferrer"
-            className="ck-display text-display-m transition-colors hover:text-gold"
-          >
-            WhatsApp {site.contact.whatsapp}
+          <LogoLockup className="w-[180px]" />
+          <p className="mt-5 max-w-[300px] text-cream-300 ck-body-sm">{t.footer.claim}</p>
+          <div className="mt-4 flex gap-1">
+            <a
+              href={contact.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={t.footer.instagram}
+              title={t.footer.instagram}
+              className={iconButtonVariants({ variant: "inverse", size: "sm" })}
+            >
+              <SiInstagram className="size-4" />
+            </a>
+            <a
+              href={contact.whatsappLink}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={t.nav.whatsapp}
+              title={t.nav.whatsapp}
+              className={iconButtonVariants({ variant: "inverse", size: "sm" })}
+            >
+              <SiWhatsapp className="size-4" />
+            </a>
+          </div>
+        </div>
+
+        <FooterColumn title={t.footer.order}>
+          <a href={contact.whatsappLink} target="_blank" rel="noreferrer" className={footerLink}>
+            WhatsApp {contact.whatsapp}
           </a>
-        </div>
-        <div>
-          <div className="mb-4 ck-kicker text-ink-2-on-dark">{t.footer.pickupDelivery}</div>
-          <div className="ck-display text-display-m">{t.footer.pickupDeliveryValue}</div>
-        </div>
-        <div>
-          <div className="mb-4 ck-kicker text-ink-2-on-dark">{t.footer.hours}</div>
-          <div className="ck-display text-display-m">{site.contact.hours}</div>
-        </div>
+          <span>{contact.hours}</span>
+        </FooterColumn>
+
+        <FooterColumn title={t.footer.assortment}>
+          {navItems.slice(0, 3).map((item) => (
+            <Link key={item.to} to={item.to} className={footerLink}>
+              {t.nav[item.key]}
+            </Link>
+          ))}
+        </FooterColumn>
+
+        <FooterColumn title={t.footer.contact}>
+          <span>
+            {contact.address.street}
+            <br />
+            {contact.address.zip} {contact.address.city}
+          </span>
+          <span>{t.footer.pickupDeliveryValue}</span>
+          <Link to="/kontakt" className={footerLink}>
+            {t.nav.kontakt}
+          </Link>
+        </FooterColumn>
       </div>
-      <div className="border-t border-white/10">
+
+      <div className="border-t border-hairline-inverse">
         <div
           className={cn(
             shell,
-            "flex flex-col items-center justify-between gap-5 py-7 md:flex-row",
+            "flex flex-col items-center justify-between gap-4 py-5 ck-eyebrow tracking-label text-on-inverse-muted md:flex-row",
           )}
         >
-          <Logo size="sm" onDark />
-          <p className="text-body-s text-ink-2-on-dark">{t.footer.claim}</p>
-          <nav
-            className="flex gap-7 text-[0.7rem] tracking-[0.16em] text-ink-2-on-dark uppercase"
-            aria-label={t.footer.legal}
-          >
-            <Link to="/impressum" className="transition-colors hover:text-cream-on-dark">
+          <span>
+            © {new Date().getFullYear()} {site.name} · {contact.address.city}
+          </span>
+          <span className="hidden md:inline">— {site.tagline} —</span>
+          <nav className="flex gap-4" aria-label={t.footer.legal}>
+            <Link to="/impressum" className={footerLink}>
               {t.footer.impressum}
             </Link>
-            <Link to="/datenschutz" className="transition-colors hover:text-cream-on-dark">
+            <Link to="/datenschutz" className={footerLink}>
               {t.footer.datenschutz}
             </Link>
-            <Link to="/agb" className="transition-colors hover:text-cream-on-dark">
+            <Link to="/agb" className={footerLink}>
               {t.footer.agb}
             </Link>
           </nav>
@@ -235,21 +253,14 @@ export function Footer() {
   );
 }
 
-/** Öffentliches Seiten-Shell: Header + Inhalt + Footer. */
-export function PublicShell({
-  children,
-  marquee = false,
-}: {
-  children: React.ReactNode;
-  marquee?: boolean;
-}) {
+/** Öffentliches Seiten-Shell: Header, Inhalt, Footer, Warenkorb-Drawer. */
+export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <div aria-hidden className="ck-grain" />
+    <div className="flex min-h-dvh flex-col">
       <Header />
-      {marquee && <Marquee />}
       <main className="flex-1">{children}</main>
       <Footer />
+      <BagDrawer />
     </div>
   );
 }

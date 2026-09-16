@@ -69,4 +69,5 @@ docs/design/          Caramelka Directions (Design-Referenz)
 - Echte Kontaktdaten/WhatsApp-Nummer in `src/lib/site.ts`
 - Impressum/Datenschutz/AGB juristisch finalisieren
 - `/signup` schließen (Invite-only) · PayPal-Zahlung · E-Mail-Bestätigung bei Bestellung
+
 # caramelka

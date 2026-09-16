@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AdminBack, AdminEmpty, AdminHeading } from "#/components/ck/admin";
 import { AdminProductForm } from "#/components/ck/admin-product-form";
 import { $adminListProducts } from "#/lib/server/admin";
 
@@ -27,13 +28,16 @@ function EditProductPage() {
 
   const product = data.products.find((p) => p.id === id);
   if (!product) {
-    return <p className="py-12 text-center text-espresso/50">Produkt nicht gefunden.</p>;
+    return <AdminEmpty>Produkt nicht gefunden.</AdminEmpty>;
   }
   const sizes = data.sizes.filter((s) => s.productId === id);
 
   return (
     <div>
-      <h1 className="mb-6 ck-display text-3xl">{product.nameDe} bearbeiten</h1>
+      <AdminBack to="/app/produkte">Alle Produkte</AdminBack>
+      <div className="mt-6">
+        <AdminHeading eyebrow="Produkt bearbeiten" title={product.nameDe} />
+      </div>
       <AdminProductForm
         categories={data.categories}
         initial={{

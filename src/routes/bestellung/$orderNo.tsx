@@ -1,12 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CheckIcon } from "lucide-react";
 
-import { PublicShell } from "#/components/ck/layout";
-import { Kicker, pillVariants, SectionTitle } from "#/components/ck/primitives";
+import { buttonVariants } from "#/components/ck/button";
+import { PublicShell, shell } from "#/components/ck/layout";
+import { Eyebrow, PageHead, Price } from "#/components/ck/primitives";
 import { formatDate, formatPrice } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
 import { $getOrderConfirmation } from "#/lib/server/orders";
 import { site } from "#/lib/site";
+import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/bestellung/$orderNo")({
   loader: async ({ params }) => {
@@ -23,53 +24,48 @@ export const Route = createFileRoute("/bestellung/$orderNo")({
   component: ConfirmationPage,
 });
 
+/** Bestätigung: Monogramm als Siegel, dann die Zusammenfassung. */
 function ConfirmationPage() {
   const { t, locale } = useI18n();
   const order = Route.useLoaderData();
 
   return (
     <PublicShell>
-      <section className="mx-auto max-w-2xl px-5 py-16 md:px-8 md:py-20">
-        <div className="mb-10 text-center">
-          <div className="mx-auto mb-6 grid size-14 place-items-center rounded-full bg-caramel text-creme">
-            <CheckIcon className="size-6" aria-hidden />
-          </div>
-          <Kicker className="mb-3">{t.confirmation.kicker}</Kicker>
-          <SectionTitle as="h1" className="mb-4">
-            {t.confirmation.title}
-          </SectionTitle>
-          <p className="mx-auto max-w-[46ch] text-[15px] leading-[1.65] text-espresso/70">
-            {t.confirmation.text(order.orderNo)}
-          </p>
-        </div>
+      <section className={cn(shell, "max-w-narrow pt-16 pb-20")}>
+        <PageHead
+          seal
+          eyebrow={t.confirmation.kicker}
+          title={t.confirmation.title}
+          lede={t.confirmation.text(order.orderNo)}
+        />
 
-        <div className="rounded-md border border-espresso/15 bg-white p-6">
-          <h2 className="mb-5 ck-kicker">{t.confirmation.summary}</h2>
-          <ul className="mb-5 space-y-3 text-[14px]">
+        <div className="mt-10 rounded-md border border-t-2 border-hairline border-t-accent bg-surface p-6">
+          <Eyebrow>{t.confirmation.summary}</Eyebrow>
+          <ul className="mt-5 flex flex-col gap-3 ck-body-sm">
             {order.items.map((item, i) => (
               // eslint-disable-next-line react/no-array-index-key
               <li key={i} className="flex justify-between gap-4">
-                <span className="text-espresso/80">
+                <span className="text-ink">
                   {item.quantity} × {item.productName}
-                  <span className="block text-[12.5px] text-espresso/55">
+                  <span className="block text-ink-muted">
                     {item.sizeLabel}
                     {item.fillingName ? ` · ${item.fillingName}` : ""}
                     {item.inscription ? ` · „${item.inscription}“` : ""}
                   </span>
                 </span>
-                <span className="font-semibold whitespace-nowrap">
+                <Price className="text-md whitespace-nowrap">
                   {formatPrice(item.totalCents, locale)}
-                </span>
+                </Price>
               </li>
             ))}
           </ul>
-          <dl className="space-y-2 border-t border-espresso/10 pt-4 text-[14px]">
+          <dl className="mt-5 flex flex-col gap-2 border-t border-hairline pt-4 ck-body-sm">
             <div className="flex justify-between">
-              <dt className="text-espresso/60">{t.confirmation.date}</dt>
+              <dt className="text-ink-muted">{t.confirmation.date}</dt>
               <dd>{formatDate(order.desiredDate, locale)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-espresso/60">
+              <dt className="text-ink-muted">
                 {order.fulfilment === "pickup" ? t.confirmation.pickup : t.confirmation.delivery}
               </dt>
               <dd>
@@ -78,27 +74,29 @@ function ConfirmationPage() {
             </div>
             {order.deliveryFeeCents > 0 && (
               <div className="flex justify-between">
-                <dt className="text-espresso/60">{t.common.deliveryFee}</dt>
+                <dt className="text-ink-muted">{t.common.deliveryFee}</dt>
                 <dd>{formatPrice(order.deliveryFeeCents, locale)}</dd>
               </div>
             )}
-            <div className="flex justify-between border-t border-espresso/10 pt-3">
-              <dt className="font-semibold">{t.confirmation.total}</dt>
-              <dd className="ck-display text-[24px]">{formatPrice(order.totalCents, locale)}</dd>
+            <div className="flex items-baseline justify-between border-t border-hairline pt-3">
+              <dt className="ck-label">{t.confirmation.total}</dt>
+              <dd>
+                <Price className="text-2xl">{formatPrice(order.totalCents, locale)}</Price>
+              </dd>
             </div>
           </dl>
         </div>
 
-        <div className="mt-9 flex flex-wrap justify-center gap-4">
+        <div className="mt-9 flex flex-wrap justify-center gap-3">
           <a
             href={site.contact.whatsappLink}
             target="_blank"
             rel="noreferrer"
-            className={pillVariants.outline}
+            className={buttonVariants({ variant: "secondary" })}
           >
             {t.confirmation.whatsapp}
           </a>
-          <Link to="/" className={pillVariants.primary}>
+          <Link to="/" className={buttonVariants()}>
             {t.confirmation.backHome}
           </Link>
         </div>

@@ -8,12 +8,7 @@ import {
 } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  ShotOverlay,
-  shotLayoutId,
-  useShotOverlay,
-  type Shot,
-} from "#/components/ck/shot-overlay";
+import { ShotOverlay, shotLayoutId, useShotOverlay, type Shot } from "#/components/ck/shot-overlay";
 
 /**
  * Magnetic Carousel: Bildstreifen, die sich macOS-Dock-artig vergrößern,
@@ -275,7 +270,7 @@ function Bar({
         type="button"
         onClick={() => onOpen(index)}
         aria-label={shot.caption}
-        className="size-full cursor-pointer overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-caramel"
+        className="size-full cursor-pointer overflow-hidden"
       >
         {!hidden && (
           <motion.div layoutId={shotLayoutId(shot.imageKey)} className="size-full">
@@ -310,7 +305,7 @@ function TouchStrip({
   return (
     // scroll-px spiegelt das Padding, sonst rastet der erste Streifen hinter
     // den linken Rand.
-    <ul className="flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-6 py-8 scroll-px-6 md:px-10 md:scroll-px-10">
+    <ul className="flex snap-x snap-mandatory scroll-px-6 list-none gap-3 overflow-x-auto px-6 py-8 md:scroll-px-10 md:px-10">
       {shots.map((shot, index) => (
         <li key={shot.imageKey} className="shrink-0 snap-start">
           <button
@@ -318,7 +313,7 @@ function TouchStrip({
             type="button"
             onClick={() => onOpen(index)}
             aria-label={shot.caption}
-            className="block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-caramel"
+            className="block overflow-hidden"
             style={{ width: height * 0.52, height: height * 0.78 }}
           >
             <motion.div layoutId={shotLayoutId(shot.imageKey)} className="size-full">

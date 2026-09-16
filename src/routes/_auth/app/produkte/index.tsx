@@ -3,10 +3,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "#/components/ui/button";
+import {
+  AdminEmpty,
+  AdminHeading,
+  AdminTable,
+  adminTd,
+  adminTh,
+  adminTheadTr,
+  adminTr,
+} from "#/components/ck/admin";
+import { Badge } from "#/components/ck/badge";
+import { Button, buttonVariants } from "#/components/ck/button";
+import { Price } from "#/components/ck/primitives";
 import { formatPrice } from "#/lib/format";
 import { $adminDeleteProduct, $adminListProducts } from "#/lib/server/admin";
-import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/_auth/app/produkte/")({
   component: AdminProductsPage,
@@ -37,86 +47,76 @@ function AdminProductsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="ck-display text-3xl">Produkte</h1>
-        <Button render={<Link to="/app/produkte/neu" />} nativeButton={false}>
-          <PlusIcon className="size-4" /> Neues Produkt
-        </Button>
-      </div>
+      <AdminHeading
+        eyebrow="Sortiment"
+        title="Produkte"
+        actions={
+          <Link to="/app/produkte/neu" className={buttonVariants({ size: "sm" })}>
+            <PlusIcon strokeWidth={1.5} /> Neues Produkt
+          </Link>
+        }
+      />
 
       {isPending ? (
-        <p className="py-12 text-center text-espresso/50">Laden …</p>
+        <AdminEmpty>Laden …</AdminEmpty>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-espresso/15 bg-white">
-          <table className="w-full text-left text-[13.5px]">
-            <thead>
-              <tr className="border-b border-espresso/10 text-[11px] tracking-[0.14em] text-espresso/50 uppercase">
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Kategorie</th>
-                <th className="px-4 py-3 text-right">ab Preis</th>
-                <th className="px-4 py-3">Vorlauf</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">
-                  <span className="sr-only">Aktionen</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.products.map((p) => {
-                const price = fromPrice(p.id);
-                return (
-                  <tr
-                    key={p.id}
-                    className="border-b border-espresso/5 last:border-0 hover:bg-creme-2/50"
-                  >
-                    <td className="px-4 py-3">
+        <AdminTable>
+          <thead>
+            <tr className={adminTheadTr}>
+              <th className={adminTh}>Name</th>
+              <th className={adminTh}>Kategorie</th>
+              <th className={`${adminTh} text-right`}>ab Preis</th>
+              <th className={adminTh}>Vorlauf</th>
+              <th className={adminTh}>Status</th>
+              <th className={adminTh}>
+                <span className="sr-only">Aktionen</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.products.map((p) => {
+              const price = fromPrice(p.id);
+              return (
+                <tr key={p.id} className={adminTr}>
+                  <td className={adminTd}>
+                    <span className="flex flex-wrap items-center gap-2">
                       <Link
                         to="/app/produkte/$id"
                         params={{ id: p.id }}
-                        className="font-semibold text-caramel-deep hover:underline"
+                        className="font-medium text-brand underline-offset-[3px] hover:underline"
                       >
                         {p.nameDe}
                       </Link>
-                      {p.featured && (
-                        <span className="ml-2 rounded-full bg-gold/25 px-2 py-0.5 text-[10.5px] font-semibold text-caramel-deep">
-                          Startseite
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">{categoryName(p.categoryId)}</td>
-                    <td className="px-4 py-3 text-right">
-                      {price != null ? formatPrice(price) : "—"}
-                    </td>
-                    <td className="px-4 py-3">{Math.round(p.leadTimeHours / 24)} Tage</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-1 text-[11px] font-semibold",
-                          p.active
-                            ? "bg-espresso/10 text-espresso"
-                            : "bg-destructive/10 text-destructive",
-                        )}
+                      {p.featured && <Badge tone="accent">Startseite</Badge>}
+                    </span>
+                  </td>
+                  <td className={adminTd}>{categoryName(p.categoryId)}</td>
+                  <td className={`${adminTd} text-right`}>
+                    {price != null ? <Price className="text-md">{formatPrice(price)}</Price> : "—"}
+                  </td>
+                  <td className={adminTd}>{Math.round(p.leadTimeHours / 24)} Tage</td>
+                  <td className={adminTd}>
+                    <Badge tone={p.active ? "success" : "error"} dot>
+                      {p.active ? "Aktiv" : "Inaktiv"}
+                    </Badge>
+                  </td>
+                  <td className={`${adminTd} text-right`}>
+                    {p.active && (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-ink-muted hover:text-error"
+                        onClick={() => deactivate.mutate(p.id)}
                       >
-                        {p.active ? "Aktiv" : "Inaktiv"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {p.active && (
-                        <button
-                          type="button"
-                          onClick={() => deactivate.mutate(p.id)}
-                          className="text-[12px] tracking-[0.1em] text-espresso/50 uppercase hover:text-destructive"
-                        >
-                          Deaktivieren
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        Deaktivieren
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </AdminTable>
       )}
     </div>
   );

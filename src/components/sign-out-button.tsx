@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { LogOutIcon } from "lucide-react";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "#/components/ck/button";
 import { authClient } from "#/lib/auth/auth-client";
 import { authQueryOptions } from "#/lib/auth/queries";
 
@@ -10,6 +11,9 @@ export function SignOutButton() {
   const router = useRouter();
   return (
     <Button
+      variant="inverse"
+      size="sm"
+      icon={<LogOutIcon strokeWidth={1.5} />}
       onClick={async () => {
         await authClient.signOut({
           fetchOptions: {
@@ -21,12 +25,8 @@ export function SignOutButton() {
           },
         });
       }}
-      type="button"
-      className="w-fit"
-      variant="destructive"
-      size="lg"
     >
-      Sign out
+      Abmelden
     </Button>
   );
 }

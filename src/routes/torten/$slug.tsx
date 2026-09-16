@@ -1,12 +1,27 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeftIcon, MinusIcon, PlusIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  CalendarIcon,
+  MinusIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  TruckIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "#/components/ck/badge";
+import { Button } from "#/components/ck/button";
+import { IconButton } from "#/components/ck/icon-button";
+import { Input } from "#/components/ck/input";
 import { PublicShell, shell } from "#/components/ck/layout";
 import { Placeholder } from "#/components/ck/placeholder";
-import { Body, Pill } from "#/components/ck/primitives";
+import { Body, Eyebrow, Heading, Lede, Price, textLinkClass } from "#/components/ck/primitives";
+import { Radio } from "#/components/ck/radio";
+import { Tabs } from "#/components/ck/tabs";
+import { Tag } from "#/components/ck/tag";
+import { useBagDrawer } from "#/lib/bag-drawer";
 import { useCart } from "#/lib/cart";
 import { earliestDate, formatDate, formatPrice, toIsoDate } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
@@ -71,10 +86,18 @@ export const Route = createFileRoute("/torten/$slug")({
   component: ProductPage,
 });
 
+const legendClass = "mb-3 ck-label text-ink-muted";
+
+/**
+ * Produktseite: Foto 4:5 links (klebend), rechts Eyebrow, Name in der Serif,
+ * Preis, kursive Beschreibung, dann Größe als Radio-Karten, Füllung als
+ * Tags, Aufschrift, Menge und der eine Primär-Button. Darunter Reiter.
+ */
 function ProductPage() {
   const { slug } = Route.useParams();
   const { t, locale, pickL } = useI18n();
   const cart = useCart();
+  const { openBag } = useBagDrawer();
   const { data: product } = useSuspenseQuery(productQueryOptions(slug));
 
   const [sizeId, setSizeId] = useState<number | null>(null);
@@ -96,8 +119,16 @@ function ProductPage() {
   if (!product) return null;
 
   const name = pickL(product.nameDe, product.nameRu);
+  const description = pickL(product.descriptionDe, product.descriptionRu);
   const selectedSize = product.sizes.find((s) => s.id === sizeId) ?? product.sizes[0];
   const selectedFilling = product.fillings.find((f) => f.id === fillingId) ?? null;
+  const totalCents = selectedSize ? selectedSize.priceCents * quantity : 0;
+
+  const allergenText = selectedFilling?.allergensDe
+    ? `${t.product.allergens}: ${pickL(selectedFilling.allergensDe, selectedFilling.allergensRu)}`
+    : product.fillingSelectable
+      ? t.product.allergensByFilling
+      : t.product.allergensNone;
 
   function addToCart() {
     if (!product || !selectedSize) return;
@@ -118,103 +149,85 @@ function ProductPage() {
       quantity,
       leadTimeHours: product.leadTimeHours,
     });
-    toast.success(t.product.added);
+    toast.success(t.product.added, {
+      description: `${name} · ${pickL(selectedSize.labelDe, selectedSize.labelRu)}`,
+      action: { label: t.product.viewBag, onClick: openBag },
+    });
   }
 
   return (
     <PublicShell>
-      <section className={cn(shell, "py-12 md:py-16")}>
-        <Link
-          to="/torten"
-          className="ck-nav-link mb-10 inline-flex items-center gap-2 text-ink-2 transition-colors hover:text-ink"
-        >
-          <ArrowLeftIcon className="size-3.5" aria-hidden /> {t.product.backToCatalog}
+      <section className={cn(shell, "pt-10 pb-20")}>
+        <Link to="/torten" className={textLinkClass()}>
+          <ArrowLeftIcon aria-hidden strokeWidth={1.5} className="size-3.5" />
+          {t.product.backToCatalog}
         </Link>
 
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
-          <div className="h-fit lg:sticky lg:top-28 lg:col-span-6">
-            <div className="ck-frame">
-              <Placeholder imageKey={product.imageKey} alt={name} priority className="aspect-[4/5]" />
+        <div className="mt-8 grid items-start gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+          <div className="ck-frame lg:sticky lg:top-24">
+            <div className="aspect-[4/5] overflow-hidden">
+              <Placeholder imageKey={product.imageKey} alt={name} priority />
             </div>
           </div>
 
-          <div className="lg:col-span-5 lg:col-start-8">
-            <h1 className="mb-4 ck-display text-display-l text-ink">{name}</h1>
-            <Body size="l" className="mb-3">
-              {pickL(product.descriptionDe, product.descriptionRu)}
-            </Body>
-            <Body size="s" tone="muted" className="mb-10">
-              {t.product.leadTimeNote(earliest)}
-            </Body>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <Eyebrow>{t.catalog.leadTime(product.leadTimeHours)}</Eyebrow>
+              {product.featured && <Badge tone="accent">{t.catalog.featuredBadge}</Badge>}
+            </div>
+            <Heading as="h1" className="mt-3">
+              {name}
+            </Heading>
+            {selectedSize && (
+              <div className="mt-2.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                <Price className="text-2xl">{formatPrice(selectedSize.priceCents, locale)}</Price>
+                <span className="text-ink-muted ck-body-sm">
+                  {pickL(selectedSize.labelDe, selectedSize.labelRu)} · {t.product.priceNote}
+                </span>
+              </div>
+            )}
+            <Lede className="mt-5 text-[19px]">{description}</Lede>
 
             {/* Größe */}
-            <fieldset className="mb-9">
-              <legend className="mb-4 ck-kicker">{t.product.size}</legend>
-              <div className="flex flex-col">
+            <fieldset className="mt-8">
+              <legend className={legendClass}>{t.product.size}</legend>
+              <div className="flex flex-col gap-2">
                 {product.sizes.map((size) => (
-                  <label
+                  <Radio
                     key={size.id}
-                    className={cn(
-                      "flex cursor-pointer items-center justify-between border-b py-4 transition-colors",
-                      selectedSize?.id === size.id
-                        ? "border-espresso"
-                        : "border-rule hover:border-rule-strong",
-                    )}
-                  >
-                    <span className="flex items-center gap-3.5">
-                      <input
-                        type="radio"
-                        name="size"
-                        checked={selectedSize?.id === size.id}
-                        onChange={() => setSizeId(size.id)}
-                        className="accent-espresso"
-                      />
-                      <span
-                        className={cn(
-                          "text-body-m",
-                          selectedSize?.id === size.id ? "text-ink" : "text-ink-2",
-                        )}
-                      >
-                        {pickL(size.labelDe, size.labelRu)}
-                      </span>
-                    </span>
-                    <span className="ck-price text-body-l text-ink">
-                      {formatPrice(size.priceCents, locale)}
-                    </span>
-                  </label>
+                    card
+                    name="size"
+                    label={pickL(size.labelDe, size.labelRu)}
+                    meta={formatPrice(size.priceCents, locale)}
+                    checked={selectedSize?.id === size.id}
+                    onChange={() => setSizeId(size.id)}
+                  />
                 ))}
               </div>
             </fieldset>
 
             {/* Füllung */}
             {product.fillingSelectable ? (
-              <fieldset className="mb-9">
-                <legend className="mb-4 ck-kicker">{t.product.filling}</legend>
-                <div className="flex flex-wrap gap-2.5">
+              <fieldset className="mt-8">
+                <legend className={legendClass}>{t.product.filling}</legend>
+                <div className="flex flex-wrap gap-2">
                   {product.fillings.map((filling) => (
-                    <button
+                    <Tag
                       key={filling.id}
-                      type="button"
+                      selected={selectedFilling?.id === filling.id}
                       onClick={() => setFillingId(filling.id)}
-                      aria-pressed={selectedFilling?.id === filling.id}
-                      className={cn(
-                        "rounded-full border px-4.5 py-2 text-body-s transition-colors duration-300",
-                        selectedFilling?.id === filling.id
-                          ? "border-espresso bg-espresso text-creme"
-                          : "border-rule-strong text-ink-2 hover:border-espresso hover:text-ink",
-                      )}
                     >
                       {pickL(filling.nameDe, filling.nameRu)}
-                    </button>
+                    </Tag>
                   ))}
                 </div>
                 {selectedFilling && (
-                  <div className="mt-4 border-l border-espresso bg-creme-2 px-5 py-4">
-                    <Body size="s" tone="primary">
+                  <div className="mt-4 border-l-2 border-accent bg-accent-soft px-5 py-4">
+                    <Body size="sm">
                       {pickL(selectedFilling.descriptionDe, selectedFilling.descriptionRu)}
                     </Body>
                     {selectedFilling.allergensDe && (
-                      <Body size="s" tone="muted" className="mt-1.5">
+                      <Body size="sm" tone="muted" className="mt-1">
                         {t.product.allergens}:{" "}
                         {pickL(selectedFilling.allergensDe, selectedFilling.allergensRu)}
                       </Body>
@@ -223,62 +236,92 @@ function ProductPage() {
                 )}
               </fieldset>
             ) : (
-              <div className="mb-9 border-l border-rule-strong bg-creme-2 px-5 py-4">
-                <Body size="s">{t.product.fillingByArrangement}</Body>
+              <div className="mt-8 border-l-2 border-hairline-strong bg-sunken px-5 py-4">
+                <Body size="sm">{t.product.fillingByArrangement}</Body>
               </div>
             )}
 
             {/* Aufschrift */}
-            <div className="mb-9">
-              <label htmlFor="inscription" className="mb-3 block ck-kicker">
-                {t.product.inscription}
-              </label>
-              <input
-                id="inscription"
-                type="text"
-                maxLength={120}
-                value={inscription}
-                onChange={(e) => setInscription(e.target.value)}
-                placeholder={t.product.inscriptionPlaceholder}
-                className="w-full rounded-sm border border-rule-strong bg-white px-4 py-3 text-body-m text-ink placeholder:text-ink-3 focus:border-espresso focus:outline-none"
-              />
-            </div>
+            <Input
+              className="mt-8"
+              label={t.product.inscription}
+              maxLength={120}
+              value={inscription}
+              onChange={(e) => setInscription(e.target.value)}
+              placeholder={t.product.inscriptionPlaceholder}
+              hint={`${inscription.length} / 120`}
+            />
 
             {/* Menge und Warenkorb */}
-            <div className="flex flex-wrap items-center gap-4">
-              <div
-                className="flex items-center rounded-full border border-rule-strong"
-                aria-label={t.product.quantity}
-              >
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="grid size-11 place-items-center text-ink-2 transition-colors hover:text-ink"
-                  aria-label={`${t.product.quantity} verringern`}
+            <div className="mt-8 grid grid-cols-1 items-end gap-3 sm:grid-cols-[132px_1fr]">
+              <div className="flex flex-col gap-2">
+                <span className="ck-label text-ink-muted">{t.product.quantity}</span>
+                <div
+                  className="flex h-13 items-center rounded-sm border border-hairline bg-surface px-1"
+                  aria-label={t.product.quantity}
                 >
-                  <MinusIcon className="size-4" aria-hidden />
-                </button>
-                <span className="w-8 text-center text-body-m font-semibold tabular-nums text-ink">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-                  className="grid size-11 place-items-center text-ink-2 transition-colors hover:text-ink"
-                  aria-label={`${t.product.quantity} erhöhen`}
-                >
-                  <PlusIcon className="size-4" aria-hidden />
-                </button>
+                  <IconButton
+                    size="sm"
+                    label={`${t.product.quantity} −`}
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  >
+                    <MinusIcon className="size-3.5" strokeWidth={1.5} />
+                  </IconButton>
+                  <span className="flex-1 text-center tabular-nums ck-body">{quantity}</span>
+                  <IconButton
+                    size="sm"
+                    label={`${t.product.quantity} +`}
+                    onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+                  >
+                    <PlusIcon className="size-3.5" strokeWidth={1.5} />
+                  </IconButton>
+                </div>
               </div>
-              <Pill onClick={addToCart} className="flex-1 sm:flex-none">
-                {t.product.addToCart}
-                {selectedSize && (
-                  <span className="opacity-75">
-                    {formatPrice(selectedSize.priceCents * quantity, locale)}
-                  </span>
-                )}
-              </Pill>
+              <Button
+                size="lg"
+                block
+                icon={<ShoppingBagIcon strokeWidth={1.5} />}
+                onClick={addToCart}
+              >
+                {t.product.addToCart} · {formatPrice(totalCents, locale)}
+              </Button>
             </div>
+
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-ink-muted ck-body-sm">
+              <span className="inline-flex items-center gap-2">
+                <TruckIcon aria-hidden strokeWidth={1.5} className="size-4" />
+                {t.product.delivery(site.shop.deliveryRadiusKm)}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CalendarIcon aria-hidden strokeWidth={1.5} className="size-4" />
+                {t.product.leadTimeNote(earliest)}
+              </span>
+            </div>
+
+            <Tabs
+              className="mt-10"
+              items={[
+                {
+                  value: "description",
+                  label: t.product.tabs.description,
+                  content: <Body size="sm">{description}</Body>,
+                },
+                {
+                  value: "ordering",
+                  label: t.product.tabs.ordering,
+                  content: (
+                    <Body size="sm">
+                      {t.product.orderingText(earliest, site.shop.deliveryRadiusKm)}
+                    </Body>
+                  ),
+                },
+                {
+                  value: "allergens",
+                  label: t.product.tabs.allergens,
+                  content: <Body size="sm">{allergenText}</Body>,
+                },
+              ]}
+            />
           </div>
         </div>
       </section>
