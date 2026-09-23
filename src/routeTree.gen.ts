@@ -26,7 +26,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TortenIndexRouteImport } from './routes/torten/index'
 import { Route as TortenSlugRouteImport } from './routes/torten/$slug'
 import { Route as BestellungOrderNoRouteImport } from './routes/bestellung/$orderNo'
-import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
 import { Route as GuestLoginRouteImport } from './routes/_guest/login'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
 import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
@@ -120,11 +119,6 @@ const BestellungOrderNoRoute = BestellungOrderNoRouteImport.update({
   path: '/bestellung/$orderNo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestSignupRoute = GuestSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => GuestRouteRoute,
-} as any)
 const GuestLoginRoute = GuestLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -186,7 +180,6 @@ export interface FileRoutesByFullPath {
   '/warenkorb': typeof WarenkorbRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/login': typeof GuestLoginRoute
-  '/signup': typeof GuestSignupRoute
   '/bestellung/$orderNo': typeof BestellungOrderNoRoute
   '/torten/$slug': typeof TortenSlugRoute
   '/torten/': typeof TortenIndexRoute
@@ -212,7 +205,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/warenkorb': typeof WarenkorbRoute
   '/login': typeof GuestLoginRoute
-  '/signup': typeof GuestSignupRoute
   '/bestellung/$orderNo': typeof BestellungOrderNoRoute
   '/torten/$slug': typeof TortenSlugRoute
   '/torten': typeof TortenIndexRoute
@@ -242,7 +234,6 @@ export interface FileRoutesById {
   '/warenkorb': typeof WarenkorbRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/_guest/login': typeof GuestLoginRoute
-  '/_guest/signup': typeof GuestSignupRoute
   '/bestellung/$orderNo': typeof BestellungOrderNoRoute
   '/torten/$slug': typeof TortenSlugRoute
   '/torten/': typeof TortenIndexRoute
@@ -271,7 +262,6 @@ export interface FileRouteTypes {
     | '/warenkorb'
     | '/app'
     | '/login'
-    | '/signup'
     | '/bestellung/$orderNo'
     | '/torten/$slug'
     | '/torten/'
@@ -297,7 +287,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/warenkorb'
     | '/login'
-    | '/signup'
     | '/bestellung/$orderNo'
     | '/torten/$slug'
     | '/torten'
@@ -326,7 +315,6 @@ export interface FileRouteTypes {
     | '/warenkorb'
     | '/_auth/app'
     | '/_guest/login'
-    | '/_guest/signup'
     | '/bestellung/$orderNo'
     | '/torten/$slug'
     | '/torten/'
@@ -481,13 +469,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BestellungOrderNoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_guest/signup': {
-      id: '/_guest/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof GuestSignupRouteImport
-      parentRoute: typeof GuestRouteRoute
-    }
     '/_guest/login': {
       id: '/_guest/login'
       path: '/login'
@@ -590,12 +571,10 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface GuestRouteRouteChildren {
   GuestLoginRoute: typeof GuestLoginRoute
-  GuestSignupRoute: typeof GuestSignupRoute
 }
 
 const GuestRouteRouteChildren: GuestRouteRouteChildren = {
   GuestLoginRoute: GuestLoginRoute,
-  GuestSignupRoute: GuestSignupRoute,
 }
 
 const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(

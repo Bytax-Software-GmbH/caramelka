@@ -14,6 +14,8 @@ services:
       VITE_BASE_URL: ${SERVICE_URL_APP}
       DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
+      # Kommagetrennt. Nur diese E-Mails kommen in /app (leer = niemand).
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
     depends_on:
       db:
         condition: service_healthy
@@ -34,10 +36,16 @@ services:
       target: base
     # Schema migrieren, dann leere DB einmalig mit Platzhalter-Katalog befüllen
     # (db:seed:prod ist idempotent und lässt bestehende Daten unangetastet).
-    command: ["sh", "-c", "pnpm db:migrate && pnpm db:seed:prod"]
+    # admin:ensure:prod legt den ersten Admin an (No-op ohne Bootstrap-Variablen,
+    # überschreibt nie ein bestehendes Konto).
+    command: ["sh", "-c", "pnpm db:migrate && pnpm db:seed:prod && pnpm admin:ensure:prod"]
     environment:
       DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # Nach dem ersten erfolgreichen Deploy wieder leeren.
+      ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
     depends_on:
       db:
         condition: service_healthy

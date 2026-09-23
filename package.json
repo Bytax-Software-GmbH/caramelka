@@ -27,7 +27,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node --env-file=.env --import tsx src/lib/db/seed.ts",
-    "db:seed:prod": "node --import tsx src/lib/db/seed.ts"
+    "db:seed:prod": "node --import tsx src/lib/db/seed.ts",
+    "admin:ensure": "node --env-file=.env --import tsx src/lib/db/ensure-admin.ts",
+    "admin:ensure:prod": "node --import tsx src/lib/db/ensure-admin.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

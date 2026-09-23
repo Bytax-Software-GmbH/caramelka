@@ -34,8 +34,13 @@ pnpm db:seed                     # Platzhalter-Katalog (idempotent, Bestellungen
 pnpm dev                         # http://localhost:3000
 ```
 
-Admin: erster Account via `/signup`, danach `/login` → `/app`.
-(Achtung: `/signup` vor Launch deaktivieren oder Rollen-Gating ergänzen.)
+Admin: Registrierung ist geschlossen. In `.env` `ADMIN_EMAILS` und
+`ADMIN_BOOTSTRAP_EMAIL`/`ADMIN_BOOTSTRAP_PASSWORD` setzen, dann `pnpm admin:ensure`,
+danach `/login` → `/app`. Nur E-Mails aus `ADMIN_EMAILS` kommen in den Admin.
+
+Produktion (Coolify): `ADMIN_EMAILS` für app + migrate setzen. Der migrate-Container
+legt den Bootstrap-Admin beim Deploy an (überschreibt nie); die Bootstrap-Variablen
+danach wieder leeren.
 
 ## Scripts
 
@@ -68,6 +73,6 @@ docs/design/          Caramelka Directions (Design-Referenz)
 - Echte Fotos statt `Placeholder` (imageKey → Bildpfad)
 - Echte Kontaktdaten/WhatsApp-Nummer in `src/lib/site.ts`
 - Impressum/Datenschutz/AGB juristisch finalisieren
-- `/signup` schließen (Invite-only) · PayPal-Zahlung · E-Mail-Bestätigung bei Bestellung
+- PayPal-Zahlung · E-Mail-Bestätigung bei Bestellung
 
 # caramelka
