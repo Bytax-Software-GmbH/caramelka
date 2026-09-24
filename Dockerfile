@@ -32,6 +32,11 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
+# Termine und Vorlaufzeiten rechnen in Berliner Zeit (Node bringt die Zonendaten mit).
+ENV TZ=Europe/Berlin
+# Kundenfotos; in docker-compose als Volume eingehängt.
+ENV UPLOAD_DIR=/data/uploads
+RUN mkdir -p /data/uploads
 
 COPY --from=build /app/.output ./.output
 

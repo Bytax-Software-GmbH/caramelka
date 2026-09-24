@@ -45,3 +45,8 @@ export function normalizeImageKey(key: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 }
+
+/** Füllungen ohne eigenes Motiv nutzen das Foto mit dem Slug als Namen. */
+export function fillingImageKey(filling: { imageKey: string; slug: string }): string {
+  return filling.imageKey === "fuellung" ? filling.slug : filling.imageKey;
+}

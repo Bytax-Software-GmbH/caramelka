@@ -19,9 +19,9 @@ export const Route = createFileRoute("/impressum")({
         {site.contact.address.zip} {site.contact.address.city}
       </p>
       <p>
-        Telefon/WhatsApp: {site.contact.whatsapp}
+        Telefon: <a href={site.contact.phoneLink}>{site.contact.phone}</a>
         <br />
-        E-Mail: {site.contact.email}
+        E-Mail: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
       </p>
       <p>Umsatzsteuer-ID: folgt</p>
     </SimplePage>

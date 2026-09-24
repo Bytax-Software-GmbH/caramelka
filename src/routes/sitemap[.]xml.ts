@@ -17,6 +17,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const entries: string[] = [
           url("/", undefined, 1),
           url("/torten", undefined, 0.9),
+          url("/bestellen", undefined, 0.8),
           url("/fuellungen", undefined, 0.7),
           url("/galerie", undefined, 0.6),
           url("/kontakt", undefined, 0.6),

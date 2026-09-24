@@ -19,6 +19,7 @@ import { Route as GalerieRouteImport } from './routes/galerie'
 import { Route as FuellungenRouteImport } from './routes/fuellungen'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as ColorsRouteImport } from './routes/colors'
+import { Route as BestellenRouteImport } from './routes/bestellen'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
@@ -32,6 +33,7 @@ import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthAppFuellungenRouteImport } from './routes/_auth/app/fuellungen'
 import { Route as AuthAppProdukteIndexRouteImport } from './routes/_auth/app/produkte/index'
+import { Route as ApiAdminOrderFilesFileIdRouteImport } from './routes/api/admin/order-files/$fileId'
 import { Route as AuthAppProdukteNeuRouteImport } from './routes/_auth/app/produkte/neu'
 import { Route as AuthAppProdukteIdRouteImport } from './routes/_auth/app/produkte/$id'
 import { Route as AuthAppBestellungenIdRouteImport } from './routes/_auth/app/bestellungen.$id'
@@ -84,6 +86,11 @@ const DatenschutzRoute = DatenschutzRouteImport.update({
 const ColorsRoute = ColorsRouteImport.update({
   id: '/colors',
   path: '/colors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BestellenRoute = BestellenRouteImport.update({
+  id: '/bestellen',
+  path: '/bestellen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgbRoute = AgbRouteImport.update({
@@ -149,6 +156,12 @@ const AuthAppProdukteIndexRoute = AuthAppProdukteIndexRouteImport.update({
   path: '/produkte/',
   getParentRoute: () => AuthAppRouteRoute,
 } as any)
+const ApiAdminOrderFilesFileIdRoute =
+  ApiAdminOrderFilesFileIdRouteImport.update({
+    id: '/api/admin/order-files/$fileId',
+    path: '/api/admin/order-files/$fileId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthAppProdukteNeuRoute = AuthAppProdukteNeuRouteImport.update({
   id: '/produkte/neu',
   path: '/produkte/neu',
@@ -168,6 +181,7 @@ const AuthAppBestellungenIdRoute = AuthAppBestellungenIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/bestellen': typeof BestellenRoute
   '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
@@ -189,11 +203,13 @@ export interface FileRoutesByFullPath {
   '/app/bestellungen/$id': typeof AuthAppBestellungenIdRoute
   '/app/produkte/$id': typeof AuthAppProdukteIdRoute
   '/app/produkte/neu': typeof AuthAppProdukteNeuRoute
+  '/api/admin/order-files/$fileId': typeof ApiAdminOrderFilesFileIdRoute
   '/app/produkte/': typeof AuthAppProdukteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/bestellen': typeof BestellenRoute
   '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
@@ -214,6 +230,7 @@ export interface FileRoutesByTo {
   '/app/bestellungen/$id': typeof AuthAppBestellungenIdRoute
   '/app/produkte/$id': typeof AuthAppProdukteIdRoute
   '/app/produkte/neu': typeof AuthAppProdukteNeuRoute
+  '/api/admin/order-files/$fileId': typeof ApiAdminOrderFilesFileIdRoute
   '/app/produkte': typeof AuthAppProdukteIndexRoute
 }
 export interface FileRoutesById {
@@ -222,6 +239,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/agb': typeof AgbRoute
+  '/bestellen': typeof BestellenRoute
   '/colors': typeof ColorsRoute
   '/datenschutz': typeof DatenschutzRoute
   '/fuellungen': typeof FuellungenRoute
@@ -243,6 +261,7 @@ export interface FileRoutesById {
   '/_auth/app/bestellungen/$id': typeof AuthAppBestellungenIdRoute
   '/_auth/app/produkte/$id': typeof AuthAppProdukteIdRoute
   '/_auth/app/produkte/neu': typeof AuthAppProdukteNeuRoute
+  '/api/admin/order-files/$fileId': typeof ApiAdminOrderFilesFileIdRoute
   '/_auth/app/produkte/': typeof AuthAppProdukteIndexRoute
 }
 export interface FileRouteTypes {
@@ -250,6 +269,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agb'
+    | '/bestellen'
     | '/colors'
     | '/datenschutz'
     | '/fuellungen'
@@ -271,11 +291,13 @@ export interface FileRouteTypes {
     | '/app/bestellungen/$id'
     | '/app/produkte/$id'
     | '/app/produkte/neu'
+    | '/api/admin/order-files/$fileId'
     | '/app/produkte/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agb'
+    | '/bestellen'
     | '/colors'
     | '/datenschutz'
     | '/fuellungen'
@@ -296,6 +318,7 @@ export interface FileRouteTypes {
     | '/app/bestellungen/$id'
     | '/app/produkte/$id'
     | '/app/produkte/neu'
+    | '/api/admin/order-files/$fileId'
     | '/app/produkte'
   id:
     | '__root__'
@@ -303,6 +326,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/agb'
+    | '/bestellen'
     | '/colors'
     | '/datenschutz'
     | '/fuellungen'
@@ -324,6 +348,7 @@ export interface FileRouteTypes {
     | '/_auth/app/bestellungen/$id'
     | '/_auth/app/produkte/$id'
     | '/_auth/app/produkte/neu'
+    | '/api/admin/order-files/$fileId'
     | '/_auth/app/produkte/'
   fileRoutesById: FileRoutesById
 }
@@ -332,6 +357,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
+  BestellenRoute: typeof BestellenRoute
   ColorsRoute: typeof ColorsRoute
   DatenschutzRoute: typeof DatenschutzRoute
   FuellungenRoute: typeof FuellungenRoute
@@ -346,6 +372,7 @@ export interface RootRouteChildren {
   TortenSlugRoute: typeof TortenSlugRoute
   TortenIndexRoute: typeof TortenIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiAdminOrderFilesFileIdRoute: typeof ApiAdminOrderFilesFileIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -418,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/colors'
       fullPath: '/colors'
       preLoaderRoute: typeof ColorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bestellen': {
+      id: '/bestellen'
+      path: '/bestellen'
+      fullPath: '/bestellen'
+      preLoaderRoute: typeof BestellenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agb': {
@@ -511,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppProdukteIndexRouteImport
       parentRoute: typeof AuthAppRouteRoute
     }
+    '/api/admin/order-files/$fileId': {
+      id: '/api/admin/order-files/$fileId'
+      path: '/api/admin/order-files/$fileId'
+      fullPath: '/api/admin/order-files/$fileId'
+      preLoaderRoute: typeof ApiAdminOrderFilesFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/app/produkte/neu': {
       id: '/_auth/app/produkte/neu'
       path: '/produkte/neu'
@@ -586,6 +627,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   AgbRoute: AgbRoute,
+  BestellenRoute: BestellenRoute,
   ColorsRoute: ColorsRoute,
   DatenschutzRoute: DatenschutzRoute,
   FuellungenRoute: FuellungenRoute,
@@ -600,16 +642,18 @@ const rootRouteChildren: RootRouteChildren = {
   TortenSlugRoute: TortenSlugRoute,
   TortenIndexRoute: TortenIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiAdminOrderFilesFileIdRoute: ApiAdminOrderFilesFileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

@@ -16,6 +16,19 @@ services:
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
       # Kommagetrennt. Nur diese E-Mails kommen in /app (leer = niemand).
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      TZ: Europe/Berlin
+      # Bestell-Mails über das Geschäftspostfach. Ohne SMTP_HOST gehen keine Mails raus.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      ORDER_NOTIFY_TO: ${ORDER_NOTIFY_TO:-}
+      MAIL_BCC: ${MAIL_BCC:-}
+    volumes:
+      # Kundenfotos aus dem Anfrage-Formular. Zusammen mit postgres-data sichern.
+      - uploads-data:/data/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -43,6 +56,7 @@ services:
       DATABASE_URL: postgresql://caramelka:${SERVICE_PASSWORD_POSTGRES}@db:5432/caramelka
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_AUTHSECRET}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      TZ: Europe/Berlin
       # Nach dem ersten erfolgreichen Deploy wieder leeren.
       ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
       ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
@@ -70,3 +84,4 @@ services:
 
 volumes:
   postgres-data:
+  uploads-data:

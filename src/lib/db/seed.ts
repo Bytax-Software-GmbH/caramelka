@@ -38,9 +38,11 @@ async function seed() {
     .returning();
   const cat = Object.fromEntries(cats.map((c) => [c.slug, c.id]));
 
+  // Platzhalter-Preise je kg (TODO: echte Preise der Kundin im Admin pflegen).
   await db.insert(fillings).values([
     {
       slug: "karamell-creme",
+      pricePerKgCents: 4800,
       nameDe: "Karamell-Creme",
       nameRu: "Карамельный крем",
       descriptionDe:
@@ -53,6 +55,7 @@ async function seed() {
     },
     {
       slug: "himbeer-vanille",
+      pricePerKgCents: 4600,
       nameDe: "Himbeer-Vanille",
       nameRu: "Малина-ваниль",
       descriptionDe: "Frische Himbeeren, leichte Vanillecreme und saftiger heller Biskuit.",
@@ -63,6 +66,7 @@ async function seed() {
     },
     {
       slug: "schokolade-70",
+      pricePerKgCents: 5000,
       nameDe: "Schokolade 70 %",
       nameRu: "Шоколад 70 %",
       descriptionDe: "Dunkler Schokoladenbiskuit, Ganache aus 70 %-Kuvertüre, kaum süß.",
@@ -73,6 +77,7 @@ async function seed() {
     },
     {
       slug: "pistazie-himbeere",
+      pricePerKgCents: 5600,
       nameDe: "Pistazie-Himbeere",
       nameRu: "Фисташка-малина",
       descriptionDe: "Pistaziencreme mit echter Pistazienpaste und fruchtigem Himbeerkern.",
@@ -83,6 +88,7 @@ async function seed() {
     },
     {
       slug: "zitrone-mohn",
+      pricePerKgCents: 4400,
       nameDe: "Zitrone-Mohn",
       nameRu: "Лимон-мак",
       descriptionDe: "Zitronencurd, Mohnbiskuit und Frischkäsecreme, frisch und leicht.",
@@ -93,6 +99,7 @@ async function seed() {
     },
     {
       slug: "snickers",
+      pricePerKgCents: 4800,
       nameDe: "Karamell-Erdnuss",
       nameRu: "Карамель-арахис",
       descriptionDe:
@@ -109,6 +116,7 @@ async function seed() {
     .values([
       {
         slug: "bento-mini",
+        orderKind: "dessert",
         categoryId: cat.bento!,
         nameDe: "Bento Mini",
         nameRu: "Бенто мини",
@@ -158,6 +166,7 @@ async function seed() {
       },
       {
         slug: "hochzeit-klassik",
+        orderKind: "event",
         categoryId: cat.hochzeit!,
         nameDe: "Hochzeit Klassik",
         nameRu: "Свадебный классический",
@@ -173,6 +182,7 @@ async function seed() {
       },
       {
         slug: "hochzeit-grande",
+        orderKind: "event",
         categoryId: cat.hochzeit!,
         nameDe: "Hochzeit Grande",
         nameRu: "Свадебный гранд",
@@ -187,6 +197,7 @@ async function seed() {
       },
       {
         slug: "eclair-box",
+        orderKind: "dessert",
         categoryId: cat.patisserie!,
         nameDe: "Éclair-Box",
         nameRu: "Бокс эклеров",
@@ -199,6 +210,7 @@ async function seed() {
       },
       {
         slug: "pralinen-box",
+        orderKind: "dessert",
         categoryId: cat.patisserie!,
         nameDe: "Pralinen-Box",
         nameRu: "Бокс конфет",

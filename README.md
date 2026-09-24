@@ -6,12 +6,16 @@ Inspiration: [paulinecake.ae](https://www.paulinecake.ae) · Design: `docs/desig
 
 ## Features
 
-- **Shop:** Katalog mit Kategorien, Produktseiten mit Größen-, Füllungs- und Aufschrift-Wahl
-- **Checkout:** Warenkorb (localStorage) → Abholung/Lieferung (bis 100 km, Pauschale) →
-  Wunschtermin mit Vorlaufzeiten (Mo–Sa) → Bestellung mit Bestätigungsseite.
+- **Sortiment:** Katalog mit Kategorien, Produktseiten mit Richtpreisen und "Jetzt anfragen"
+- **Anfrage-Formular** (`/bestellen`, ersetzt Warenkorb und WhatsApp): Torte nach Gewicht mit
+  Füllung, Desserts in festen Größen oder Hochzeit/Bankett; Dekor mit bis zu 3 Wunschfotos;
+  Termin mit Zeitfenster (Vorlaufzeit, So geschlossen); Abholung/Lieferung (bis 100 km).
+  Preis als Schätzung (€/kg je Füllung), verbindlich erst mit der Bestätigung per E-Mail.
   Zahlung bei Übergabe; PayPal-Integration folgt.
+- **E-Mails** über SMTP mit Outbox (Wiederholversuche): Eingangsbestätigung an die Kundin,
+  neue Anfrage an die Backstube
 - **Zweisprachig:** DE (Standard) / RU, Cookie-persistiert, Inhalte aus der DB zweisprachig
-- **Füllungs-Guide** mit Allergenen, **Galerie**, **Kontakt** (WhatsApp-first)
+- **Füllungs-Guide** mit Allergenen und kg-Preisen, **Galerie**, **Kontakt** (Telefon, E-Mail)
 - **Admin** (`/app`, better-auth): Bestellungen mit Status-Workflow, Produkt- & Füllungs-CRUD
 - SEO: Sitemap, robots, JSON-LD (Bakery), OG-Tags
 
@@ -42,6 +46,11 @@ Produktion (Coolify): `ADMIN_EMAILS` für app + migrate setzen. Der migrate-Cont
 legt den Bootstrap-Admin beim Deploy an (überschreibt nie); die Bootstrap-Variablen
 danach wieder leeren.
 
+Mails lokal: `docker compose -f docker-compose.dev.yml up -d` startet Mailpit
+(SMTP `localhost:1025`, Postfach http://localhost:8025). In `.env`: `SMTP_HOST=localhost`,
+`SMTP_PORT=1025`. Schema-Änderungen für Produktion immer per `pnpm db:generate` als
+Migration (`drizzle/`), nie per `db:push` gegen Prod.
+
 ## Scripts
 
 | Script                   | Zweck                           |
@@ -60,19 +69,24 @@ src/
   components/ck/      Design-System (logo, layout, primitives, placeholder, …)
   lib/
     i18n/             DE/RU-Wörterbuch + Provider (Cookie "ck-locale")
-    cart.tsx          Warenkorb (localStorage "ck-cart-v1")
-    db/               schema, seed, queries
-    server/           Server Functions (catalog, orders, admin)
+    order-request/    Formular-Vertrag: Zod-Schema, Schätzung, Termin-Logik (Client + Server)
+    db/               schema, seed, queries, ensure-admin
+    server/           Server Functions (catalog, orders, admin), *.server.ts (Upload, Mail)
     site.ts           Site-/Shop-Konfiguration (Kontakt, Lieferradius, Gebühren)
-  routes/             TanStack file-based routes (torten, kasse, /app-Admin, …)
+  components/order-request/  Anfrage-Wizard (Schritte, Zusammenfassung, Fotos)
+  routes/             TanStack file-based routes (torten, bestellen, /app-Admin, …)
 docs/design/          Caramelka Directions (Design-Referenz)
 ```
 
 ## Vor Launch (TODOs)
 
 - Echte Fotos statt `Placeholder` (imageKey → Bildpfad)
-- Echte Kontaktdaten/WhatsApp-Nummer in `src/lib/site.ts`
+- Echte Telefonnummer und Adresse in `src/lib/site.ts`
+- Preise je kg für jede Füllung im Admin pflegen (Seed hat nur Platzhalter)
+- SMTP des Geschäftspostfachs in Coolify setzen (`SMTP_*`, `MAIL_FROM`, `ORDER_NOTIFY_TO`),
+  SPF/DKIM prüfen, Test-Mail aus dem Admin schicken
+- Volume `uploads-data` (Kundenfotos) ins Backup aufnehmen
 - Impressum/Datenschutz/AGB juristisch finalisieren
-- PayPal-Zahlung · E-Mail-Bestätigung bei Bestellung
+- PayPal-Zahlung
 
 # caramelka

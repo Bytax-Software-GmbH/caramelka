@@ -51,10 +51,12 @@ function EditProductPage() {
           imageKey: product.imageKey,
           leadTimeHours: product.leadTimeHours,
           fillingSelectable: product.fillingSelectable,
+          orderKind: product.orderKind,
           featured: product.featured,
           active: product.active,
           sort: product.sort,
           sizes: sizes.map((s) => ({
+            id: s.id,
             labelDe: s.labelDe,
             labelRu: s.labelRu,
             priceCents: s.priceCents,
