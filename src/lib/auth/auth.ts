@@ -29,8 +29,10 @@ export const auth = betterAuth({
   },
 
   // https://www.better-auth.com/docs/authentication/email-password
+  // Keine öffentliche Registrierung: Admins entstehen nur über `pnpm admin:ensure`.
   emailAndPassword: {
     enabled: true,
+    disableSignUp: true,
   },
 
   experimental: {
@@ -38,3 +40,11 @@ export const auth = betterAuth({
     joins: true,
   },
 });
+
+/**
+ * Nur E-Mails aus `ADMIN_EMAILS` gelten als eingeloggt. Leere Liste = niemand
+ * (fail closed), auch bestehende Fremdkonten und deren Sessions nicht.
+ */
+export function isAdminEmail(email: string): boolean {
+  return env.ADMIN_EMAILS.includes(email.trim().toLowerCase());
+}

@@ -1,7 +1,7 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { getRequest, setResponseHeader } from "@tanstack/react-start/server";
 
-import { auth } from "#/lib/auth/auth";
+import { auth, isAdminEmail } from "#/lib/auth/auth";
 
 /**
  * This server function is meant to be called via authQueryOptions() in queries.ts,
@@ -38,5 +38,8 @@ export const _getUser = createServerOnlyFn(async (query?: GetUserServerQuery) =>
     setResponseHeader("Set-Cookie", cookies);
   }
 
-  return session.response?.user || null;
+  const user = session.response?.user;
+  // Allowlist greift hier zentral: authMiddleware, freshAuthMiddleware und der _auth-Guard.
+  if (!user || !isAdminEmail(user.email)) return null;
+  return user;
 });

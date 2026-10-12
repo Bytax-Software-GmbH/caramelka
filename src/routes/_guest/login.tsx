@@ -66,12 +66,6 @@ function LoginForm() {
           {isPending ? "Anmelden …" : "Anmelden"}
         </Button>
       </div>
-      <p className="text-center text-ink-muted ck-body-sm">
-        Noch kein Konto?{" "}
-        <Link to="/signup" className="border-b border-hairline-accent text-brand">
-          Registrieren
-        </Link>
-      </p>
     </form>
   );
 }
