@@ -1,13 +1,11 @@
-import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { Link } from "@tanstack/react-router";
-import { MenuIcon, ShoppingBagIcon, XIcon } from "lucide-react";
+import { MenuIcon, PhoneIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
-import { BagDrawer } from "#/components/ck/bag-drawer";
+import { buttonVariants } from "#/components/ck/button";
 import { IconButton, iconButtonVariants } from "#/components/ck/icon-button";
 import { Logo, LogoLockup } from "#/components/ck/logo";
-import { useBagDrawer } from "#/lib/bag-drawer";
-import { useCart } from "#/lib/cart";
 import { useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
@@ -60,8 +58,6 @@ function LocaleSwitch({ className }: { className?: string }) {
  */
 export function Header() {
   const { t } = useI18n();
-  const { count } = useCart();
-  const { openBag } = useBagDrawer();
   const [open, setOpen] = useState(false);
 
   return (
@@ -97,18 +93,21 @@ export function Header() {
         <div className="flex items-center justify-end gap-1">
           <LocaleSwitch className="mr-3 hidden sm:flex" />
           <a
-            href={site.contact.whatsappLink}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={t.nav.whatsapp}
-            title={t.nav.whatsapp}
-            className={iconButtonVariants({ variant: "inverse" })}
+            href={site.contact.phoneLink}
+            aria-label={`${t.nav.call}: ${site.contact.phone}`}
+            title={site.contact.phone}
+            className={cn(iconButtonVariants({ variant: "inverse" }), "hidden lg:inline-flex")}
           >
-            <SiWhatsapp className="size-[18px]" />
+            <PhoneIcon strokeWidth={1.5} />
           </a>
-          <IconButton variant="inverse" label={t.nav.warenkorb} badge={count} onClick={openBag}>
-            <ShoppingBagIcon strokeWidth={1.5} />
-          </IconButton>
+          <Link
+            to="/bestellen"
+            aria-label={t.nav.requestLong}
+            className={cn(buttonVariants({ variant: "inverse", size: "sm" }), "ml-1")}
+          >
+            <span className="sm:hidden">{t.nav.request}</span>
+            <span className="hidden sm:inline">{t.nav.requestLong}</span>
+          </Link>
         </div>
       </div>
 
@@ -118,6 +117,13 @@ export function Header() {
           aria-label="Mobile Navigation"
         >
           <div className="flex flex-col">
+            <Link
+              to="/bestellen"
+              onClick={() => setOpen(false)}
+              className={cn(navLink, "border-b-0 py-3 text-sm")}
+            >
+              {t.nav.requestLong}
+            </Link>
             {navItems.map((item) => (
               <Link
                 key={item.to}
@@ -130,13 +136,8 @@ export function Header() {
             ))}
             <div className="mt-2 flex items-center justify-between border-t border-hairline-inverse pt-4">
               <LocaleSwitch />
-              <a
-                href={site.contact.whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                className={cn(navLink, "border-b-0")}
-              >
-                {t.nav.whatsapp}
+              <a href={site.contact.phoneLink} className={cn(navLink, "border-b-0")}>
+                {t.nav.call}
               </a>
             </div>
           </div>
@@ -184,24 +185,20 @@ export function Footer() {
             >
               <SiInstagram className="size-4" />
             </a>
-            <a
-              href={contact.whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={t.nav.whatsapp}
-              title={t.nav.whatsapp}
-              className={iconButtonVariants({ variant: "inverse", size: "sm" })}
-            >
-              <SiWhatsapp className="size-4" />
-            </a>
           </div>
         </div>
 
         <FooterColumn title={t.footer.order}>
-          <a href={contact.whatsappLink} target="_blank" rel="noreferrer" className={footerLink}>
-            WhatsApp {contact.whatsapp}
+          <Link to="/bestellen" className={footerLink}>
+            {t.footer.request}
+          </Link>
+          <a href={contact.phoneLink} className={footerLink}>
+            {contact.phone}
           </a>
-          <span>{contact.hours}</span>
+          <a href={`mailto:${contact.email}`} className={footerLink}>
+            {contact.email}
+          </a>
+          <span>{t.footer.hoursValue}</span>
         </FooterColumn>
 
         <FooterColumn title={t.footer.assortment}>
@@ -253,14 +250,13 @@ export function Footer() {
   );
 }
 
-/** Öffentliches Seiten-Shell: Header, Inhalt, Footer, Warenkorb-Drawer. */
+/** Öffentliches Seiten-Shell: Header, Inhalt, Footer. */
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <BagDrawer />
     </div>
   );
 }

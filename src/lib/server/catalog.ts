@@ -21,6 +21,7 @@ export const $getCatalog = createServerFn({ method: "GET" }).handler(async () =>
         nameRu: products.nameRu,
         imageKey: products.imageKey,
         leadTimeHours: products.leadTimeHours,
+        orderKind: products.orderKind,
         featured: products.featured,
         sort: products.sort,
         fromPriceCents: min(productSizes.priceCents).as("from_price_cents"),

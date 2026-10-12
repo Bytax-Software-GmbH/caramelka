@@ -39,6 +39,7 @@ function NewProductPage() {
           imageKey: "torte",
           leadTimeHours: 48,
           fillingSelectable: true,
+          orderKind: "cake",
           featured: false,
           active: true,
           sort: 0,

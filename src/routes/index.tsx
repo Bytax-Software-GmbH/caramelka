@@ -72,14 +72,9 @@ function Hero() {
             <Link to="/torten" className={buttonVariants({ variant: "inverse-solid", size: "lg" })}>
               {t.hero.ctaPrimary}
             </Link>
-            <a
-              href={site.contact.whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              className={buttonVariants({ variant: "inverse", size: "lg" })}
-            >
+            <Link to="/bestellen" className={buttonVariants({ variant: "inverse", size: "lg" })}>
               {t.hero.ctaSecondary}
-            </a>
+            </Link>
           </div>
         </div>
         <div className="ck-rise ck-frame-inverse [animation-delay:120ms]">

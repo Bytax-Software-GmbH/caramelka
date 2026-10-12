@@ -13,8 +13,10 @@ import {
   CardTitle,
 } from "#/components/ck/card";
 import { Placeholder } from "#/components/ck/placeholder";
+import type { OrderKind } from "#/lib/db/schema/caramelka.schema";
 import { formatPrice } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
+import { requiredLeadTimeHours } from "#/lib/order-request/schedule";
 
 export interface ProductCardData {
   slug: string;
@@ -23,6 +25,8 @@ export interface ProductCardData {
   imageKey: string;
   fromPriceCents: number | null;
   leadTimeHours?: number;
+  /** Für die tatsächliche Vorlaufzeit (Art-Standard vs. Produkt). */
+  orderKind?: OrderKind;
   featured?: boolean;
 }
 
@@ -54,7 +58,13 @@ export function ProductCard({ product, eyebrow }: { product: ProductCardData; ey
           </Link>
         </CardTitle>
         {product.leadTimeHours != null && (
-          <CardDescription>{t.catalog.leadTime(product.leadTimeHours)}</CardDescription>
+          <CardDescription>
+            {t.catalog.leadTime(
+              product.orderKind
+                ? requiredLeadTimeHours(product.orderKind, [product.leadTimeHours])
+                : product.leadTimeHours,
+            )}
+          </CardDescription>
         )}
         <CardFooter className="mt-auto pt-3">
           {product.fromPriceCents != null ? (

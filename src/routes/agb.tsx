@@ -10,20 +10,24 @@ export const Route = createFileRoute("/agb")({
   component: () => (
     <SimplePage kicker="Rechtliches" title="Allgemeine Geschäftsbedingungen">
       {/* TODO: Vor Launch juristisch prüfen lassen. */}
-      <h2>1. Geltungsbereich</h2>
+      <h2>1. Geltungsbereich und Vertragsschluss</h2>
       <p>
-        Diese AGB gelten für alle Bestellungen über {site.name} ({site.domain}). Bestellungen sind
-        erst nach unserer persönlichen Bestätigung (Telefon oder WhatsApp) verbindlich.
+        Diese AGB gelten für alle Bestellungen über {site.name} ({site.domain}). Das Absenden des
+        Anfrage-Formulars ist eine unverbindliche Anfrage. Ein Vertrag kommt erst zustande, wenn wir
+        die Bestellung per E-Mail bestätigen. Die Bestätigung nennt Termin, Übergabe und Endpreis.
       </p>
       <h2>2. Bestellung & Vorlaufzeiten</h2>
       <p>
-        Alle Torten werden frisch auf Bestellung gefertigt. Es gelten die beim Produkt angegebenen
-        Vorlaufzeiten. Wunschtermine sind Montag bis Samstag möglich.
+        Alle Torten werden frisch auf Bestellung gefertigt. Es gelten die im Formular angezeigten
+        Vorlaufzeiten. Abholung und Lieferung sind Montag bis Samstag möglich; Hochzeits- und
+        Festtorten besprechen wir persönlich.
       </p>
       <h2>3. Preise & Zahlung</h2>
       <p>
-        Alle Preise inkl. gesetzlicher MwSt. Die Zahlung erfolgt bei Abholung bzw. Lieferung in bar
-        oder per Karte. Online-Zahlungsarten werden ergänzt, sobald verfügbar.
+        Alle Preise inkl. gesetzlicher MwSt. Im Formular angezeigte Preise sind Schätzungen (Gewicht
+        mal Preis je kg bzw. Preis der Größe, zuzüglich Lieferung). Verbindlich ist der Endpreis aus
+        unserer Bestätigung; aufwendiges Dekor kann ihn erhöhen. Die Zahlung erfolgt bei Abholung
+        bzw. Lieferung in bar oder per Karte.
       </p>
       <h2>4. Lieferung</h2>
       <p>
@@ -35,6 +39,11 @@ export const Route = createFileRoute("/agb")({
         Torten sind individuell angefertigte, verderbliche Waren. Das gesetzliche Widerrufsrecht ist
         gemäß § 312g Abs. 2 BGB ausgeschlossen. Stornierungen sind bis 72 Stunden vor dem
         Wunschtermin kostenfrei möglich.
+      </p>
+      <h2>6. Fotos</h2>
+      <p>
+        Hochgeladene Fotos nutzen wir ausschließlich als Vorlage für deine Bestellung. Bitte lade
+        nur Fotos hoch, die du dafür verwenden darfst.
       </p>
     </SimplePage>
   ),

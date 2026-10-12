@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, TriangleAlertIcon } from "lucide-react";
 
 import { Eyebrow, textLinkClass } from "#/components/ck/primitives";
 import { cn } from "#/lib/utils";
@@ -80,6 +80,36 @@ export function AdminField({ label, children }: { label: string; children: React
     <div>
       <dt className="ck-eyebrow tracking-label text-ink-subtle">{label}</dt>
       <dd className="mt-1 text-ink">{children}</dd>
+    </div>
+  );
+}
+
+/** Hinweisband über dem Inhalt, z. B. wenn der E-Mail-Versand nicht eingerichtet ist. */
+export function AdminNotice({
+  title,
+  className,
+  children,
+}: {
+  title: React.ReactNode;
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex gap-3 rounded-md border border-l-2 border-hairline border-l-warning bg-warning-bg px-4 py-3 text-ink ck-body-sm",
+        className,
+      )}
+    >
+      <TriangleAlertIcon
+        aria-hidden
+        strokeWidth={1.5}
+        className="mt-0.5 size-4 shrink-0 text-warning"
+      />
+      <div>
+        <p className="font-medium">{title}</p>
+        {children && <div className="mt-0.5 text-ink-muted">{children}</div>}
+      </div>
     </div>
   );
 }

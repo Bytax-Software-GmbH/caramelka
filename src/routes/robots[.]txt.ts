@@ -11,8 +11,6 @@ Allow: /
 Disallow: /app
 Disallow: /login
 Disallow: /colors
-Disallow: /warenkorb
-Disallow: /kasse
 Disallow: /bestellung
 Disallow: /api/
 

@@ -10,8 +10,6 @@ import { ThemeParamSync } from "#/components/ck/theme-preview";
 import { Toaster } from "#/components/ui/sonner";
 import { env } from "#/env/client";
 import type { AuthQueryResult } from "#/lib/auth/queries";
-import { BagDrawerProvider } from "#/lib/bag-drawer";
-import { CartProvider } from "#/lib/cart";
 import { $getLocale, I18nProvider, useI18n } from "#/lib/i18n";
 import { site } from "#/lib/site";
 
@@ -32,7 +30,17 @@ const bakeryJsonLd = {
   alternateName: site.nameCyrillic,
   url: site.url,
   description: site.description,
-  telephone: site.contact.whatsapp,
+  telephone: site.contact.phone,
+  email: site.contact.email,
+  sameAs: [site.contact.instagram],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: site.shop.openingHours.open,
+      closes: site.shop.openingHours.close,
+    },
+  ],
   address: {
     "@type": "PostalAddress",
     streetAddress: site.contact.address.street,
@@ -94,19 +102,15 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
       </head>
       <body>
         <I18nProvider initialLocale={initialLocale}>
-          <CartProvider>
-            <BagDrawerProvider>
-              <HtmlLangSync />
-              {/* Farb-Vorschau über URL-Parameter. In der Entwicklung immer an,
-                in Produktion nur mit VITE_ENABLE_THEME_PREVIEW=true. Auf der
-                Demo-Instanz erwünscht, damit der Kunde Paletten auf der echten
-                URL testen kann; vor dem Launch abschalten, sonst kann jeder
-                Besucher die Seite über `?primary=…` umfärben. */}
-              {themePreviewEnabled && <ThemeParamSync />}
-              {children}
-              <Toaster position="bottom-right" />
-            </BagDrawerProvider>
-          </CartProvider>
+          <HtmlLangSync />
+          {/* Farb-Vorschau über URL-Parameter. In der Entwicklung immer an,
+            in Produktion nur mit VITE_ENABLE_THEME_PREVIEW=true. Auf der
+            Demo-Instanz erwünscht, damit der Kunde Paletten auf der echten
+            URL testen kann; vor dem Launch abschalten, sonst kann jeder
+            Besucher die Seite über `?primary=…` umfärben. */}
+          {themePreviewEnabled && <ThemeParamSync />}
+          {children}
+          <Toaster position="bottom-right" />
         </I18nProvider>
 
         <TanStackDevtools

@@ -1,30 +1,18 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import {
-  ArrowLeftIcon,
-  CalendarIcon,
-  MinusIcon,
-  PlusIcon,
-  ShoppingBagIcon,
-  TruckIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, TruckIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import { Badge } from "#/components/ck/badge";
-import { Button } from "#/components/ck/button";
-import { IconButton } from "#/components/ck/icon-button";
-import { Input } from "#/components/ck/input";
+import { buttonVariants } from "#/components/ck/button";
 import { PublicShell, shell } from "#/components/ck/layout";
 import { Placeholder } from "#/components/ck/placeholder";
 import { Body, Eyebrow, Heading, Lede, Price, textLinkClass } from "#/components/ck/primitives";
-import { Radio } from "#/components/ck/radio";
 import { Tabs } from "#/components/ck/tabs";
 import { Tag } from "#/components/ck/tag";
-import { useBagDrawer } from "#/lib/bag-drawer";
-import { useCart } from "#/lib/cart";
-import { earliestDate, formatDate, formatPrice, toIsoDate } from "#/lib/format";
+import { formatDate, formatPrice } from "#/lib/format";
 import { useI18n } from "#/lib/i18n";
+import { earliestBookableDate, requiredLeadTimeHours } from "#/lib/order-request/schedule";
 import { productQueryOptions } from "#/lib/queries";
 import { site } from "#/lib/site";
 import { cn } from "#/lib/utils";
@@ -74,7 +62,7 @@ export const Route = createFileRoute("/torten/$slug")({
                 "@type": "Offer",
                 priceCurrency: site.shop.currency,
                 price: (loaderData.fromPriceCents / 100).toFixed(2),
-                availability: "https://schema.org/InStock",
+                availability: "https://schema.org/MadeToOrder",
                 url,
               },
             }),
@@ -89,71 +77,43 @@ export const Route = createFileRoute("/torten/$slug")({
 const legendClass = "mb-3 ck-label text-ink-muted";
 
 /**
- * Produktseite: Foto 4:5 links (klebend), rechts Eyebrow, Name in der Serif,
- * Preis, kursive Beschreibung, dann Größe als Radio-Karten, Füllung als
- * Tags, Aufschrift, Menge und der eine Primär-Button. Darunter Reiter.
+ * Produktseite: Foto 4:5 links (klebend), rechts Name, "ab"-Preis, kursive
+ * Beschreibung, Größen als Richtpreise und Füllungen als Tags. Der eine
+ * Primär-Button führt ins Anfrage-Formular, vorbelegt mit Produkt und
+ * gewählter Füllung. Darunter Reiter.
  */
 function ProductPage() {
   const { slug } = Route.useParams();
   const { t, locale, pickL } = useI18n();
-  const cart = useCart();
-  const { openBag } = useBagDrawer();
   const { data: product } = useSuspenseQuery(productQueryOptions(slug));
-
-  const [sizeId, setSizeId] = useState<number | null>(null);
   const [fillingId, setFillingId] = useState<number | null>(null);
-  const [inscription, setInscription] = useState("");
-  const [quantity, setQuantity] = useState(1);
 
+  const leadHours = product
+    ? requiredLeadTimeHours(product.orderKind, [product.leadTimeHours])
+    : site.shop.leadTimeHoursByKind.cake;
   const earliest = useMemo(
     () =>
       product
-        ? formatDate(
-            toIsoDate(earliestDate(product.leadTimeHours, site.shop.closedWeekdays)),
-            locale,
-          )
+        ? formatDate(earliestBookableDate(product.orderKind, leadHours, new Date()), locale)
         : "",
-    [product, locale],
+    [product, leadHours, locale],
   );
 
   if (!product) return null;
 
   const name = pickL(product.nameDe, product.nameRu);
   const description = pickL(product.descriptionDe, product.descriptionRu);
-  const selectedSize = product.sizes.find((s) => s.id === sizeId) ?? product.sizes[0];
+  const fromPrice = product.sizes.reduce<number | null>(
+    (min, size) => (min === null || size.priceCents < min ? size.priceCents : min),
+    null,
+  );
   const selectedFilling = product.fillings.find((f) => f.id === fillingId) ?? null;
-  const totalCents = selectedSize ? selectedSize.priceCents * quantity : 0;
 
   const allergenText = selectedFilling?.allergensDe
     ? `${t.product.allergens}: ${pickL(selectedFilling.allergensDe, selectedFilling.allergensRu)}`
     : product.fillingSelectable
       ? t.product.allergensByFilling
       : t.product.allergensNone;
-
-  function addToCart() {
-    if (!product || !selectedSize) return;
-    cart.add({
-      productId: product.id,
-      slug: product.slug,
-      nameDe: product.nameDe,
-      nameRu: product.nameRu,
-      imageKey: product.imageKey,
-      sizeId: selectedSize.id,
-      sizeLabelDe: selectedSize.labelDe,
-      sizeLabelRu: selectedSize.labelRu,
-      fillingId: selectedFilling?.id ?? null,
-      fillingNameDe: selectedFilling?.nameDe ?? null,
-      fillingNameRu: selectedFilling?.nameRu ?? null,
-      inscription: inscription.trim() || null,
-      unitPriceCents: selectedSize.priceCents,
-      quantity,
-      leadTimeHours: product.leadTimeHours,
-    });
-    toast.success(t.product.added, {
-      description: `${name} · ${pickL(selectedSize.labelDe, selectedSize.labelRu)}`,
-      action: { label: t.product.viewBag, onClick: openBag },
-    });
-  }
 
   return (
     <PublicShell>
@@ -172,55 +132,63 @@ function ProductPage() {
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-3">
-              <Eyebrow>{t.catalog.leadTime(product.leadTimeHours)}</Eyebrow>
+              <Eyebrow>{t.catalog.leadTime(leadHours)}</Eyebrow>
               {product.featured && <Badge tone="accent">{t.catalog.featuredBadge}</Badge>}
             </div>
             <Heading as="h1" className="mt-3">
               {name}
             </Heading>
-            {selectedSize && (
+            {fromPrice !== null && (
               <div className="mt-2.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                <Price className="text-2xl">{formatPrice(selectedSize.priceCents, locale)}</Price>
-                <span className="text-ink-muted ck-body-sm">
-                  {pickL(selectedSize.labelDe, selectedSize.labelRu)} · {t.product.priceNote}
-                </span>
+                <Price className="text-2xl">
+                  {t.product.fromPrice(formatPrice(fromPrice, locale))}
+                </Price>
+                <span className="text-ink-muted ck-body-sm">{t.product.priceNote}</span>
               </div>
             )}
             <Lede className="mt-5 text-[19px]">{description}</Lede>
 
-            {/* Größe */}
-            <fieldset className="mt-8">
-              <legend className={legendClass}>{t.product.size}</legend>
-              <div className="flex flex-col gap-2">
-                {product.sizes.map((size) => (
-                  <Radio
-                    key={size.id}
-                    card
-                    name="size"
-                    label={pickL(size.labelDe, size.labelRu)}
-                    meta={formatPrice(size.priceCents, locale)}
-                    checked={selectedSize?.id === size.id}
-                    onChange={() => setSizeId(size.id)}
-                  />
-                ))}
+            {/* Größen als Richtpreise */}
+            {product.sizes.length > 0 && (
+              <div className="mt-8">
+                <div className={legendClass}>{t.product.sizes}</div>
+                <ul className="divide-y divide-hairline border-y border-hairline">
+                  {product.sizes.map((size) => (
+                    <li
+                      key={size.id}
+                      className="flex items-baseline justify-between gap-4 py-3 ck-body-sm"
+                    >
+                      <span className="text-ink">{pickL(size.labelDe, size.labelRu)}</span>
+                      <Price className="text-md">{formatPrice(size.priceCents, locale)}</Price>
+                    </li>
+                  ))}
+                </ul>
+                {product.orderKind !== "event" && (
+                  <p className="mt-2 text-ink-muted ck-body-sm">
+                    {product.orderKind === "cake" ? t.product.sizesNote : t.product.sizesNoteFixed}
+                  </p>
+                )}
               </div>
-            </fieldset>
+            )}
 
-            {/* Füllung */}
+            {/* Füllung: wählt nur vor, bestellt wird im Formular */}
             {product.fillingSelectable ? (
-              <fieldset className="mt-8">
-                <legend className={legendClass}>{t.product.filling}</legend>
+              <div className="mt-8">
+                <div className={legendClass}>{t.product.filling}</div>
                 <div className="flex flex-wrap gap-2">
                   {product.fillings.map((filling) => (
                     <Tag
                       key={filling.id}
                       selected={selectedFilling?.id === filling.id}
-                      onClick={() => setFillingId(filling.id)}
+                      onClick={() =>
+                        setFillingId((current) => (current === filling.id ? null : filling.id))
+                      }
                     >
                       {pickL(filling.nameDe, filling.nameRu)}
                     </Tag>
                   ))}
                 </div>
+                <p className="mt-2 text-ink-muted ck-body-sm">{t.product.fillingHint}</p>
                 {selectedFilling && (
                   <div className="mt-4 border-l-2 border-accent bg-accent-soft px-5 py-4">
                     <Body size="sm">
@@ -234,57 +202,22 @@ function ProductPage() {
                     )}
                   </div>
                 )}
-              </fieldset>
+              </div>
             ) : (
               <div className="mt-8 border-l-2 border-hairline-strong bg-sunken px-5 py-4">
                 <Body size="sm">{t.product.fillingByArrangement}</Body>
               </div>
             )}
 
-            {/* Aufschrift */}
-            <Input
-              className="mt-8"
-              label={t.product.inscription}
-              maxLength={120}
-              value={inscription}
-              onChange={(e) => setInscription(e.target.value)}
-              placeholder={t.product.inscriptionPlaceholder}
-              hint={`${inscription.length} / 120`}
-            />
-
-            {/* Menge und Warenkorb */}
-            <div className="mt-8 grid grid-cols-1 items-end gap-3 sm:grid-cols-[132px_1fr]">
-              <div className="flex flex-col gap-2">
-                <span className="ck-label text-ink-muted">{t.product.quantity}</span>
-                <div
-                  className="flex h-13 items-center rounded-sm border border-hairline bg-surface px-1"
-                  aria-label={t.product.quantity}
-                >
-                  <IconButton
-                    size="sm"
-                    label={`${t.product.quantity} −`}
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  >
-                    <MinusIcon className="size-3.5" strokeWidth={1.5} />
-                  </IconButton>
-                  <span className="flex-1 text-center tabular-nums ck-body">{quantity}</span>
-                  <IconButton
-                    size="sm"
-                    label={`${t.product.quantity} +`}
-                    onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-                  >
-                    <PlusIcon className="size-3.5" strokeWidth={1.5} />
-                  </IconButton>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                block
-                icon={<ShoppingBagIcon strokeWidth={1.5} />}
-                onClick={addToCart}
+            <div className="mt-8">
+              <Link
+                to="/bestellen"
+                search={{ produkt: product.slug, fuellung: selectedFilling?.slug }}
+                className={buttonVariants({ size: "lg", block: true })}
               >
-                {t.product.addToCart} · {formatPrice(totalCents, locale)}
-              </Button>
+                {t.product.requestCta}
+              </Link>
+              <p className="mt-3 text-center text-ink-muted ck-body-sm">{t.product.requestNote}</p>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-ink-muted ck-body-sm">

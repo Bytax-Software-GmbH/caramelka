@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { centsToEuroInput, parseEuroToCents } from "#/components/admin/format";
 import {
   AdminEmpty,
   AdminHeading,
@@ -18,6 +19,8 @@ import { Badge } from "#/components/ck/badge";
 import { Button } from "#/components/ck/button";
 import { Checkbox } from "#/components/ck/checkbox";
 import { Input, Textarea } from "#/components/ck/input";
+import { Price } from "#/components/ck/primitives";
+import { formatPrice } from "#/lib/format";
 import { $adminListFillings, $adminUpsertFilling } from "#/lib/server/admin";
 
 export const Route = createFileRoute("/_auth/app/fuellungen")({
@@ -33,6 +36,8 @@ interface FillingDraft {
   descriptionRu: string;
   allergensDe: string;
   allergensRu: string;
+  /** Euro je kg als Eingabetext; leer = kein Preis (keine Schätzung im Formular). */
+  priceEuro: string;
   active: boolean;
   sort: number;
 }
@@ -45,9 +50,19 @@ const emptyDraft: FillingDraft = {
   descriptionRu: "",
   allergensDe: "",
   allergensRu: "",
+  priceEuro: "",
   active: true,
   sort: 0,
 };
+
+const MAX_PRICE_PER_KG_CENTS = 100_000;
+
+/** Leer = null (kein Preis), sonst Cent; undefined = ungültige Eingabe. */
+function pricePerKgFromInput(input: string): number | null | undefined {
+  if (input.trim() === "") return null;
+  const cents = parseEuroToCents(input);
+  return cents === null || cents > MAX_PRICE_PER_KG_CENTS ? undefined : cents;
+}
 
 function AdminFillingsPage() {
   const queryClient = useQueryClient();
@@ -59,8 +74,12 @@ function AdminFillingsPage() {
   });
 
   const save = useMutation({
-    mutationFn: (d: FillingDraft) =>
-      $adminUpsertFilling({
+    mutationFn: (d: FillingDraft) => {
+      const pricePerKgCents = pricePerKgFromInput(d.priceEuro);
+      if (pricePerKgCents === undefined) {
+        throw new Error("Preis je kg bitte in Euro angeben, z. B. 48 oder 48,50.");
+      }
+      return $adminUpsertFilling({
         data: {
           ...(d.id ? { id: d.id } : {}),
           slug: d.slug.trim(),
@@ -70,18 +89,25 @@ function AdminFillingsPage() {
           descriptionRu: d.descriptionRu.trim(),
           allergensDe: d.allergensDe.trim(),
           allergensRu: d.allergensRu.trim(),
+          pricePerKgCents,
           active: d.active,
           sort: d.sort,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin"] });
       void queryClient.invalidateQueries({ queryKey: ["fillings"] });
       toast.success("Füllung gespeichert");
       setDraft(null);
     },
-    onError: () => toast.error("Speichern fehlgeschlagen"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : "Speichern fehlgeschlagen"),
   });
+
+  const priceError =
+    draft && pricePerKgFromInput(draft.priceEuro) === undefined
+      ? "Bitte einen Betrag in Euro eingeben, z. B. 48 oder 48,50."
+      : undefined;
 
   function patch(next: Partial<FillingDraft>) {
     setDraft((d) => (d ? { ...d, ...next } : d));
@@ -159,6 +185,17 @@ function AdminFillingsPage() {
                 value={draft.allergensRu}
                 onChange={(e) => patch({ allergensRu: e.target.value })}
               />
+              <Input
+                label="Preis je kg"
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="z. B. 48 oder 48,50"
+                value={draft.priceEuro}
+                onChange={(e) => patch({ priceEuro: e.target.value })}
+                trailing={<span aria-hidden>€/kg</span>}
+                error={priceError}
+                hint="Für Torten nach Gewicht. Leer lassen: keine Schätzung, der Preis kommt mit der Bestätigung."
+              />
             </div>
             <div className="mt-5">
               <Checkbox
@@ -186,6 +223,7 @@ function AdminFillingsPage() {
           <thead>
             <tr className={adminTheadTr}>
               <th className={adminTh}>Name</th>
+              <th className={`${adminTh} text-right`}>Preis je kg</th>
               <th className={adminTh}>Allergene</th>
               <th className={adminTh}>Status</th>
               <th className={adminTh}>
@@ -200,7 +238,14 @@ function AdminFillingsPage() {
                   <span className="font-medium">{f.nameDe}</span>
                   <span className="block text-ink-muted">{f.nameRu}</span>
                 </td>
-                <td className={`${adminTd} text-ink-muted`}>{f.allergensDe || "—"}</td>
+                <td className={`${adminTd} text-right whitespace-nowrap`}>
+                  {f.pricePerKgCents === null ? (
+                    <span className="text-ink-muted">offen</span>
+                  ) : (
+                    <Price className="text-md">{formatPrice(f.pricePerKgCents)}</Price>
+                  )}
+                </td>
+                <td className={`${adminTd} text-ink-muted`}>{f.allergensDe || "keine Angabe"}</td>
                 <td className={adminTd}>
                   <Badge tone={f.active ? "success" : "error"} dot>
                     {f.active ? "Aktiv" : "Inaktiv"}
@@ -220,6 +265,8 @@ function AdminFillingsPage() {
                         descriptionRu: f.descriptionRu,
                         allergensDe: f.allergensDe,
                         allergensRu: f.allergensRu,
+                        priceEuro:
+                          f.pricePerKgCents === null ? "" : centsToEuroInput(f.pricePerKgCents),
                         active: f.active,
                         sort: f.sort,
                       })

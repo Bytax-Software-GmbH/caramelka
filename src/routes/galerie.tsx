@@ -44,9 +44,14 @@ function GalleryPage() {
           <Display as="h2" className="mx-auto mt-8 max-w-[18ch]">
             {t.gallery.ctaTitle}
           </Display>
-          <Link to="/torten" className={cn(buttonVariants({ size: "lg" }), "mt-8")}>
-            {t.hero.ctaPrimary}
-          </Link>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link to="/bestellen" className={buttonVariants({ size: "lg" })}>
+              {t.hero.ctaSecondary}
+            </Link>
+            <Link to="/torten" className={buttonVariants({ variant: "secondary", size: "lg" })}>
+              {t.hero.ctaPrimary}
+            </Link>
+          </div>
         </Reveal>
       </section>
     </PublicShell>

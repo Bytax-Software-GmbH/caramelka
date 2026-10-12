@@ -16,6 +16,7 @@ import { Badge } from "#/components/ck/badge";
 import { Button, buttonVariants } from "#/components/ck/button";
 import { Price } from "#/components/ck/primitives";
 import { formatPrice } from "#/lib/format";
+import { PRODUCT_ORDER_KIND_LABEL } from "#/lib/order-status";
 import { $adminDeleteProduct, $adminListProducts } from "#/lib/server/admin";
 
 export const Route = createFileRoute("/_auth/app/produkte/")({
@@ -38,7 +39,8 @@ function AdminProductsPage() {
     },
   });
 
-  const categoryName = (id: number) => data?.categories.find((c) => c.id === id)?.nameDe ?? "—";
+  const categoryName = (id: number) =>
+    data?.categories.find((c) => c.id === id)?.nameDe ?? "ohne Kategorie";
   const fromPrice = (productId: number) => {
     const prices =
       data?.sizes.filter((s) => s.productId === productId).map((s) => s.priceCents) ?? [];
@@ -65,6 +67,7 @@ function AdminProductsPage() {
             <tr className={adminTheadTr}>
               <th className={adminTh}>Name</th>
               <th className={adminTh}>Kategorie</th>
+              <th className={adminTh}>Anfrage-Art</th>
               <th className={`${adminTh} text-right`}>ab Preis</th>
               <th className={adminTh}>Vorlauf</th>
               <th className={adminTh}>Status</th>
@@ -91,8 +94,15 @@ function AdminProductsPage() {
                     </span>
                   </td>
                   <td className={adminTd}>{categoryName(p.categoryId)}</td>
+                  <td className={`${adminTd} whitespace-nowrap`}>
+                    {PRODUCT_ORDER_KIND_LABEL[p.orderKind]}
+                  </td>
                   <td className={`${adminTd} text-right`}>
-                    {price != null ? <Price className="text-md">{formatPrice(price)}</Price> : "—"}
+                    {price != null ? (
+                      <Price className="text-md">{formatPrice(price)}</Price>
+                    ) : (
+                      <span className="text-ink-muted">keine Größe</span>
+                    )}
                   </td>
                   <td className={adminTd}>{Math.round(p.leadTimeHours / 24)} Tage</td>
                   <td className={adminTd}>

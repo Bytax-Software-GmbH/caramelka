@@ -30,14 +30,15 @@ export function toIsoDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/**
- * Frühestes bestellbares Datum: jetzt + Vorlaufzeit, dann auf den nächsten
- * offenen Tag (Mo–Sa) vorrücken.
- */
-export function earliestDate(leadTimeHours: number, closedWeekdays: number[]): Date {
-  const d = new Date(Date.now() + leadTimeHours * 3_600_000);
-  while (closedWeekdays.includes(d.getDay())) {
-    d.setDate(d.getDate() + 1);
-  }
-  return d;
+/** 2500 → "2,5 kg" bzw. "2,5 кг". */
+export function formatWeight(grams: number, locale: Locale = "de"): string {
+  const kg = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : "de-DE", {
+    maximumFractionDigits: 1,
+  }).format(grams / 1000);
+  return `${kg} ${locale === "ru" ? "кг" : "kg"}`;
+}
+
+/** "14:30" → "14:30 Uhr" (DE), im Russischen ohne Zusatz. */
+export function formatTime(hhmm: string, locale: Locale = "de"): string {
+  return locale === "ru" ? hhmm : `${hhmm} Uhr`;
 }
