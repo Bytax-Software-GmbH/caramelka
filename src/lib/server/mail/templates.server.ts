@@ -4,7 +4,7 @@
  */
 import { env } from "#/env/server";
 import type { EventType, Fulfilment, Locale, OrderKind } from "#/lib/db/schema";
-import { formatDate, formatPrice, formatTime, formatWeight } from "#/lib/format";
+import { formatDate, formatDateTime, formatPrice, formatTime, formatWeight } from "#/lib/format";
 import { roundEstimate } from "#/lib/order-request/estimate";
 import { site } from "#/lib/site";
 
@@ -104,8 +104,18 @@ const copy = {
     confirmed: {
       subject: (no: string) => `Bestätigt: deine Bestellung ${no}`,
       subjectUpdated: (no: string) => `Aktualisiert: deine Bestellung ${no}`,
+      subjectOffer: (no: string) => `Dein Angebot: Bestellung ${no}`,
+      subjectOfferUpdated: (no: string) => `Neuer Preis: deine Bestellung ${no}`,
       intro: "wir haben deine Bestellung bestätigt und freuen uns darauf!",
       introUpdated: "wir haben deine Bestellung aktualisiert. Hier sind die neuen Angaben:",
+      introOffer:
+        "wir haben deine Anfrage geprüft. Der Endpreis liegt über der Schätzung aus dem Formular. Darum ist diese E-Mail ein Angebot und noch keine verbindliche Bestätigung:",
+      introOfferNoEstimate:
+        "wir haben deine Anfrage geprüft. Im Formular stand noch kein Preis. Darum ist diese E-Mail ein Angebot und noch keine verbindliche Bestätigung:",
+      introOfferUpdated:
+        "wir mussten den Preis deiner Bestellung anpassen. Darum gilt diese E-Mail als neues Angebot:",
+      offerDeadline: (until: string) =>
+        `Passt dir der Preis nicht? Dann antworte bis ${until} auf diese E-Mail oder ruf uns an, und wir stornieren kostenfrei. Hören wir bis dahin nichts von dir, gilt die Bestellung zu diesem Preis als bestätigt und wir legen los.`,
       payment: "Bezahlt wird bequem bei Abholung bzw. Lieferung, bar oder mit Karte.",
       calendar: "Den Termin findest du als Kalendereintrag im Anhang.",
       terms: `Es gelten unsere AGB: ${site.url}/agb`,
@@ -168,8 +178,18 @@ const copy = {
     confirmed: {
       subject: (no: string) => `Заказ ${no} подтверждён`,
       subjectUpdated: (no: string) => `Заказ ${no} изменён`,
+      subjectOffer: (no: string) => `Предложение по заказу ${no}`,
+      subjectOfferUpdated: (no: string) => `Новая цена: заказ ${no}`,
       intro: "мы подтвердили ваш заказ и уже ждём встречи!",
       introUpdated: "мы изменили ваш заказ. Актуальные данные:",
+      introOffer:
+        "мы проверили вашу заявку. Итоговая цена выше предварительной из формы. Поэтому это письмо является предложением, а не окончательным подтверждением:",
+      introOfferNoEstimate:
+        "мы проверили вашу заявку. В форме цена ещё не была указана. Поэтому это письмо является предложением, а не окончательным подтверждением:",
+      introOfferUpdated:
+        "нам пришлось изменить цену вашего заказа. Поэтому это письмо является новым предложением:",
+      offerDeadline: (until: string) =>
+        `Цена не подходит? Ответьте на это письмо или позвоните нам до ${until}, и мы отменим заказ бесплатно. Если до этого времени мы не получим ответа, заказ считается подтверждённым по этой цене, и мы приступим к работе.`,
       payment: "Оплата при получении, наличными или картой.",
       calendar: "Дата и время заказа во вложении как событие календаря.",
       terms: `Действуют наши условия (AGB): ${site.url}/agb`,
@@ -238,7 +258,7 @@ function estimateText(order: OrderMailData, c: Copy): string {
 function summaryRows(
   order: OrderMailData,
   c: Copy,
-  options: { price: "estimate" | "final" },
+  options: { price: "estimate" | "final" | "offer" },
 ): Row[] {
   const rows: Row[] = [
     [c.labels.orderNo, order.orderNo],
@@ -263,7 +283,11 @@ function summaryRows(
   if (order.fileCount > 0) rows.push([c.labels.photos, c.photos(order.fileCount)]);
   if (order.note) rows.push([c.labels.note, order.note]);
   if (order.kind !== "event") {
-    if (options.price === "final" && order.finalTotalCents !== null) {
+    if (options.price !== "estimate" && order.finalTotalCents !== null) {
+      // Angebot: Schätzung und Endpreis nebeneinander, damit die Abweichung sichtbar ist.
+      if (options.price === "offer" && order.estimateComplete) {
+        rows.push([c.labels.estimate, estimateText(order, c)]);
+      }
       rows.push([c.labels.finalPrice, formatPrice(order.finalTotalCents, order.locale)]);
     } else {
       rows.push([c.labels.estimate, estimateText(order, c)]);
@@ -357,25 +381,47 @@ export function staffNewRequestMail(order: OrderMailData): RenderedMail {
   });
 }
 
-/** An die Kundin: verbindliche Bestätigung mit Endpreis (Phase 2). */
+/**
+ * An die Kundin: verbindliche Bestätigung mit Endpreis (Phase 2). Mit
+ * `offerUntil` wird daraus ein Angebot mit Antwortfrist, weil der Endpreis
+ * über der Schätzung liegt oder es keine gab (siehe order-request/offer.ts).
+ */
 export function orderConfirmedMail(
   order: OrderMailData,
-  options: { updated: boolean },
+  options: { updated: boolean; offerUntil: Date | null },
 ): RenderedMail {
   const c = copy[order.locale];
   const isEvent = order.kind === "event";
+  const offer = options.offerUntil !== null;
+  const subject = offer
+    ? options.updated
+      ? c.confirmed.subjectOfferUpdated(order.orderNo)
+      : c.confirmed.subjectOffer(order.orderNo)
+    : options.updated
+      ? c.confirmed.subjectUpdated(order.orderNo)
+      : c.confirmed.subject(order.orderNo);
+  const intro = offer
+    ? options.updated
+      ? c.confirmed.introOfferUpdated
+      : order.estimateComplete
+        ? c.confirmed.introOffer
+        : c.confirmed.introOfferNoEstimate
+    : options.updated
+      ? c.confirmed.introUpdated
+      : c.confirmed.intro;
   return compose({
     locale: order.locale,
-    subject: options.updated
-      ? c.confirmed.subjectUpdated(order.orderNo)
-      : c.confirmed.subject(order.orderNo),
+    subject,
     before: [
       c.greeting(order.customerName),
-      options.updated ? c.confirmed.introUpdated : c.confirmed.intro,
+      intro,
       ...(order.customerMessage ? [`${c.labels.message}:\n${order.customerMessage}`] : []),
     ],
-    rows: summaryRows(order, c, { price: "final" }),
+    rows: summaryRows(order, c, { price: offer ? "offer" : "final" }),
     after: [
+      ...(options.offerUntil
+        ? [c.confirmed.offerDeadline(formatDateTime(options.offerUntil, order.locale))]
+        : []),
       ...(isEvent ? [] : [c.confirmed.payment]),
       c.confirmed.calendar,
       c.confirmed.terms,

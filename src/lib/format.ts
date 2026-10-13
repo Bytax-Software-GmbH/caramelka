@@ -1,4 +1,5 @@
 import type { Locale } from "#/lib/i18n";
+import { site } from "#/lib/site";
 
 /** 4200 → "42 €" / "42,50 €" — ganze Beträge ohne Nachkommastellen. */
 export function formatPrice(cents: number, locale: Locale = "de"): string {
@@ -36,6 +37,21 @@ export function formatWeight(grams: number, locale: Locale = "de"): string {
     maximumFractionDigits: 1,
   }).format(grams / 1000);
   return `${kg} ${locale === "ru" ? "кг" : "kg"}`;
+}
+
+/** Zeitpunkt in Berliner Zeit: "Mi., 14. Oktober 2026 um 16:00 Uhr" bzw. russisches Pendant. */
+export function formatDateTime(at: Date, locale: Locale = "de"): string {
+  const text = new Intl.DateTimeFormat(locale === "ru" ? "ru-RU" : "de-DE", {
+    timeZone: site.shop.timeZone,
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(at);
+  return locale === "ru" ? text : `${text} Uhr`;
 }
 
 /** "14:30" → "14:30 Uhr" (DE), im Russischen ohne Zusatz. */

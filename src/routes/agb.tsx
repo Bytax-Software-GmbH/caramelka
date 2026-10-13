@@ -15,6 +15,11 @@ export const Route = createFileRoute("/agb")({
         Diese AGB gelten für alle Bestellungen über {site.name} ({site.domain}). Das Absenden des
         Anfrage-Formulars ist eine unverbindliche Anfrage. Ein Vertrag kommt erst zustande, wenn wir
         die Bestellung per E-Mail bestätigen. Die Bestätigung nennt Termin, Übergabe und Endpreis.
+        Liegt der Endpreis über der im Formular gezeigten Schätzung oder stand dort noch kein Preis,
+        ist unsere E-Mail ein Angebot: Du kannst es bis zu der darin genannten Frist kostenfrei
+        ablehnen, per Antwort auf die E-Mail oder telefonisch. Darauf weisen wir in der E-Mail
+        ausdrücklich hin. Lehnst du bis dahin nicht ab, gilt das Angebot als angenommen und die
+        Bestellung als bestätigt.
       </p>
       <h2>2. Bestellung & Vorlaufzeiten</h2>
       <p>

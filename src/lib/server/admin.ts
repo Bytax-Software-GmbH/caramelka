@@ -33,6 +33,7 @@ import {
 } from "#/lib/db/schema";
 import { formatPrice } from "#/lib/format";
 import { buildIcs } from "#/lib/ics";
+import { isPriceOffer, offerResponseDeadline } from "#/lib/order-request/offer";
 import { daySlots, isClosedDay } from "#/lib/order-request/schedule";
 import { orderKindSchema } from "#/lib/order-request/schema";
 import { canConfirmOrDecline, isManualTransition } from "#/lib/order-status";
@@ -58,7 +59,8 @@ const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 type OrderActionResult = { ok: true } | { ok: false; code: "NOT_FOUND" | "INVALID_STATUS" };
 
 type ConfirmOrderResult =
-  | { ok: true }
+  /** `offerUntil`: ISO-Zeitpunkt, wenn die Mail als Angebot mit Frist rausging. */
+  | { ok: true; offerUntil: string | null }
   | { ok: false; code: "NOT_FOUND" | "INVALID_STATUS" | "INVALID_SCHEDULE" };
 
 type EmailSendResult =
@@ -368,10 +370,15 @@ export const $adminConfirmOrder = createServerFn({ method: "POST" })
         })
         .where(eq(orders.id, order.id));
 
+      let offerUntil: Date | null = null;
       if (data.sendEmail) {
         // Nach dem Update laden, damit Mail und Kalender den neuen Stand zeigen.
         const mailData = await loadOrderMailData(tx, order.id);
         if (!mailData) throw new Error("Bestellung für die E-Mail nicht gefunden");
+        // Endpreis über der Schätzung (oder keine Schätzung): Mail ist ein Angebot mit Frist.
+        if (isPriceOffer(mailData, data.finalTotalCents)) {
+          offerUntil = offerResponseDeadline(mailData, new Date());
+        }
         const sequence = await tx.$count(
           emailOutbox,
           and(eq(emailOutbox.orderId, order.id), eq(emailOutbox.kind, "order_confirmed")),
@@ -381,11 +388,11 @@ export const $adminConfirmOrder = createServerFn({ method: "POST" })
           kind: "order_confirmed",
           recipient: mailData.email,
           replyTo: staffRecipients()[0] ?? null,
-          ...orderConfirmedMail(mailData, { updated: wasConfirmed }),
+          ...orderConfirmedMail(mailData, { updated: wasConfirmed, offerUntil }),
           ics: confirmationIcs(mailData, sequence),
         });
       }
-      return { ok: true };
+      return { ok: true, offerUntil: offerUntil?.toISOString() ?? null };
     });
 
     if (result.ok && data.sendEmail) dispatchOutboxInBackground();
