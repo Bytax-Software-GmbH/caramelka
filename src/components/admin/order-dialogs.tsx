@@ -8,8 +8,9 @@ import { Dialog } from "#/components/ck/dialog";
 import { Input, Textarea } from "#/components/ck/input";
 import { Select } from "#/components/ck/select";
 import type { Fulfilment, OrderKind, OrderStatus } from "#/lib/db/schema/caramelka.schema";
-import { formatDate, formatPrice, formatTime } from "#/lib/format";
+import { formatDate, formatDateTime, formatPrice, formatTime } from "#/lib/format";
 import { roundEstimate } from "#/lib/order-request/estimate";
+import { isPriceOffer, offerResponseDeadline, shownEstimateCents } from "#/lib/order-request/offer";
 import { daySlots, isClosedDay } from "#/lib/order-request/schedule";
 import { $adminConfirmOrder, $adminDeclineOrder } from "#/lib/server/admin";
 
@@ -113,6 +114,8 @@ export function ConfirmOrderDialog({
   const [time, setTime] = useState(order.desiredTime ?? "");
   const [sendEmail, setSendEmail] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  // Einmal beim Öffnen, damit die Frist-Vorschau beim Tippen nicht springt.
+  const [openedAt] = useState(() => new Date());
 
   const priceCents = parseEuroToCents(price);
   const dateChanged = changeSchedule && date !== order.desiredDate;
@@ -129,6 +132,13 @@ export function ConfirmOrderDialog({
   else if (dateChanged && isClosedDay(date, order.kind))
     dateError = "An diesem Tag ist geschlossen.";
   const timeError = timeChanged && !slots.includes(time) ? "Bitte eine Uhrzeit wählen." : null;
+
+  // Liegt der Preis über der Schätzung, geht die Mail als Angebot mit Frist raus.
+  const offerUntil =
+    sendEmail && priceCents !== null && !priceError && isPriceOffer(order, priceCents)
+      ? formatDateTime(offerResponseDeadline(order, openedAt))
+      : null;
+  const shownEstimate = shownEstimateCents(order);
 
   const timeOptions = [
     ...(time === "" ? [{ value: "", label: "Uhrzeit wählen", disabled: true }] : []),
@@ -147,7 +157,9 @@ export function ConfirmOrderDialog({
         return;
       }
       toast.success(isUpdate ? "Bestätigung aktualisiert" : "Bestellung bestätigt", {
-        description: mailToastDescription(order, input.sendEmail),
+        description: result.offerUntil
+          ? `Als Angebot verschickt. Die Kundin kann bis ${formatDateTime(new Date(result.offerUntil))} kostenfrei absagen.`
+          : mailToastDescription(order, input.sendEmail),
       });
       onClose();
     },
@@ -206,6 +218,15 @@ export function ConfirmOrderDialog({
           hint={priceHint(order)}
           trailing={<span aria-hidden>€</span>}
         />
+        {offerUntil ? (
+          <p className="-mt-2 text-warning ck-body-sm">
+            {shownEstimate === null
+              ? "Die Kundin hat im Formular noch keinen Preis gesehen."
+              : `Liegt über der Schätzung von ca. ${formatPrice(shownEstimate)}.`}{" "}
+            Die E-Mail geht deshalb als Angebot raus: Sagt die Kundin nicht bis {offerUntil} ab,
+            gilt der Preis als angenommen.
+          </p>
+        ) : null}
         <Textarea
           label="Nachricht an die Kundin (optional)"
           rows={3}
